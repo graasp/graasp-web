@@ -6,6 +6,7 @@ defmodule Admin.Publications do
   import Ecto.Query, warn: false
 
   alias Admin.Accounts
+  alias Admin.Accounts.Account
   alias Admin.Accounts.Scope
   alias Admin.Accounts.UserNotifier
   alias Admin.Items.Item

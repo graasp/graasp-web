@@ -28,13 +28,7 @@ defmodule Admin.ItemThumbnails do
   defp get_item_thumbnail(item_id, size) when size in ["small", "medium", "large", "original"] do
     key = "thumbnails/#{item_id}/#{size}"
     ttl = 3600
-
-    {:ok, url} =
-      Admin.SignedUrlCache.get_or_put(key, ttl, fn ->
-        S3.get_object_url(bucket(), key, expires_in: ttl)
-      end)
-
-    url
+    get_url_for(key, ttl)
   end
 
   def delete_thumbnails(item_id) when is_binary(item_id) do
