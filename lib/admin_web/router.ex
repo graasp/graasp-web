@@ -202,6 +202,15 @@ defmodule AdminWeb.Router do
       scope "/trash" do
         live "/", TrashLive.Index, :index
       end
+
+      scope "/validation" do
+        live "/", ValidationLive.Poc, :index
+        live "/:item_id/validate", ValidationLive.Form, :validate
+      end
+
+      scope "/orphans" do
+        live "/", OrphansLive.Index, :index
+      end
     end
 
     post "/users/update-password", UserSessionController, :update_password

@@ -147,7 +147,16 @@ defmodule Admin.MixProject do
       {:ecto_psql_extras, "~> 0.6"},
 
       # thumbnail generation
-      {:image, "~> 0.54"}
+      {:image, "~> 0.54"},
+
+      # dependencies for the yolo model (nudenet)
+      {:yolo, github: "spaenleh/yolo_elixir", branch: "main"},
+      {:ortex, "~> 0.1.10"},
+      {:nx, "~> 0.9"},
+      {:exla, "~> 0.10"},
+      {:evision, "~> 0.2"},
+      {:kino, "~> 0.16"},
+      {:kino_yolo, github: "poeticoding/kino_yolo", branch: "main"}
     ]
   end
 

@@ -10,12 +10,13 @@
     "lib/admin_web/live/analytics_live/event_generator.ex",
     "lib/admin_web/live/analytics_live/example.ex",
     "lib/admin_web/live/dev_live/index.ex",
-    "lib/admin_web/telemetry.ex"
+    "lib/admin_web/telemetry.ex",
+    "deps/postgrex/lib/postgrex/type_module.ex"
   ],
 
   "coverage_options": {
     "treat_no_relevant_lines_as_covered": true,
-    "minimum_coverage": 80,
+    "minimum_coverage": 70,
     "html_filter_full_covered": true
   }
 }

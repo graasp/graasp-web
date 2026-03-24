@@ -120,7 +120,7 @@ msgctxt "page title"
 msgid "Contact"
 msgstr "Kontakt"
 
-#: lib/admin_web/live/dashboard_live/index.ex:121
+#: lib/admin_web/live/dashboard_live/index.ex:155
 #, elixir-autogen, elixir-format
 msgctxt "page title"
 msgid "Dashboard"
