@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.10.6](https://github.com/graasp/graasp-web/compare/v0.10.5...v0.10.6) (2026-05-04)
+
+
+### Bug Fixes
+
+* add analytics path for react app ([#239](https://github.com/graasp/graasp-web/issues/239)) ([34b96db](https://github.com/graasp/graasp-web/commit/34b96dbc5471be4dcca963be8a72bfe534279959))
+* add client build script ([#240](https://github.com/graasp/graasp-web/issues/240)) ([acaf45d](https://github.com/graasp/graasp-web/commit/acaf45d680d2c4524774bbaaa84e2ddf52a26814))
+* add file cache for s3 urls ([#221](https://github.com/graasp/graasp-web/issues/221)) ([4030970](https://github.com/graasp/graasp-web/commit/4030970a579006838c0b1e10ecf33a341d3dde8f))
+* add git hash to compiled env ([#241](https://github.com/graasp/graasp-web/issues/241)) ([7d66622](https://github.com/graasp/graasp-web/commit/7d6662218a544d5d9e3075a698c514d12a81da21))
+* add indexes to improve perf when creating meilisearch data ([#244](https://github.com/graasp/graasp-web/issues/244)) ([02f0f05](https://github.com/graasp/graasp-web/commit/02f0f052200ff25a35358f4f9fd9fa78e64ce3d5))
+* add japanese as a supported language ([#242](https://github.com/graasp/graasp-web/issues/242)) ([d0edb36](https://github.com/graasp/graasp-web/commit/d0edb365ed009464b68c1e829dd35b01d8b6e38b))
+* add sentry test page ([#232](https://github.com/graasp/graasp-web/issues/232)) ([9d668eb](https://github.com/graasp/graasp-web/commit/9d668eb26d66657b592eb0d64f1d4efbc225b3ab))
+* allow a large timeout for delete queries ([45a9d3a](https://github.com/graasp/graasp-web/commit/45a9d3ab1a9dbb9e4712f05aa8fec9f84a4360c3))
+* improve code coverage ([#236](https://github.com/graasp/graasp-web/issues/236)) ([eb1de4e](https://github.com/graasp/graasp-web/commit/eb1de4e7cd2cd3982c523720223414a9886b4bca))
+* improve trash page with job tracking and cancel button ([#235](https://github.com/graasp/graasp-web/issues/235)) ([a4e0b2f](https://github.com/graasp/graasp-web/commit/a4e0b2f410dab2718f45e81d52670140b4a72e24))
+* **ja:** update translations ([#245](https://github.com/graasp/graasp-web/issues/245)) ([d8253e9](https://github.com/graasp/graasp-web/commit/d8253e94909e613c729238f96e0533c776da82f4))
+* key is too long when emptying the trash ([#234](https://github.com/graasp/graasp-web/issues/234)) ([8477b08](https://github.com/graasp/graasp-web/commit/8477b08bb7caf54546b826a1706a28f78cd2f451))
+* remove nil values from s3 config ([#238](https://github.com/graasp/graasp-web/issues/238)) ([f48e03d](https://github.com/graasp/graasp-web/commit/f48e03d856534b334ba92b255cd9af12ffe1d907))
+* set application name on pg connection ([#237](https://github.com/graasp/graasp-web/issues/237)) ([7c9fada](https://github.com/graasp/graasp-web/commit/7c9fada913647ded826a498f43098becf97f6c6c))
+* small issues and the test ([e8cf2a3](https://github.com/graasp/graasp-web/commit/e8cf2a31bf656722184795f8cdaa5861fcfcead3))
+* update mise action version ([#246](https://github.com/graasp/graasp-web/issues/246)) ([5e75847](https://github.com/graasp/graasp-web/commit/5e7584789d2ed28c0051f4beb684a2079dac0eac))
+* use batch delete for item tree deletion ([#243](https://github.com/graasp/graasp-web/issues/243)) ([8f28d34](https://github.com/graasp/graasp-web/commit/8f28d34cd1df2eb194a9dc1a68948ab36efc912c))
+
 ## [0.10.5](https://github.com/graasp/graasp-web/compare/v0.10.4...v0.10.5) (2026-04-20)
 
 
