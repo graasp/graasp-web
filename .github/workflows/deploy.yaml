@@ -45,7 +45,7 @@ jobs:
           path: client
 
       - name: Install Mise
-        uses: jdx/mise-action@v3
+        uses: jdx/mise-action@v4
 
       - name: build client
         run: cd client && mise run build && cp -r dist/* ../priv/static/client
