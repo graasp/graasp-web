@@ -30,68 +30,73 @@ defmodule AdminWeb.NotificationLive.Index do
         </div>
       <% end %>
 
-      <h2 class="text-lg font-bold">Drafts</h2>
-      <.table
-        id="wip_notifications"
-        rows={@streams.wip_notifications}
-        row_id={fn {_id, notification} -> "notifications-#{notification.id}" end}
-        row_click={
-          fn {_id, notification} -> JS.navigate(~p"/admin/notifications/#{notification}") end
-        }
-      >
-        <:col :let={{_id, notification}} label="Name">{notification.name}</:col>
-        <:col :let={{_id, notification}} label="Audience">{notification.audience}</:col>
-        <:action :let={{_id, notification}}>
-          <div class="sr-only">
-            <.link navigate={~p"/admin/notifications/#{notification}"}>Show</.link>
-          </div>
-        </:action>
-        <:action :let={{_id, notification}}>
-          <.link
-            class="text-error"
-            phx-click={
-              JS.push("delete_wip", value: %{id: notification.id})
-              |> hide("#notifications-#{notification.id}")
-            }
-            data-confirm="Are you sure?"
-          >
-            Delete
-          </.link>
-        </:action>
-      </.table>
+      <div class="bg-base-100 p-6 rounded-lg">
+        <h2 class="text-lg font-bold">Drafts</h2>
+        <.table
+          id="wip_notifications"
+          rows={@streams.wip_notifications}
+          row_id={fn {_id, notification} -> "notifications-#{notification.id}" end}
+          row_click={
+            fn {_id, notification} -> JS.navigate(~p"/admin/notifications/#{notification}") end
+          }
+        >
+          <:col :let={{_id, notification}} label="Name">{notification.name}</:col>
+          <:col :let={{_id, notification}} label="Audience">{notification.audience}</:col>
+          <:action :let={{_id, notification}}>
+            <div class="sr-only">
+              <.link navigate={~p"/admin/notifications/#{notification}"}>Show</.link>
+            </div>
+          </:action>
+          <:action :let={{_id, notification}}>
+            <.link
+              class="text-error"
+              phx-click={
+                JS.push("delete_wip", value: %{id: notification.id})
+                |> hide("#notifications-#{notification.id}")
+              }
+              data-confirm="Are you sure?"
+            >
+              Delete
+            </.link>
+          </:action>
+        </.table>
+      </div>
 
-      <h2 class="text-lg font-bold">Sent</h2>
-
-      <.table
-        id="notifications"
-        rows={@streams.sent_notifications}
-        row_click={
-          fn {_id, notification} -> JS.navigate(~p"/admin/notifications/#{notification}/archive") end
-        }
-      >
-        <:col :let={{_id, notification}} label="Name">{notification.name}</:col>
-        <:col :let={{_id, notification}} label="Audience">{notification.audience}</:col>
-        <:col :let={{_id, notification}} label="Default Language">
-          {notification.default_language}
-        </:col>
-        <:col :let={{_id, notification}} label="Sent">{length(notification.logs)}</:col>
-        <:col :let={{_id, notification}} label="Sent On">{notification.sent_at || "Not Sent"}</:col>
-        <:col :let={{_id, notification}} label="Total">{notification.total_recipients}</:col>
-        <:action :let={{_id, notification}}>
-          <div class="sr-only">
-            <.link navigate={~p"/admin/notifications/#{notification}"}>Show</.link>
-          </div>
-        </:action>
-        <:action :let={{id, notification}}>
-          <.link
-            class="text-error"
-            phx-click={JS.push("delete_sent", value: %{id: notification.id}) |> hide("##{id}")}
-            data-confirm="Are you sure?"
-          >
-            Delete
-          </.link>
-        </:action>
-      </.table>
+      <div class="bg-base-100 p-6 rounded-lg">
+        <h2 class="text-lg font-bold">Sent</h2>
+        <.table
+          id="notifications"
+          rows={@streams.sent_notifications}
+          row_click={
+            fn {_id, notification} ->
+              JS.navigate(~p"/admin/notifications/#{notification}/archive")
+            end
+          }
+        >
+          <:col :let={{_id, notification}} label="Name">{notification.name}</:col>
+          <:col :let={{_id, notification}} label="Audience">{notification.audience}</:col>
+          <:col :let={{_id, notification}} label="Default Language">
+            {notification.default_language}
+          </:col>
+          <:col :let={{_id, notification}} label="Sent">{length(notification.logs)}</:col>
+          <:col :let={{_id, notification}} label="Sent On">{notification.sent_at || "Not Sent"}</:col>
+          <:col :let={{_id, notification}} label="Total">{notification.total_recipients}</:col>
+          <:action :let={{_id, notification}}>
+            <div class="sr-only">
+              <.link navigate={~p"/admin/notifications/#{notification}"}>Show</.link>
+            </div>
+          </:action>
+          <:action :let={{id, notification}}>
+            <.link
+              class="text-error"
+              phx-click={JS.push("delete_sent", value: %{id: notification.id}) |> hide("##{id}")}
+              data-confirm="Are you sure?"
+            >
+              Delete
+            </.link>
+          </:action>
+        </.table>
+      </div>
     </Layouts.admin>
     """
   end

@@ -34,12 +34,13 @@ defmodule AdminWeb.Layouts do
     doc: "the current [scope](https://hexdocs.pm/phoenix/scopes.html)"
 
   slot :inner_block, required: true
+  attr :class, :string, default: nil, doc: "the class attribute for the main div"
 
   def admin(assigns) do
     ~H"""
     <.menu_bar {assigns} />
 
-    <main class="px-4 py-8 sm:px-6 lg:px-8">
+    <main class={["grow px-4 py-8 sm:px-6 lg:px-8 bg-base-200", @class]}>
       <div class="mx-auto max-w-4xl space-y-4">
         {render_slot(@inner_block)}
       </div>
@@ -60,11 +61,12 @@ defmodule AdminWeb.Layouts do
     doc: "the form for locale selection"
 
   slot :inner_block, required: true
+  attr :class, :string, default: nil, doc: "the class attribute for the main div"
 
   def landing(assigns) do
     ~H"""
     <.landing_menu {assigns} />
-    <main class="grow flex flex-col">
+    <main class={["grow flex flex-col", @class]}>
       <div class="grow">
         {render_slot(@inner_block)}
       </div>
@@ -215,7 +217,7 @@ defmodule AdminWeb.Layouts do
 
   def menu_bar(assigns) do
     ~H"""
-    <div class="navbar bg-base-100 shadow-sm">
+    <div class="navbar shadow-sm">
       <div class="navbar-start">
         <%= if @current_scope do %>
           <div class="dropdown">
