@@ -37,7 +37,7 @@ defmodule AdminWeb.Forms.PublishedItemSearchForm do
   defp validate_and_put_published_item_id(changeset) do
     item_id = Ecto.Changeset.get_field(changeset, :item_id)
 
-    case Publications.get_published_item_id_for_item_id(item_id) do
+    case Publications.get_publication_id_for_item_id(item_id) do
       nil ->
         Ecto.Changeset.add_error(
           changeset,
