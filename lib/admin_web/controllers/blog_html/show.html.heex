@@ -1,4 +1,9 @@
-<Layouts.landing flash={@flash} current_scope={@current_scope} locale_form={@locale_form}>
+<Layouts.landing
+  flash={@flash}
+  current_scope={@current_scope}
+  locale_form={@locale_form}
+  class="bg-base-200"
+>
   <div class="p-8 max-w-screen-lg mx-auto gap-4 flex flex-col align-start">
     <.link class="btn btn-ghost w-fit" href={~p"/blog"}>
       <.icon name="hero-arrow-left" /> {gettext("Back to posts")}

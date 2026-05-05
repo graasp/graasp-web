@@ -3,7 +3,7 @@ defmodule AdminWeb.DashboardLive.Index do
 
   def render(assigns) do
     ~H"""
-    <Layouts.admin flash={@flash} current_scope={@current_scope}>
+    <Layouts.admin flash={@flash} current_scope={@current_scope} class="bg-base-200">
       <.header>
         Welcome, {@current_scope.user.name || @current_scope.user.email}
       </.header>

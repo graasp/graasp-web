@@ -24,34 +24,36 @@
     </div>
   </.form>
 
-  <.table
-    id="published_items"
-    rows={@published_items}
-    row_click={&JS.navigate(~p"/admin/published_items/#{&1}")}
-  >
-    <:col :let={published_item}>
-      <.thumbnail
-        src={published_item.thumbnails.small}
-        size="small"
-        alt={published_item.item.name}
-      />
-    </:col>
-    <:col :let={published_item} label="Publication">
-      <div class="flex flex-col align-center gap-1">
-        <span class="font-bold">{published_item.item.name}</span>
-        <span class="text-sm line-clamp-10">
-          <.raw_html html={published_item.item.description} />
-        </span>
-      </div>
-    </:col>
+  <div class="bg-base-100 p-6 rounded-lg">
+    <.table
+      id="published_items"
+      rows={@published_items}
+      row_click={&JS.navigate(~p"/admin/published_items/#{&1}")}
+    >
+      <:col :let={published_item}>
+        <.thumbnail
+          src={published_item.thumbnails.small}
+          size="small"
+          alt={published_item.item.name}
+        />
+      </:col>
+      <:col :let={published_item} label="Publication">
+        <div class="flex flex-col align-center gap-1">
+          <span class="font-bold">{published_item.item.name}</span>
+          <span class="text-sm line-clamp-10">
+            <.raw_html html={published_item.item.description} />
+          </span>
+        </div>
+      </:col>
 
-    <:col :let={published_item} label="Creator">
-      <.publication_creator publication={published_item} />
-    </:col>
-    <:action :let={published_item}>
-      <div class="sr-only">
-        <.link navigate={~p"/admin/published_items/#{published_item}"}>Show</.link>
-      </div>
-    </:action>
-  </.table>
+      <:col :let={published_item} label="Creator">
+        <.publication_creator publication={published_item} />
+      </:col>
+      <:action :let={published_item}>
+        <div class="sr-only">
+          <.link navigate={~p"/admin/published_items/#{published_item}"}>Show</.link>
+        </div>
+      </:action>
+    </.table>
+  </div>
 </Layouts.admin>

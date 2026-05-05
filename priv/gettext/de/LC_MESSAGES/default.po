@@ -11,24 +11,24 @@ msgstr ""
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/admin_web/components/core_components.ex:353
+#: lib/admin_web/components/core_components.ex:387
 #: lib/admin_web/live/notification_live/show.ex:71
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr "Aktionen"
 
-#: lib/admin_web/components/layouts.ex:131
-#: lib/admin_web/components/layouts.ex:143
+#: lib/admin_web/components/layouts.ex:133
+#: lib/admin_web/components/layouts.ex:145
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr "Verbindungsversuch"
 
-#: lib/admin_web/components/layouts.ex:138
+#: lib/admin_web/components/layouts.ex:140
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr "Etwas ist schiefgelaufen!"
 
-#: lib/admin_web/components/layouts.ex:126
+#: lib/admin_web/components/layouts.ex:128
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr "Wir können das Internet nicht finden."
@@ -38,65 +38,65 @@ msgstr "Wir können das Internet nicht finden."
 msgid "close"
 msgstr "schließen"
 
-#: lib/admin_web/controllers/blog_html/index.html.heex:26
-#: lib/admin_web/controllers/blog_html/show.html.heex:9
+#: lib/admin_web/controllers/blog_html/index.html.heex:31
+#: lib/admin_web/controllers/blog_html/show.html.heex:14
 #, elixir-autogen, elixir-format
 msgid " by %{authors}"
 msgstr "von %{authors}"
 
-#: lib/admin_web/controllers/blog_html/show.html.heex:4
+#: lib/admin_web/controllers/blog_html/show.html.heex:9
 #, elixir-autogen, elixir-format
 msgid "Back to posts"
 msgstr "Zurück zu den Beiträgen"
 
-#: lib/admin_web/controllers/blog_html/index.html.heex:40
+#: lib/admin_web/controllers/blog_html/index.html.heex:45
 #, elixir-autogen, elixir-format
 msgid "Read more"
 msgstr "Mehr lesen"
 
-#: lib/admin_web/controllers/blog_html/index.html.heex:4
+#: lib/admin_web/controllers/blog_html/index.html.heex:9
 #, elixir-autogen, elixir-format
 msgid "Recent Posts"
 msgstr "Neueste Beiträge"
 
-#: lib/admin_web/components/layouts.ex:361
-#: lib/admin_web/components/layouts.ex:391
+#: lib/admin_web/components/layouts.ex:363
+#: lib/admin_web/components/layouts.ex:393
 #, elixir-autogen, elixir-format
 msgid "Admin"
 msgstr "Administration"
 
-#: lib/admin_web/components/layouts.ex:349
-#: lib/admin_web/components/layouts.ex:383
+#: lib/admin_web/components/layouts.ex:351
+#: lib/admin_web/components/layouts.ex:385
 #, elixir-autogen, elixir-format
 msgid "Blog"
 msgstr "Blog"
 
-#: lib/admin_web/components/layouts.ex:368
-#: lib/admin_web/components/layouts.ex:400
+#: lib/admin_web/components/layouts.ex:370
+#: lib/admin_web/components/layouts.ex:402
 #, elixir-autogen, elixir-format
 msgid "Get started"
 msgstr "Jetzt starten"
 
-#: lib/admin_web/components/layouts.ex:346
-#: lib/admin_web/components/layouts.ex:382
+#: lib/admin_web/components/layouts.ex:348
+#: lib/admin_web/components/layouts.ex:384
 #, elixir-autogen, elixir-format
 msgid "Library"
 msgstr "Bibliothek"
 
-#: lib/admin_web/components/layouts.ex:372
-#: lib/admin_web/components/layouts.ex:404
+#: lib/admin_web/components/layouts.ex:374
+#: lib/admin_web/components/layouts.ex:406
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr "Einloggen"
 
-#: lib/admin_web/components/layouts.ex:355
-#: lib/admin_web/components/layouts.ex:387
+#: lib/admin_web/components/layouts.ex:357
+#: lib/admin_web/components/layouts.ex:389
 #, elixir-autogen, elixir-format
 msgid "About"
 msgstr "Über uns"
 
-#: lib/admin_web/components/layouts.ex:358
-#: lib/admin_web/components/layouts.ex:388
+#: lib/admin_web/components/layouts.ex:360
+#: lib/admin_web/components/layouts.ex:390
 #, elixir-autogen, elixir-format
 msgid "Contact"
 msgstr "Kontakt"
@@ -144,17 +144,17 @@ msgstr "Graasp ist eine Plattform für kollaboratives Lernen und Lehren."
 msgid "Home"
 msgstr "Startseite"
 
-#: lib/admin_web/components/layouts.ex:182
+#: lib/admin_web/components/layouts.ex:184
 #, elixir-autogen, elixir-format
 msgid "Use dark theme"
 msgstr "Dunkles Design verwenden"
 
-#: lib/admin_web/components/layouts.ex:173
+#: lib/admin_web/components/layouts.ex:175
 #, elixir-autogen, elixir-format
 msgid "Use light theme"
 msgstr "Helles Design verwenden"
 
-#: lib/admin_web/components/layouts.ex:164
+#: lib/admin_web/components/layouts.ex:166
 #, elixir-autogen, elixir-format
 msgid "Use system theme"
 msgstr "Systemdesign verwenden"
@@ -190,19 +190,19 @@ msgctxt "page title"
 msgid "Subscribed to Marketing Emails"
 msgstr "Marketing-E-Mails abonniert"
 
-#: lib/admin_web/controllers/docs_html/index.html.heex:3
-#: lib/admin_web/controllers/docs_html/show.html.heex:4
+#: lib/admin_web/controllers/docs_html/index.html.heex:8
+#: lib/admin_web/controllers/docs_html/show.html.heex:9
 #, elixir-autogen, elixir-format
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: lib/admin_web/controllers/docs_html/search.html.heex:4
+#: lib/admin_web/controllers/docs_html/search.html.heex:9
 #, elixir-autogen, elixir-format
 msgid "Search documentation for %{tag}"
 msgstr "Dokumentation für %{tag} durchsuchen"
 
-#: lib/admin_web/controllers/docs_html/index.html.heex:5
-#: lib/admin_web/controllers/docs_html/search.html.heex:7
+#: lib/admin_web/controllers/docs_html/index.html.heex:10
+#: lib/admin_web/controllers/docs_html/search.html.heex:12
 #, elixir-autogen, elixir-format
 msgid "Welcome to the documentation page. Here you can find information about our products and services."
 msgstr "Willkommen auf der Dokumentationsseite. Hier finden Sie Informationen zu unseren Produkten und Dienstleistungen."
@@ -243,7 +243,7 @@ msgctxt "documentation section"
 msgid "tips"
 msgstr "Tipps"
 
-#: lib/admin_web/controllers/docs_html/show.html.heex:37
+#: lib/admin_web/controllers/docs_html/show.html.heex:42
 #, elixir-autogen, elixir-format
 msgid "Back to documentation"
 msgstr "Zurück zur Dokumentation"
@@ -272,18 +272,18 @@ msgctxt "page_title"
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: lib/admin_web/components/layouts.ex:352
-#: lib/admin_web/components/layouts.ex:385
+#: lib/admin_web/components/layouts.ex:354
+#: lib/admin_web/components/layouts.ex:387
 #, elixir-autogen, elixir-format
 msgid "Support"
 msgstr "Hilfe"
 
-#: lib/admin_web/controllers/docs_html/index.html.heex:59
+#: lib/admin_web/controllers/docs_html/index.html.heex:64
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Contact us"
 msgstr "Uns kontaktieren"
 
-#: lib/admin_web/controllers/docs_html/index.html.heex:57
+#: lib/admin_web/controllers/docs_html/index.html.heex:62
 #, elixir-autogen, elixir-format
 msgid "Did not find what you were looking for?"
 msgstr "Nicht gefunden, wonach Sie gesucht haben?"
@@ -317,7 +317,7 @@ msgctxt "page title"
 msgid "Graasp Blog Atom feed"
 msgstr "Graasp Blog Atom feed"
 
-#: lib/admin_web/controllers/docs_html/show.html.heex:54
+#: lib/admin_web/controllers/docs_html/show.html.heex:59
 #, elixir-autogen, elixir-format
 msgid "Next"
 msgstr ""
@@ -339,7 +339,7 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: lib/admin_web/components/layouts.ex:195
+#: lib/admin_web/components/layouts.ex:197
 #, elixir-autogen, elixir-format
 msgid "Open navigation menu"
 msgstr ""

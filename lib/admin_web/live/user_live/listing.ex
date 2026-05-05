@@ -7,16 +7,15 @@ defmodule AdminWeb.UserLive.Listing do
   def render(assigns) do
     ~H"""
     <Layouts.admin flash={@flash} current_scope={@current_scope}>
-      <div class="">
-        <.header>
-          Admin users
-          <:subtitle>Show users that are currently registered in the app</:subtitle>
-          <:actions>
-            <.button navigate={~p"/admin/users/new"} id="new_user">Add an admin user</.button>
-          </:actions>
-        </.header>
-      </div>
-      <div id="user-list" phx-update="stream" class="flex flex-col gap-2">
+      <.header>
+        Admin users
+        <:subtitle>Show users that are currently registered in the app</:subtitle>
+        <:actions>
+          <.button navigate={~p"/admin/users/new"} id="new_user">Add an admin user</.button>
+        </:actions>
+      </.header>
+
+      <div id="user-list" phx-update="stream" class="flex flex-col gap-2 bg-base-100 p-6 rounded-lg">
         <%= for {id, user} <- @streams.users do %>
           <div
             id={id}

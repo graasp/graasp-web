@@ -94,17 +94,51 @@ defmodule AdminWeb.CoreComponents do
   """
   attr :rest, :global, include: ~w(href navigate patch method download name value disabled)
   attr :class, :string
-  attr :variant, :string, values: ~w(primary)
+  attr :variant, :string, values: ~w(primary ghost)
+
+  attr :color, :string,
+    values: ~w(primary accent neutral error info success warning),
+    default: "primary"
+
+  attr :size, :string, values: ~w(md sm lg)
+
   slot :inner_block, required: true
 
   def button(%{rest: rest} = assigns) do
-    variants = %{"primary" => "btn-primary", nil => "btn-primary btn-soft"}
+    variants = %{
+      "primary" => "",
+      "ghost" => "btn-ghost",
+      nil => "btn-soft"
+    }
+
+    colors = %{
+      "primary" => "btn-primary",
+      "accent" => "btn-accent",
+      "neutral" => "btn-neutral",
+      "error" => "btn-error",
+      "info" => "btn-info",
+      "success" => "btn-success",
+      "warning" => "btn-warning"
+    }
+
+    sizes = %{
+      "sm" => "btn-sm",
+      "md" => "",
+      "lg" => "btn-lg",
+      nil => ""
+    }
 
     assigns =
       assign(
         assigns,
         :class,
-        ["btn", Map.fetch!(variants, assigns[:variant])] ++ [assigns[:class]]
+        [
+          "btn",
+          Map.fetch!(colors, assigns[:color]),
+          Map.fetch!(variants, assigns[:variant]),
+          Map.fetch!(sizes, assigns[:size])
+        ] ++
+          [assigns[:class]]
       )
 
     if rest[:href] || rest[:navigate] || rest[:patch] do
@@ -456,10 +490,11 @@ defmodule AdminWeb.CoreComponents do
 
   attr :html, :string, required: true
   attr :class, :string, default: ""
+  attr :id, :string, default: nil
 
   def raw_html(assigns) do
     ~H"""
-    <div class={[@class, "prose prose-sm"]}>
+    <div class={["prose prose-sm", @class]} id={@id}>
       {HtmlSanitizeEx.basic_html(@html) |> Phoenix.HTML.raw()}
     </div>
     """
@@ -517,7 +552,7 @@ defmodule AdminWeb.CoreComponents do
           case assigns.size do
             "small" -> "size-10"
             "medium" -> "size-24"
-            "large" -> "size-96"
+            "large" -> "size-75"
           end
       )
 
