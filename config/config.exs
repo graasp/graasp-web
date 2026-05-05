@@ -16,7 +16,7 @@ config :admin, Oban,
     # periodic jobs
     {Oban.Plugins.Cron,
      crontab: [
-       {"0 3 * * *", Admin.TrashCleanupWorker, max_attempts: 1}
+       {"0 1 * * *", Admin.TrashCleanupWorker, max_attempts: 1}
      ]}
   ],
   engine: Oban.Engines.Basic,
