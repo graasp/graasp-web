@@ -9,20 +9,22 @@ defmodule Admin.Validation.NudenetValidation do
   defp model_name, do: Application.app_dir(:admin, "priv/models/320n.onnx")
   defp classes_path, do: Application.app_dir(:admin, "priv/models/labels.json")
 
+  @model_width 320
+
   def from_file(s3_path) do
-    image = get_image(s3_path)
+    {image, original_image} = get_image(s3_path)
     detected_objects = perform(image)
 
     annotated_image =
-      PredictionDraw.draw_detected_objects(image, detected_objects)
+      PredictionDraw.draw_detected_objects(original_image, detected_objects)
 
     {annotated_image, detected_objects}
   end
 
   def show(s3_path, detected_objects) do
-    image = get_image(s3_path)
+    {_, original_image} = get_image(s3_path)
 
-    PredictionDraw.draw_detected_objects(image, detected_objects)
+    PredictionDraw.draw_detected_objects(original_image, detected_objects)
   end
 
   def perform(image) do
@@ -34,13 +36,35 @@ defmodule Admin.Validation.NudenetValidation do
       prob_threshold: 0.25,
       frame_scaler: YOLO.FrameScalers.ImageScaler
     )
-    |> YOLO.to_detected_objects(model.classes)
+    |> to_detected_objects(model.classes)
+    |> IO.inspect(label: "detected")
   end
 
   defp get_image(s3_path) do
     image_bin =
       S3.download(Admin.ItemFiles.bucket(), s3_path)
 
-    Image.from_binary!(image_bin) |> Image.thumbnail!(320) |> Image.split_alpha() |> elem(0)
+    original_image = Image.from_binary!(image_bin)
+
+    {Image.thumbnail!(original_image, 320) |> Image.split_alpha() |> elem(0),
+     original_image |> Image.thumbnail!(640) |> Image.split_alpha() |> elem(0)}
+  end
+
+  defp to_detected_objects(bboxes, model_classes) do
+    Enum.map(bboxes, fn [cx, cy, w, h, prob, class_idx] ->
+      class_idx = round(class_idx)
+
+      %{
+        prob: prob,
+        bbox: %{
+          cx: cx / @model_width,
+          cy: cy / @model_width,
+          w: w / @model_width,
+          h: h / @model_width
+        },
+        class_idx: class_idx,
+        class: Map.get(model_classes, class_idx)
+      }
+    end)
   end
 end

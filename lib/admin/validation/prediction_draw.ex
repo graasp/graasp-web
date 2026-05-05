@@ -28,6 +28,8 @@ defmodule Admin.Validation.PredictionDraw do
           options :: Keyword.t()
         ) :: Vix.Vips.Image.t()
   def draw_detected_objects(image, detected_objects, options \\ []) do
+    width = Vix.Vips.Image.width(image)
+
     description = Keyword.get(options, :description)
     classes = Keyword.get(options, :classes)
 
@@ -42,7 +44,8 @@ defmodule Admin.Validation.PredictionDraw do
       end
 
     # draw detected objects
-    image_with_detections = Enum.reduce(detected_objects, image, &draw_object_detection(&2, &1))
+    image_with_detections =
+      Enum.reduce(detected_objects, image, &draw_object_detection(&2, &1, width))
 
     # add description label
     if description do
@@ -63,16 +66,16 @@ defmodule Admin.Validation.PredictionDraw do
     end
   end
 
-  defp draw_object_detection(image, %{bbox: bbox} = detection) do
-    left = max(round(bbox.cx - bbox.w / 2), 0)
-    top = max(round(bbox.cy - bbox.h / 2), 0)
+  defp draw_object_detection(image, %{bbox: bbox} = detection, width) do
+    left = max(round((bbox.cx - bbox.w / 2) * width), 0)
+    top = max(round((bbox.cy - bbox.h / 2) * width), 0)
     color = PredictionColors.class_color(detection.class_idx)
 
     class_label = class_label_image(detection)
     {_, text_height, _} = Image.shape(class_label)
 
     image
-    |> Image.Draw.rect!(left, top, bbox.w, bbox.h,
+    |> Image.Draw.rect!(left, top, ceil(bbox.w * width), ceil(bbox.h * width),
       stroke_width: @stroke_width,
       color: color,
       fill: false
