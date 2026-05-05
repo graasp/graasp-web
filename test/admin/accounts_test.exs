@@ -578,4 +578,16 @@ defmodule Admin.AccountsTest do
       assert [] = Accounts.get_members_by_language("invalid")
     end
   end
+
+  describe "user_stats/1" do
+    test "returns stats when there are no users" do
+      assert Accounts.user_stats() == %{total: 0, confirmed: 0}
+    end
+
+    test "returns stats when there are unconfirmed users" do
+      _user1 = user_fixture()
+      _user2 = unconfirmed_user_fixture()
+      assert Accounts.user_stats() == %{total: 2, confirmed: 1}
+    end
+  end
 end

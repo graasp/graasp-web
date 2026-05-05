@@ -22,7 +22,14 @@ defmodule Admin.ItemsTest do
     test "get_item!/2 returns the item with given id" do
       scope = user_scope_fixture()
       item = item_fixture(scope)
-      assert Items.get_item!(scope, item.id) == item
+      result_item = Items.get_item!(scope, item.id)
+      assert result_item.name == item.name
+      assert result_item.description == item.description
+      assert result_item.type == item.type
+      assert result_item.path == item.path
+      assert result_item.settings == item.settings
+      assert result_item.extra == item.extra
+      assert result_item.thumbnails
     end
 
     test "create_item/2 with valid data creates a item" do
@@ -78,7 +85,13 @@ defmodule Admin.ItemsTest do
       scope = user_scope_fixture()
       item = item_fixture(scope)
       assert {:error, %Ecto.Changeset{}} = Items.update_item(scope, item, @invalid_attrs)
-      assert item == Items.get_item!(scope, item.id)
+      result_item = Items.get_item!(scope, item.id)
+      assert result_item.name == item.name
+      assert result_item.type == item.type
+      assert result_item.path == item.path
+      assert result_item.description == item.description
+      assert result_item.settings == item.settings
+      assert result_item.extra == item.extra
     end
 
     test "delete_item/2 deletes the item" do

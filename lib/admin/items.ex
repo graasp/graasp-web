@@ -60,6 +60,7 @@ defmodule Admin.Items do
   """
   def get_item!(%Scope{} = _scope, id) do
     Repo.get!(Item, id)
+    |> populate_thumbnails()
   end
 
   @doc """
@@ -172,5 +173,12 @@ defmodule Admin.Items do
           fragment("?->'h5p'->'contentId' = ?", item.extra, ^h5p_content_id)
     )
     |> Repo.one()
+  end
+
+  defp populate_thumbnails(%Item{id: item_id} = item) do
+    thumbnails =
+      Admin.ItemThumbnails.get_item_thumbnails(item_id)
+
+    Map.put(item, :thumbnails, thumbnails)
   end
 end
