@@ -46,12 +46,12 @@ defmodule Admin.Docs do
   end
 
   def all_sections do
-    @pages
+    all_pages()
     |> Enum.group_by(fn page -> page.section end)
   end
 
   def get_page_by_id!(id) do
-    Enum.find(@pages, fn post -> post.id == id end) ||
+    Enum.find(all_pages(), fn post -> post.id == id end) ||
       raise AdminWeb.NotFoundError, "page with id=#{id} not found"
   end
 end
