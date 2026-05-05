@@ -11,12 +11,14 @@ defmodule Admin.StaticPages do
     from: Application.app_dir(:admin, "priv/pages/**/*.md"),
     as: :pages
 
+  def all_pages, do: @pages
+
   def get_unique_page_ids do
-    @pages |> Enum.map(& &1.id) |> Enum.uniq()
+    all_pages() |> Enum.map(& &1.id) |> Enum.uniq()
   end
 
   def get_static_page!(locale, id) when is_binary(id) do
-    page = @pages |> Enum.find(&(&1.id == id && &1.locale == locale))
+    page = all_pages() |> Enum.find(&(&1.id == id && &1.locale == locale))
 
     if is_nil(page) and locale == AdminWeb.Gettext.default_locale(),
       do: raise(NotFoundError, message: "Page not found")
@@ -25,6 +27,6 @@ defmodule Admin.StaticPages do
   end
 
   def exists?(locale, id) when is_binary(id) do
-    @pages |> Enum.any?(&(&1.id == id && &1.locale == locale))
+    all_pages() |> Enum.any?(&(&1.id == id && &1.locale == locale))
   end
 end
