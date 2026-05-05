@@ -12,6 +12,7 @@ defmodule Admin.Accounts.Account do
     field :extra, :map
     field :last_authenticated_at, :utc_datetime
     field :marketing_emails_subscribed_at, :utc_datetime
+    field :thumbnails, :map, virtual: true
 
     timestamps(type: :utc_datetime)
   end

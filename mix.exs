@@ -144,7 +144,10 @@ defmodule Admin.MixProject do
       {:ecto_ltree, "~> 0.3.0"},
 
       # allow to see ecto metrics in live dashboard
-      {:ecto_psql_extras, "~> 0.6"}
+      {:ecto_psql_extras, "~> 0.6"},
+
+      # thumbnail generation
+      {:image, "~> 0.54"}
     ]
   end
 

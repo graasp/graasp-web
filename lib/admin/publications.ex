@@ -4,14 +4,16 @@ defmodule Admin.Publications do
   """
 
   import Ecto.Query, warn: false
+
+  alias Admin.Accounts
+  alias Admin.Accounts.Scope
   alias Admin.Accounts.UserNotifier
+  alias Admin.Items.Item
+  alias Admin.Items.ItemMembership
   alias Admin.Publications.PublicationRemovalNotice
+  alias Admin.Publications.PublishedItem
   alias Admin.Repo
   alias Ecto.Multi
-
-  alias Admin.Accounts.Scope
-  alias Admin.Items.Item
-  alias Admin.Publications.PublishedItem
 
   @doc """
   Subscribes to scoped notifications about any published_item changes.
@@ -137,7 +139,7 @@ defmodule Admin.Publications do
     }
   end
 
-  def get_published_item_id_for_item_id(item_id) do
+  def get_publication_id_for_item_id(item_id) do
     query =
       from pi in PublishedItem,
         join: i in Item,
@@ -313,5 +315,19 @@ defmodule Admin.Publications do
   # item association is not loaded
   defp populate_thumbnails(%PublishedItem{} = pub) do
     Map.put(pub, :thumbnails, %{small: nil, medium: nil, large: nil})
+  end
+
+  def get_authors(%Item{} = item) do
+    from(m in ItemMembership,
+      join: a in Account,
+      # has a membership on the parents of the item or the item itself
+      on: m.account_id == a.id,
+      where:
+        fragment("? @> ?", m.item_path, ^(item.path |> EctoLtree.LabelTree.decode())) and
+          m.permission in ["admin", "write"] and a.type == "individual",
+      select: a
+    )
+    |> Repo.all()
+    |> Enum.map(&Accounts.populate_avatar_url(&1))
   end
 end

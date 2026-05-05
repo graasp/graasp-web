@@ -80,5 +80,22 @@ defmodule Admin.Repo.Migrations.CreateItem do
            )
 
     create index(:recycled_item_data, [:created_at], name: "IDX_recycled_item_data_created_at")
+
+    create table(:item_membership) do
+      add :permission, :string
+      add :item_path, references(:item, column: :path, type: :ltree, on_delete: :delete_all)
+      add :creator_id, references(:account, column: :id, type: :binary_id, on_delete: :nilify_all)
+
+      add :account_id,
+          references(:account, column: :id, type: :binary_id, on_delete: :delete_all), null: false
+
+      timestamps(type: :utc_datetime)
+    end
+
+    create index(:item_membership, [:item_path],
+             name: "IDX_gist_item_membership_path",
+             using: :gist,
+             unique: false
+           )
   end
 end

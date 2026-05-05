@@ -5,6 +5,7 @@ defmodule Admin.Accounts do
   require Logger
   import Ecto.Query, warn: false
   alias Admin.Accounts.Account
+  alias Admin.ItemThumbnails
   alias Admin.Repo
 
   alias Admin.Accounts.{User, UserNotifier, UserToken}
@@ -436,5 +437,10 @@ defmodule Admin.Accounts do
 
   def update_member_marketing_emails(%Account{} = account, enable_emails) do
     account |> Account.marketing_emails_changeset(enable_emails) |> Repo.update()
+  end
+
+  def populate_avatar_url(%Account{} = account) do
+    thumbnails = ItemThumbnails.avatar_thumbnails(account.id)
+    %{account | thumbnails: thumbnails}
   end
 end
