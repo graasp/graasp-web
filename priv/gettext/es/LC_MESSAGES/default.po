@@ -59,44 +59,44 @@ msgstr "Leer más"
 msgid "Recent Posts"
 msgstr "Entradas recientes"
 
-#: lib/admin_web/components/layouts.ex:363
-#: lib/admin_web/components/layouts.ex:393
+#: lib/admin_web/components/layouts.ex:365
+#: lib/admin_web/components/layouts.ex:395
 #, elixir-autogen, elixir-format
 msgid "Admin"
 msgstr "Administración"
 
-#: lib/admin_web/components/layouts.ex:351
-#: lib/admin_web/components/layouts.ex:385
+#: lib/admin_web/components/layouts.ex:353
+#: lib/admin_web/components/layouts.ex:387
 #, elixir-autogen, elixir-format
 msgid "Blog"
 msgstr "Blog"
 
-#: lib/admin_web/components/layouts.ex:370
-#: lib/admin_web/components/layouts.ex:402
+#: lib/admin_web/components/layouts.ex:372
+#: lib/admin_web/components/layouts.ex:404
 #, elixir-autogen, elixir-format
 msgid "Get started"
 msgstr "Empezar"
 
-#: lib/admin_web/components/layouts.ex:348
-#: lib/admin_web/components/layouts.ex:384
+#: lib/admin_web/components/layouts.ex:350
+#: lib/admin_web/components/layouts.ex:386
 #, elixir-autogen, elixir-format
 msgid "Library"
 msgstr "Biblioteca"
 
-#: lib/admin_web/components/layouts.ex:374
-#: lib/admin_web/components/layouts.ex:406
+#: lib/admin_web/components/layouts.ex:376
+#: lib/admin_web/components/layouts.ex:408
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr "Acceso"
 
-#: lib/admin_web/components/layouts.ex:357
-#: lib/admin_web/components/layouts.ex:389
+#: lib/admin_web/components/layouts.ex:359
+#: lib/admin_web/components/layouts.ex:391
 #, elixir-autogen, elixir-format
 msgid "About"
 msgstr "Acerca de"
 
-#: lib/admin_web/components/layouts.ex:360
-#: lib/admin_web/components/layouts.ex:390
+#: lib/admin_web/components/layouts.ex:362
+#: lib/admin_web/components/layouts.ex:392
 #, elixir-autogen, elixir-format
 msgid "Contact"
 msgstr "Contacto"
@@ -120,7 +120,7 @@ msgctxt "page title"
 msgid "Contact"
 msgstr "Contacto"
 
-#: lib/admin_web/live/dashboard_live/index.ex:155
+#: lib/admin_web/live/dashboard_live/index.ex:160
 #, elixir-autogen, elixir-format
 msgctxt "page title"
 msgid "Dashboard"
@@ -272,8 +272,8 @@ msgctxt "page_title"
 msgid "Documentation"
 msgstr "Documentación"
 
-#: lib/admin_web/components/layouts.ex:354
-#: lib/admin_web/components/layouts.ex:387
+#: lib/admin_web/components/layouts.ex:356
+#: lib/admin_web/components/layouts.ex:389
 #, elixir-autogen, elixir-format
 msgid "Support"
 msgstr "Apoyo"

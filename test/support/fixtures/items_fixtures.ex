@@ -8,7 +8,7 @@ defmodule Admin.ItemsFixtures do
   @doc """
   Generate a item.
   """
-  def item_fixture(scope, attrs \\ %{}) do
+  def item_fixture(scope, attrs \\ %{}, file_attrs \\ %{}) do
     {:ok, creator} =
       Admin.Repo.insert(%Admin.Accounts.Account{
         id: Ecto.UUID.generate(),
@@ -32,8 +32,37 @@ defmodule Admin.ItemsFixtures do
         creator_id: creator.id
       })
 
-    {:ok, item} = Admin.Items.create_item(scope, attrs)
+    {:ok, item} = Admin.Items.create_item(scope, attrs, file_attrs)
     item
+  end
+
+  @doc """
+  Generate a file item directly in the DB without triggering S3 uploads.
+  Use this in tests that need a `type: "file"` item without real file storage.
+  """
+  def file_item_fixture(scope, attrs \\ %{}) do
+    item_id = Ecto.UUID.generate()
+
+    attrs =
+      Enum.into(attrs, %{
+        id: item_id,
+        name: "test_image.jpg",
+        description: "some description",
+        extra: %{
+          "file" => %{
+            "name" => "test_image.jpg",
+            "path" => "files/#{item_id}",
+            "mimetype" => "image/jpeg",
+            "size" => 1024
+          }
+        },
+        path: "#{PathUtils.from_uuids([item_id])}",
+        settings: %{},
+        type: "file",
+        lang: "en"
+      })
+
+    item_fixture(scope, attrs)
   end
 
   def build_tree(scope, tree_structure) when is_list(tree_structure) do

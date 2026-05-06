@@ -127,5 +127,4 @@ defmodule Admin.S3 do
       key |> String.trim_leading(prefix) |> String.trim_trailing("/")
     end)
   end
-
 end

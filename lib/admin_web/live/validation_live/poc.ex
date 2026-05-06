@@ -9,7 +9,18 @@ defmodule AdminWeb.ValidationLive.Poc do
     <Layouts.admin {assigns}>
       <h2>Recent files</h2>
       <div class="flex flex-col gap-2 w-full">
-        <div :for={file <- @recent_files} class="flex flex-row gap-2">
+        <div :for={_ <- 1..10} :if={@recent_files == :loading} class="flex flex-row gap-2">
+          <div class="size-24 bg-base-300 rounded animate-pulse flex-shrink-0" />
+          <div class="flex flex-col gap-2 flex-1">
+            <div class="h-4 bg-base-300 rounded animate-pulse w-64" />
+            <div class="h-3 bg-base-300 rounded animate-pulse w-48" />
+          </div>
+        </div>
+        <div
+          :for={file <- if(@recent_files == :loading, do: [], else: @recent_files)}
+          class="flex flex-row gap-2"
+          id={file.id}
+        >
           <img
             :if={Map.get(file, :thumbnails)}
             src={file.thumbnails.medium}
@@ -82,10 +93,17 @@ defmodule AdminWeb.ValidationLive.Poc do
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
+    if connected?(socket), do: send(self(), :load_recent_files)
+
     {:ok,
      socket
-     |> assign(:recent_files, Admin.Items.get_recent_files())
+     |> assign(:recent_files, :loading)
      |> allow_upload(:file, accept: ~w(.jpg .jpeg .png .webp), max_entries: 2)}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_info(:load_recent_files, socket) do
+    {:noreply, assign(socket, :recent_files, Admin.Items.get_recent_files())}
   end
 
   @impl Phoenix.LiveView

@@ -83,18 +83,24 @@ defmodule Admin.Items do
            |> Repo.insert() do
       case attrs.type do
         "file" ->
-          file_path = ItemFiles.upload(file_attrs, item.id)
+          case file_attrs do
+            %{} ->
+              :ok
 
-          update_item(scope, item, %{
-            extra: %{
-              file: %{
-                name: file_attrs.name,
-                path: file_path,
-                mimetype: file_attrs.mimetype,
-                size: file_attrs.size
-              }
-            }
-          })
+            _ ->
+              file_path = ItemFiles.upload(file_attrs, item.id)
+
+              update_item(scope, item, %{
+                extra: %{
+                  file: %{
+                    name: file_attrs.name,
+                    path: file_path,
+                    mimetype: file_attrs.mimetype,
+                    size: file_attrs.size
+                  }
+                }
+              })
+          end
 
         _ ->
           :ok
@@ -207,7 +213,8 @@ defmodule Admin.Items do
       limit: 10
     )
     |> Repo.all()
-    |> Enum.map(&populate_thumbnails(&1))
+    |> Task.async_stream(&populate_thumbnails/1, max_concurrency: 10)
+    |> Enum.map(fn {:ok, item} -> item end)
   end
 
   @doc """

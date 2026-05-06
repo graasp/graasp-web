@@ -37,7 +37,6 @@ defmodule Admin.Validation.NudenetValidation do
       frame_scaler: YOLO.FrameScalers.ImageScaler
     )
     |> to_detected_objects(model.classes)
-    |> IO.inspect(label: "detected")
   end
 
   defp get_image(s3_path) do

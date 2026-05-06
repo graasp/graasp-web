@@ -28,7 +28,7 @@ defmodule Admin.Validation.PredictionDraw do
           options :: Keyword.t()
         ) :: Vix.Vips.Image.t()
   def draw_detected_objects(image, detected_objects, options \\ []) do
-    width = Vix.Vips.Image.width(image)
+    width = Image.width(image)
 
     description = Keyword.get(options, :description)
     classes = Keyword.get(options, :classes)
