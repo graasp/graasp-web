@@ -8,30 +8,36 @@ defmodule AdminWeb.DashboardLive.Index do
         Welcome, {@current_scope.user.name || @current_scope.user.email}
       </.header>
 
-      <h2 class="text-lg text-bold">Publication Statistics</h2>
-      <div class="stats stats-vertical sm:stats-horizontal shadow bg-base-100">
-        <StatisticsComponents.stat value={@publication_stats.total} title="Overall">
-          Published collections
-        </StatisticsComponents.stat>
-        <StatisticsComponents.stat_comparison stat={@publication_stats.month} title="Last 30 days" />
-        <StatisticsComponents.stat_comparison stat={@publication_stats.day} title="Last 24h" />
+      <div class="flex flex-col md:flex-row gap-4">
+        <div>
+          <h2 class="text-lg text-bold">Publication Statistics</h2>
+          <div class="stats stats-vertical sm:stats-horizontal bg-base-200">
+            <StatisticsComponents.stat value={@publication_stats.total} title="Overall">
+              Published collections
+            </StatisticsComponents.stat>
+            <StatisticsComponents.stat_comparison
+              stat={@publication_stats.month}
+              title="Last 30 days"
+            />
+            <StatisticsComponents.stat_comparison stat={@publication_stats.day} title="Last 24h" />
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-lg text-bold">Recycled items Statistics</h2>
+          <div class="stats stats-vertical sm:stats-horizontal bg-base-200">
+            <StatisticsComponents.stat
+              value={@recycled_stats.scheduled}
+              title="Scheduled for deletion"
+            >
+              {@recycled_stats.total} total
+            </StatisticsComponents.stat>
+          </div>
+        </div>
       </div>
 
-      <h2 class="text-lg text-bold">Recycled items Statistics</h2>
-      <div class="stats stats-vertical sm:stats-horizontal shadow bg-base-100">
-        <StatisticsComponents.stat value={@recycled_stats.total} title="Overall">
-          Recycled items
-        </StatisticsComponents.stat>
-        <StatisticsComponents.stat value={@recycled_stats.scheduled} title="Scheduled for deletion">
-          Items trashed more than 3 months ago
-        </StatisticsComponents.stat>
-        <StatisticsComponents.stat value={@recycled_stats.pending} title="Pending">
-          Items in user trash for less than 3 months
-        </StatisticsComponents.stat>
-      </div>
-
-      <div class="flex flex-row flex-wrap gap-10">
-        <div class="flex-1">
+      <div class="flex flex-row flex-wrap gap-4">
+        <div class="flex-1 min-w-2/5 bg-base-200 p-3 rounded-lg">
           <div class="flex items-center justify-between">
             <div class="flex flex-col align-start">
               <h2><.link navigate={~p"/admin/maintenance"}>Planned Maintenance</.link></h2>
@@ -58,7 +64,7 @@ defmodule AdminWeb.DashboardLive.Index do
             <% end %>
           </div>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 min-w-2/5 bg-base-200 p-3 rounded-lg">
           <div class="flex items-center justify-between">
             <div class="flex flex-col align-start">
               <h2>H5P integrity check</h2>
@@ -87,7 +93,16 @@ defmodule AdminWeb.DashboardLive.Index do
           </div>
         </div>
 
-        <div class="w-full">
+        <div class="flex-1 min-w-2/5 bg-base-200 p-3 rounded-lg">
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col align-start">
+              <%!-- <h2><.link navigate={~p"/admin/orphans"}>Orphaned Items</.link></h2> --%>
+              <%!-- <.button navigate={~p"/admin/orphans"}>View all</.button> --%>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-full bg-base-200 p-3 rounded-lg">
           <div class="flex items-center justify-between">
             <div class="flex flex-col align-start">
               <h2>Recent Publications</h2>

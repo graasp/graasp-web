@@ -81,9 +81,6 @@ defmodule AdminWeb.Router do
     get "/player/*path", ClientController, :index
     get "/analytics/*path", ClientController, :index
 
-    # redirections for now
-    get "/library", RedirectionController, :library
-
     get "/accounts/:account_id/marketing/unsubscribe",
         AccountController,
         :marketing_emails_unsubscribe
@@ -118,6 +115,20 @@ defmodule AdminWeb.Router do
       live_session :dev_authenticated_user,
         on_mount: [{AdminWeb.UserAuth, :require_authenticated}] do
         live "/tools", AdminWeb.DevLive.Index, :index
+      end
+    end
+  end
+
+  # Public LiveView pages
+  scope "/", AdminWeb do
+    pipe_through [:browser]
+
+    live_session :public,
+      session: {AdminWeb.Public, :session, [[locale: "fr"]]},
+      on_mount: [AdminWeb.RestoreLocale, {AdminWeb.UserAuth, :mount_current_scope}] do
+      scope "/library" do
+        live "/", LibraryLive.Index, :index
+        live "/collections/:item_id", LibraryLive.Show, :show
       end
     end
   end
