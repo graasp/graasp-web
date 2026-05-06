@@ -91,7 +91,7 @@ msgstr "Nutzungsbedingungen"
 msgid "About the association"
 msgstr "Über den Verein"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:67
+#: lib/admin_web/controllers/landing_html/about.html.heex:72
 #, elixir-autogen, elixir-format
 msgid "Active learning simulations for investigating the science of global warming"
 msgstr "Aktive Lernsimulationen zur Erforschung der Wissenschaft der globalen Erwärmung"
@@ -121,7 +121,7 @@ msgstr "Als Open-Source-Projekt fördert Graasp Transparenz, Vertrauen und Zusam
 msgid "Benefit and contribute to an Open Educational Resources (OER) Library"
 msgstr "Nutzen Sie eine Bibliothek für offene Bildungsressourcen (OER) und tragen Sie dazu bei."
 
-#: lib/admin_web/controllers/landing_html/contact.html.heex:47
+#: lib/admin_web/controllers/landing_html/contact.html.heex:52
 #, elixir-autogen, elixir-format
 msgid "Built something cool using Graasp? Want to let the world know about what you created? Mention us on social media, we are happy to share it further!"
 msgstr "Hast du mit Graasp etwas Tolles gebaut? Möchtest du die Welt an deinem Werk teilhaben lassen? Erwähne uns in den sozialen Medien, wir teilen es gerne weiter!"
@@ -131,7 +131,7 @@ msgstr "Hast du mit Graasp etwas Tolles gebaut? Möchtest du die Welt an deinem 
 msgid "Check out real activities from our users"
 msgstr "Sehen Sie sich echte Aktivitäten unserer Nutzer an."
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:64
+#: lib/admin_web/controllers/landing_html/about.html.heex:69
 #, elixir-autogen, elixir-format
 msgid "Climate"
 msgstr "Klima"
@@ -141,7 +141,7 @@ msgstr "Klima"
 msgid "Collaboration is at the heart of Graasp Library, where educators and professionals come together to share, co-create, and learn. By sharing Open Educational Resources (OER), educators have access and contribute to a growing library of collective knowledge."
 msgstr "Zusammenarbeit steht im Mittelpunkt der Graasp Library. Hier kommen Pädagogen und Fachkräfte zusammen, um Wissen auszutauschen, gemeinsam Inhalte zu entwickeln und voneinander zu lernen. Durch das Teilen von Open Educational Resources (OER) erhalten Pädagogen Zugang zu einer stetig wachsenden Bibliothek kollektiven Wissens und tragen aktiv dazu bei."
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:57
+#: lib/admin_web/controllers/landing_html/about.html.heex:62
 #, elixir-autogen, elixir-format
 msgid "Collaborative digital platform for training young people on migration routes"
 msgstr "Kollaborative digitale Plattform zur Schulung junger Menschen über Migrationsrouten"
@@ -181,12 +181,12 @@ msgstr "Einfacher Zugang für die Teilnehmer"
 msgid "Easily share with your class and collegues"
 msgstr "Teilen Sie es ganz einfach mit Ihrer Klasse und Ihren Kollegen."
 
-#: lib/admin_web/controllers/landing_html/contact.html.heex:18
+#: lib/admin_web/controllers/landing_html/contact.html.heex:23
 #, elixir-autogen, elixir-format
 msgid "Facing an issue?"
 msgstr "Haben Sie ein Problem?"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:17
+#: lib/admin_web/controllers/landing_html/about.html.heex:22
 #, elixir-autogen, elixir-format
 msgid "Founded by a dedicated team of professionals, our mission is to bridge the gap between cutting-edge technology and education, empowering educators and researchers globally."
 msgstr "Gegründet von einem engagierten Team von Fachleuten, ist es unsere Mission, die Kluft zwischen Spitzentechnologie und Bildung zu überbrücken und Pädagogen und Forscher weltweit zu unterstützen."
@@ -201,27 +201,27 @@ msgstr "Los geht's!"
 msgid "Go to Graasp Library"
 msgstr "Gehe zur Graasp-Bibliothek"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:41
+#: lib/admin_web/controllers/landing_html/about.html.heex:46
 #, elixir-autogen, elixir-format
 msgid "Graasp Association"
 msgstr "Graasp Verein"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:44
+#: lib/admin_web/controllers/landing_html/about.html.heex:49
 #, elixir-autogen, elixir-format
 msgid "Graasp is more than a Learning Experience Platform. It is a product behind which there is a Swiss Non-Profit Organization dedicated to advancing digital education. Our primary goal is to support educators and researchers every step of the way, providing help and training to achieve their objectives effectively."
 msgstr "Graasp ist mehr als eine Lernplattform. Dahinter steht eine gemeinnützige Schweizer Organisation, die sich der Förderung digitaler Bildung verschrieben hat. Unser Hauptziel ist es, Lehrende und Forschende auf ihrem Weg zu unterstützen und ihnen Hilfe und Schulungen anzubieten, damit sie ihre Ziele effektiv erreichen."
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:121
+#: lib/admin_web/controllers/landing_html/about.html.heex:126
 #, elixir-autogen, elixir-format
 msgid "Have a question for us?"
 msgstr "Haben Sie eine Frage an uns?"
 
-#: lib/admin_web/controllers/landing_html/contact.html.heex:32
+#: lib/admin_web/controllers/landing_html/contact.html.heex:37
 #, elixir-autogen, elixir-format
 msgid "Have anything else you want to discuss with us?"
 msgstr "Gibt es sonst noch etwas, das Sie mit uns besprechen möchten?"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:54
+#: lib/admin_web/controllers/landing_html/about.html.heex:59
 #, elixir-autogen, elixir-format
 msgid "Helvetas"
 msgstr "Helvetas"
@@ -246,12 +246,12 @@ msgstr "Erfahren Sie mehr über interaktive Inhalte"
 msgid "Learn more about sharing with your class and colleagues"
 msgstr "Erfahren Sie mehr darüber, wie Sie Ihre Erfahrungen mit Ihrer Klasse und Ihren Kollegen teilen können."
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:13
+#: lib/admin_web/controllers/landing_html/about.html.heex:18
 #, elixir-autogen, elixir-format
 msgid "Meet the people behind Graasp"
 msgstr "Lernen Sie die Menschen hinter Graasp kennen"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:78
+#: lib/admin_web/controllers/landing_html/about.html.heex:83
 #, elixir-autogen, elixir-format
 msgid "Meet the team!"
 msgstr "Lernen Sie das Team kennen!"
@@ -276,7 +276,7 @@ msgstr "Zahlreiche wissenschaftliche Arbeiten und praktische Erfahrungen haben a
 msgid "Only people you approve can access your content. You stay in control, and requests for access can be reviewed before allowing entry."
 msgstr "Nur von Ihnen autorisierte Personen haben Zugriff auf Ihre Inhalte. Sie behalten die Kontrolle und können Zugriffsanfragen vor der Genehmigung prüfen."
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:51
+#: lib/admin_web/controllers/landing_html/about.html.heex:56
 #, elixir-autogen, elixir-format
 msgid "Other projects"
 msgstr "Andere Projekte"
@@ -291,12 +291,12 @@ msgstr "Unsere Missionen"
 msgid "President"
 msgstr "Präsident"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:103
+#: lib/admin_web/controllers/landing_html/about.html.heex:108
 #, elixir-autogen, elixir-format
 msgid "Research Papers"
 msgstr "Forschungsarbeiten"
 
-#: lib/admin_web/controllers/landing_html/contact.html.heex:44
+#: lib/admin_web/controllers/landing_html/contact.html.heex:49
 #, elixir-autogen, elixir-format
 msgid "Share cool stuff with us on social media"
 msgstr "Teile coole Sachen mit uns in den sozialen Medien"
@@ -316,7 +316,7 @@ msgstr "Teilen Sie Ihre Inhalte über einen privaten Link mit der Option, ein Pa
 msgid "Software Engineer"
 msgstr "Softwareentwickler"
 
-#: lib/admin_web/controllers/landing_html/contact.html.heex:30
+#: lib/admin_web/controllers/landing_html/contact.html.heex:35
 #, elixir-autogen, elixir-format
 msgid "Something else?"
 msgstr "Noch etwas?"
@@ -381,7 +381,7 @@ msgstr "Möchten Sie auf dem Laufenden bleiben?"
 msgid "We advance Research in Education"
 msgstr "Wir fördern die Bildungsforschung."
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:23
+#: lib/admin_web/controllers/landing_html/about.html.heex:28
 #, elixir-autogen, elixir-format
 msgid "We aim to bridge the gap between research environments and traditional educational settings such as schools. We envision a future where Graasp empowers educators and students in traditional educational setups and more, revolutionizing teaching methodologies and fostering engaging learning experiences."
 msgstr "Unser Ziel ist es, die Kluft zwischen Forschungseinrichtungen und traditionellen Bildungseinrichtungen wie Schulen zu überbrücken. Wir stellen uns eine Zukunft vor, in der Graasp Lehrende und Lernende in traditionellen und anderen Bildungskontexten stärkt, Lehrmethoden revolutioniert und anregende Lernerfahrungen fördert."
@@ -396,7 +396,7 @@ msgstr "Wir helfen Ihnen gerne weiter, wenn Sie Fragen oder Zweifel haben oder U
 msgid "We champion Openness and Transparency"
 msgstr "Wir setzen uns für Offenheit und Transparenz ein."
 
-#: lib/admin_web/controllers/landing_html/contact.html.heex:20
+#: lib/admin_web/controllers/landing_html/contact.html.heex:25
 #, elixir-autogen, elixir-format
 msgid "We offer support for issues related to login, publication of material, and general questions related to use-cases. Drop us an email and we will get back to you as soon as possible. We reply between 3-5 business days."
 msgstr "Wir bieten Unterstützung bei Problemen mit der Anmeldung, der Veröffentlichung von Inhalten und allgemeinen Fragen zu Anwendungsfällen. Schreiben Sie uns eine E-Mail, und wir melden uns schnellstmöglich bei Ihnen. Die Antwortzeit beträgt 3–5 Werktage."
@@ -406,7 +406,7 @@ msgstr "Wir bieten Unterstützung bei Problemen mit der Anmeldung, der Veröffen
 msgid "We protect Privacy and Data Sovereignty"
 msgstr "Wir schützen die Privatsphäre und die Datensouveränität."
 
-#: lib/admin_web/controllers/landing_html/contact.html.heex:9
+#: lib/admin_web/controllers/landing_html/contact.html.heex:14
 #, elixir-autogen, elixir-format
 msgid "We value feedback from our users. Whether you are facing an issue, want to let us know about an idea, or a feature you are missing, let us know!"
 msgstr "Wir freuen uns über Feedback von unseren Nutzern. Egal, ob Sie ein Problem haben, uns eine Idee mitteilen möchten oder eine Funktion vermissen – lassen Sie es uns wissen!"
@@ -437,7 +437,7 @@ msgctxt "footer link"
 msgid "Contact Us"
 msgstr "Kontaktieren Sie uns"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:125
+#: lib/admin_web/controllers/landing_html/about.html.heex:130
 #: lib/admin_web/controllers/landing_html/index.html.heex:268
 #: lib/admin_web/controllers/landing_html/index.html.heex:304
 #, elixir-autogen, elixir-format, fuzzy
@@ -445,28 +445,28 @@ msgctxt "link"
 msgid "Contact us"
 msgstr "Kontaktieren Sie uns"
 
-#: lib/admin_web/controllers/landing_html/contact.html.heex:5
+#: lib/admin_web/controllers/landing_html/contact.html.heex:10
 #, elixir-autogen, elixir-format, fuzzy
 msgctxt "title"
 msgid "Contact us"
 msgstr "Kontaktieren Sie uns"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:32
+#: lib/admin_web/controllers/landing_html/about.html.heex:37
 #, elixir-autogen, elixir-format, fuzzy
 msgid "Builder Activities"
 msgstr "Bauaktivitäten"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:35
+#: lib/admin_web/controllers/landing_html/about.html.heex:40
 #, elixir-autogen, elixir-format
 msgid "Interactive Apps"
 msgstr "Interaktive Apps"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:34
+#: lib/admin_web/controllers/landing_html/about.html.heex:39
 #, elixir-autogen, elixir-format
 msgid "Pedagogical Templates"
 msgstr "Pädagogische Vorlagen"
 
-#: lib/admin_web/controllers/landing_html/about.html.heex:33
+#: lib/admin_web/controllers/landing_html/about.html.heex:38
 #, elixir-autogen, elixir-format
 msgid "Published Capsules"
 msgstr "Veröffentlichte Kapseln"
