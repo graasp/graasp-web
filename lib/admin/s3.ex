@@ -70,6 +70,23 @@ defmodule Admin.S3 do
     url
   end
 
+  def download(bucket, key) do
+    {:ok, body} = S3.get_object(bucket, key) |> @ex_aws_mod.request()
+    body.body
+  end
+
+  def upload(bucket, key, path) do
+    {:ok, _} =
+      path
+      |> S3.Upload.stream_file()
+      |> S3.upload(bucket, key)
+      |> @ex_aws_mod.request()
+  end
+
+  def upload_stream(stream, bucket, key) do
+    {:ok, _} = S3.upload(stream, bucket, key) |> @ex_aws_mod.request()
+  end
+
   def delete_object(bucket, key) do
     {:ok, _} = S3.delete_object(bucket, key) |> @ex_aws_mod.request()
   end
@@ -109,22 +126,5 @@ defmodule Admin.S3 do
     |> Stream.map(fn %{prefix: key} ->
       key |> String.trim_leading(prefix) |> String.trim_trailing("/")
     end)
-  end
-
-  def download(bucket, key) do
-    {:ok, body} = S3.get_object(bucket, key) |> @ex_aws_mod.request()
-    body.body
-  end
-
-  def upload(bucket, key, path) do
-    {:ok, _} =
-      path
-      |> S3.Upload.stream_file()
-      |> S3.upload(bucket, key)
-      |> @ex_aws_mod.request()
-  end
-
-  def upload_stream(stream, bucket, key) do
-    {:ok, _} = S3.upload(stream, bucket, key) |> @ex_aws_mod.request()
   end
 end

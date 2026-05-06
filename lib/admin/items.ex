@@ -2,16 +2,16 @@ defmodule Admin.Items do
   @moduledoc """
   The Items context.
   """
+  require Logger
 
   import Ecto.Query, warn: false
   import EctoLtree.Functions, only: [nlevel: 1]
-  alias Admin.Repo
 
   alias Admin.Accounts.Scope
-  alias Admin.Items.Item
-  alias Admin.Items.PathUtils
-
-  require Logger
+  alias Admin.ItemFiles
+  alias Admin.Items.{Item, ItemMembership, PathUtils}
+  alias Admin.Repo
+  alias Admin.Validation.NudenetValidation
 
   @doc """
   Subscribes to scoped notifications about any item changes.
@@ -75,11 +75,37 @@ defmodule Admin.Items do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_item(%Scope{} = _scope, attrs) do
+
+  def create_item(%Scope{} = scope, attrs, file_attrs \\ %{}) do
     with {:ok, item = %Item{}} <-
            %Item{}
            |> Item.changeset(attrs)
            |> Repo.insert() do
+      case attrs.type do
+        "file" ->
+          case file_attrs do
+            %{} ->
+              :ok
+
+            _ ->
+              file_path = ItemFiles.upload(file_attrs, item.id)
+
+              update_item(scope, item, %{
+                extra: %{
+                  file: %{
+                    name: file_attrs.name,
+                    path: file_path,
+                    mimetype: file_attrs.mimetype,
+                    size: file_attrs.size
+                  }
+                }
+              })
+          end
+
+        _ ->
+          :ok
+      end
+
       broadcast({:created, item})
       {:ok, item}
     end
@@ -122,6 +148,11 @@ defmodule Admin.Items do
   def delete_item(%Scope{} = _scope, %Item{} = item) do
     with {:ok, item = %Item{}} <-
            Repo.delete(item) do
+      case item.type do
+        "file" -> ItemFiles.delete(item)
+        _ -> :ok
+      end
+
       broadcast({:deleted, item})
       {:ok, item}
     end
@@ -175,10 +206,56 @@ defmodule Admin.Items do
     |> Repo.one()
   end
 
+  def get_recent_files do
+    from(item in Item,
+      order_by: [desc: item.created_at],
+      where: item.type == "file",
+      limit: 10
+    )
+    |> Repo.all()
+    |> Task.async_stream(&populate_thumbnails/1, max_concurrency: 10)
+    |> Enum.map(fn {:ok, item} -> item end)
+  end
+
+  @doc """
+  Returns items that have no memberships at all.
+  They are effectively non-modifiable and not owned by anyone.
+  But they could still be published or have a public access.
+
+  These elements usually have a creator who has deleted their account.
+  But sometimes also the creator has left the item and the last admin has deleted their account.
+  """
+  def get_orphans_last_year do
+    from(item in Item,
+      select: item,
+      left_join: membership in ItemMembership,
+      on: fragment("? @> ?", membership.item_path, item.path),
+      where:
+        is_nil(membership.item_path) and
+          item.created_at >= date_add(^Date.utc_today(), -1, "year"),
+      order_by: [desc: item.created_at],
+      limit: 100
+    )
+    |> Repo.all()
+  end
+
   defp populate_thumbnails(%Item{id: item_id} = item) do
     thumbnails =
       Admin.ItemThumbnails.get_item_thumbnails(item_id)
 
     Map.put(item, :thumbnails, thumbnails)
   end
+
+  def validate_item(%Scope{} = _scope, item) do
+    path = get_file_path(item)
+    {image, result} = NudenetValidation.from_file(path)
+    {:ok, png_bin} = Image.write(image, :memory, suffix: ".png")
+    base64 = Base.encode64(png_bin)
+    data_url = "data:image/png;base64," <> base64
+    %{url: data_url, result: result}
+  end
+
+  defp get_file_path(%Item{type: "file", extra: %{"file" => %{"path" => path}}}), do: path
+  defp get_file_path(%Item{type: "file", extra: %{"file" => %{"key" => path}}}), do: path
+  defp get_file_path(_item), do: nil
 end

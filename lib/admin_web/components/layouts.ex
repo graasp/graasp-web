@@ -236,6 +236,7 @@ defmodule AdminWeb.Layouts do
                   </li>
                 </ul>
               </li>
+              <li><.link navigate={~p"/admin/validation"}>Validation</.link></li>
               <li><.link navigate={~p"/admin/publishers"}>Apps</.link></li>
               <li><.link navigate={~p"/admin/notifications"}>Mailing</.link></li>
               <li><.link navigate={~p"/admin/users"}>Admins</.link></li>
@@ -290,6 +291,7 @@ defmodule AdminWeb.Layouts do
                 </ul>
               </details>
             </li>
+            <li><.link navigate={~p"/admin/validation"}>Validation</.link></li>
             <li><.link navigate={~p"/admin/publishers"}>Apps</.link></li>
             <li><.link navigate={~p"/admin/notifications"}>Mailing</.link></li>
             <li><.link navigate={~p"/admin/users"}>Admins</.link></li>

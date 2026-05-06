@@ -30,7 +30,7 @@ const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content");
 const liveSocket = new LiveSocket("/live", Socket, {
-  longPollFallbackMs: 2500,
+  longPollFallbackMs: 10000, // 10 seconds
   params: { _csrf_token: csrfToken },
   hooks: { ...colocatedHooks, VegaLite },
 });

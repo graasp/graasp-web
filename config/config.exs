@@ -108,6 +108,9 @@ config :phoenix, :json_library, Jason
 config :opentelemetry, span_processor: {Sentry.OpenTelemetry.SpanProcessor, []}
 config :opentelemetry, sampler: {Sentry.OpenTelemetry.Sampler, []}
 
+# configure the default backend to use EXLA as it supports the widest CPU and GPU platforms
+config :nx, default_backend: EXLA.Backend
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

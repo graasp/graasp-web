@@ -30,60 +30,99 @@ defmodule AdminWeb.DashboardLive.Index do
         </StatisticsComponents.stat>
       </div>
 
-      <div class="flex flex-row flex-wrap gap-10">
-        <div class="flex-1">
-          <div class="flex items-center justify-between">
-            <div class="flex flex-col align-start">
-              <h2><.link navigate={~p"/admin/maintenance"}>Planned Maintenance</.link></h2>
-              <span class="text-xs text-neutral">
-                Showing {length(@maintenances)} upcoming events.
-                <.link class="link" navigate={~p"/admin/maintenance"}>View all</.link>
-              </span>
-            </div>
-            <.button navigate={~p"/admin/maintenance/new"}>
-              <.icon name="hero-plus" /> New
-            </.button>
-          </div>
-          <div class="flex flex-col mt-2 divide-y divide-neutral last:border-b-0">
-            <%= for maintenance <- @maintenances do %>
-              <AdminWeb.PlannedMaintenanceHTML.planned_maintenance_row
-                maintenance={maintenance}
-                row_click={&JS.navigate(~p"/admin/maintenance/#{&1}")}
-              />
-            <% end %>
-            <%= if length(@maintenances) == 0 do %>
-              <div class="flex flex-row items-center justify-center gap-3 italic text-neutral p-4 border border-dashed rounded-xl border-base-300">
-                <.icon name="ghost" class="animate-wiggle" /> No upcoming maintenance events
+      <div class="flex flex-row flex-wrap gap-4">
+        <div class="flex flex-col md:flex-row gap-4 w-full">
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col align-start">
+                <h2><.link navigate={~p"/admin/maintenance"}>Planned Maintenance</.link></h2>
+                <span class="text-xs text-neutral">
+                  Showing {length(@maintenances)} upcoming events.
+                  <.link class="link" navigate={~p"/admin/maintenance"}>View all</.link>
+                </span>
               </div>
-            <% end %>
+              <.button navigate={~p"/admin/maintenance/new"}>
+                <.icon name="hero-plus" /> New
+              </.button>
+            </div>
+            <div class="flex flex-col mt-2 divide-y divide-neutral last:border-b-0">
+              <%= for maintenance <- @maintenances do %>
+                <AdminWeb.PlannedMaintenanceHTML.planned_maintenance_row
+                  maintenance={maintenance}
+                  row_click={&JS.navigate(~p"/admin/maintenance/#{&1}")}
+                />
+              <% end %>
+              <%= if length(@maintenances) == 0 do %>
+                <span class="text-neutral">
+                  No upcoming maintenance events
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="flex-1 ">
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col align-start">
+                <h2>H5P integrity check</h2>
+                <span class="text-xs text-neutral">
+                  Find broken H5P content items.
+                </span>
+              </div>
+              <.button phx-click="h5p-integrity-check" phx-disable-with>
+                Check
+              </.button>
+            </div>
+            <div class="flex flex-col mt-2 gap-1">
+              <%= if @h5p_integrity_result do %>
+                <% invalid_count = @h5p_integrity_result.invalid |> length() %> Found {invalid_count} invalid H5P content items.
+                <%= if invalid_count > 0 do %>
+                  They can be removed from the storage layer to free up space.
+                  <.button phx-click="h5p-integrity-fix" phx-disable-with class="">
+                    Remove unused H5P uploads
+                  </.button>
+                <% end %>
+              <% else %>
+                <span class="text-neutral">
+                  Run the integrity check to find broken H5P items.
+                </span>
+              <% end %>
+            </div>
           </div>
         </div>
-        <div class="flex-1">
-          <div class="flex items-center justify-between">
-            <div class="flex flex-col align-start">
-              <h2>H5P integrity check</h2>
-              <span class="text-xs text-neutral">
-                Check if there are any broken H5P content items.
-              </span>
-            </div>
-            <.button phx-click="h5p-integrity-check" phx-disable-with>
-              Check Integrity
-            </.button>
-          </div>
-          <div class="flex flex-col mt-2 gap-1">
-            <%= if @h5p_integrity_result do %>
-              <% invalid_count = @h5p_integrity_result.invalid |> length() %> Found {invalid_count} invalid H5P content items.
-              <%= if invalid_count > 0 do %>
-                They can be removed from the storage layer to free up space.
-                <.button phx-click="h5p-integrity-fix" phx-disable-with class="">
-                  Remove unused H5P uploads
-                </.button>
-              <% end %>
-            <% else %>
-              <div class="flex flex-row italic text-neutral text-sm">
-                Run the integrity check to find broken H5P content items.
+
+        <div class="flex flex-col md:flex-row gap-4 w-full">
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col align-start">
+                <h2><.link navigate={~p"/admin/validation"}>Publication Review</.link></h2>
+                <span class="text-xs text-neutral">
+                  Showing {length(@publication_reviews)} pending reviews.
+                  <.link class="link" navigate={~p"/admin/validation"}>View all</.link>
+                </span>
               </div>
-            <% end %>
+            </div>
+            <div class="flex flex-col mt-2 divide-y divide-neutral last:border-b-0">
+              <%= for publication_review <- @publication_reviews do %>
+                <AdminWeb.PlannedMaintenanceHTML.planned_maintenance_row
+                  maintenance={publication_review}
+                  row_click={&JS.navigate(~p"/admin/maintenance/#{&1}")}
+                />
+              <% end %>
+              <%= if length(@publication_reviews) == 0 do %>
+                <span class="text-neutral">
+                  No pending reviews
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col align-start">
+                <h2><.link navigate={~p"/admin/orphans"}>Orphaned Items</.link></h2>
+                <.button navigate={~p"/admin/orphans"}>View all</.button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -134,6 +173,10 @@ defmodule AdminWeb.DashboardLive.Index do
       |> assign(
         :maintenances,
         Admin.Maintenance.list_upcoming_maintenance()
+      )
+      |> assign(
+        :publication_reviews,
+        Admin.Validation.list_pending_reviews()
       )
       |> assign(:h5p_integrity_result, nil)
 
