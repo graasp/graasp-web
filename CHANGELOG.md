@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.8](https://github.com/graasp/graasp-web/compare/v0.10.7...v0.10.8) (2026-05-07)
+
+
+### Bug Fixes
+
+* file upload issue on matching map ([8260b77](https://github.com/graasp/graasp-web/commit/8260b770a0c852800c74518493b330b500dd3461))
+
 ## [0.10.7](https://github.com/graasp/graasp-web/compare/v0.10.6...v0.10.7) (2026-05-06)
 
 
