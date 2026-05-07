@@ -84,7 +84,7 @@ defmodule Admin.Items do
       case attrs.type do
         "file" ->
           case file_attrs do
-            %{} ->
+            map when is_map(map) and map_size(map) == 0 ->
               :ok
 
             _ ->
