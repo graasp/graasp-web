@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.10.7](https://github.com/graasp/graasp-web/compare/v0.10.6...v0.10.7) (2026-05-06)
+
+
+### Bug Fixes
+
+* add item_memberships and thumbnails ([#249](https://github.com/graasp/graasp-web/issues/249)) ([054eb04](https://github.com/graasp/graasp-web/commit/054eb044a3310f34454aa45d57453eb08f821e48))
+* add nudenet inference and orphan items ([#253](https://github.com/graasp/graasp-web/issues/253)) ([f263451](https://github.com/graasp/graasp-web/commit/f263451f4dd039222a6f3627fb2071c9cf189642))
+* add tests ([#252](https://github.com/graasp/graasp-web/issues/252)) ([75b963c](https://github.com/graasp/graasp-web/commit/75b963cc4e5898fb7b662171df05bed1bfceb895))
+* apply style changes ([#250](https://github.com/graasp/graasp-web/issues/250)) ([b2f235a](https://github.com/graasp/graasp-web/commit/b2f235a4f317be99dc5f312e026e8bd2f2e092f1))
+* change scheduled cleanup time to account for daylight saving ([c175551](https://github.com/graasp/graasp-web/commit/c175551b125d097cab88295627bda8d8e410a604))
+* remove usage of compile time var that gets copied ([#251](https://github.com/graasp/graasp-web/issues/251)) ([32e2b3d](https://github.com/graasp/graasp-web/commit/32e2b3dc97f79b16a3b7081c6168098b3d001ab9))
+* style for about and contact page ([#254](https://github.com/graasp/graasp-web/issues/254)) ([3b2989d](https://github.com/graasp/graasp-web/commit/3b2989d2eda71e92976bd32dcb0008a65f211a8d))
+* write release for 0.10.6 ([#247](https://github.com/graasp/graasp-web/issues/247)) ([995a8b8](https://github.com/graasp/graasp-web/commit/995a8b80f0b35137993376319dba76d97aa6a733))
+
 ## [0.10.6](https://github.com/graasp/graasp-web/compare/v0.10.5...v0.10.6) (2026-05-04)
 
 
