@@ -170,5 +170,93 @@ defmodule Admin.Repo.Migrations.CreateItem do
 
     create index(:action, [:item_id], name: "IDX_1214f6f4d832c402751617361c")
     create index(:action, [:account_id], name: "IDX_action_account_id")
+
+    # app tables used by the chatbot app, mirroring core's `appDataTable`,
+    # `appActionsTable` and `appSettingsTable` (core/src/drizzle/schema.ts)
+    create table(:app_data) do
+      add :account_id,
+          references(:account,
+            type: :binary_id,
+            on_delete: :delete_all,
+            name: "FK_app_data_account_id"
+          ),
+          null: false
+
+      add :item_id,
+          references(:item,
+            type: :binary_id,
+            on_delete: :delete_all,
+            name: "FK_8c3e2463c67d9865658941c9e2d"
+          ),
+          null: false
+
+      add :data, :jsonb, null: false, default: "{}"
+      add :type, :string, size: 25, null: false
+
+      add :creator_id,
+          references(:account,
+            type: :binary_id,
+            on_delete: :nilify_all,
+            name: "FK_27cb180cb3f372e4cf55302644a"
+          )
+
+      add :visibility, :string, null: false
+
+      timestamps(type: :utc_datetime, default: fragment("now()"))
+    end
+
+    create index(:app_data, [:type], name: "IDX_6079b3bb63c13f815f7dd8d8a2")
+    create index(:app_data, [:item_id], name: "IDX_app_data_item_id")
+    create index(:app_data, [:account_id], name: "IDX_app_data_account_id")
+
+    create table(:app_action) do
+      add :account_id,
+          references(:account,
+            type: :binary_id,
+            on_delete: :delete_all,
+            name: "FK_app_action_account_id"
+          ),
+          null: false
+
+      add :item_id,
+          references(:item,
+            type: :binary_id,
+            on_delete: :delete_all,
+            name: "FK_c415fc186dda51fa260d338d776"
+          ),
+          null: false
+
+      add :data, :jsonb, null: false, default: "{}"
+      add :type, :string, size: 25, null: false
+
+      timestamps(updated_at: false, type: :utc_datetime, default: fragment("now()"))
+    end
+
+    create index(:app_action, [:item_id], name: "IDX_app_action_item_id")
+    create index(:app_action, [:account_id], name: "IDX_app_action_account_id")
+
+    create table(:app_setting) do
+      add :item_id,
+          references(:item,
+            type: :binary_id,
+            on_delete: :delete_all,
+            name: "FK_f5922b885e2680beab8add96008"
+          ),
+          null: false
+
+      add :creator_id,
+          references(:account,
+            type: :binary_id,
+            on_delete: :nilify_all,
+            name: "FK_22d3d051ee6f94932c1373a3d09"
+          )
+
+      add :name, :string, null: false
+      add :data, :jsonb, null: false, default: "{}"
+
+      timestamps(type: :utc_datetime, default: fragment("now()"))
+    end
+
+    create index(:app_setting, [:item_id, :name], name: "IDX_61546c650608c1e68789c64915")
   end
 end

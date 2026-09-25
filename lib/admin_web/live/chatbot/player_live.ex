@@ -1,9 +1,7 @@
 defmodule AdminWeb.Chatbot.PlayerLive do
   @moduledoc """
   The chatbot app's single entry point — renders the teacher settings panel
-  plus the chat for `permission == "admin"`, or just the chat otherwise,
-  matching the React app's `BuilderView` switch (only `PermissionLevel.Admin`
-  gets the admin view; everyone else, including `write`, gets the player).
+  for a Teacher, or just the chat otherwise (see `Admin.Chatbot.Scope`).
   One LiveView (rather than a separate route per view) because the Graasp
   platform embeds a single iframe URL per app instance — there's no page
   navigation to hang a second `phx-hook` handshake off of.
@@ -14,16 +12,16 @@ defmodule AdminWeb.Chatbot.PlayerLive do
   the parent window — mirroring the protocol used by
   `graasp-apps-query-client` — to fetch the local context and a short-lived
   auth token, pushed back here via the `"graasp_context"` event, where the
-  token is verified against `itemId` (`Admin.Chatbot.Token`).
+  token is verified against `itemId` (`Admin.Apps.Token`).
 
-  Once verified, the existing thread (`app_data`) and chatbot settings
-  (`app_setting`, name `"chatbot-prompt"`) are loaded via `Admin.Chatbot`.
+  Once verified, the existing thread (`app_data`) is loaded via
+  `Admin.Chatbot` and the Chatbot Settings via `Admin.Chatbot.Settings`.
   Sending a message persists the student's comment, streams a reply from
   OpenAI (`Admin.Chatbot.OpenAI`, token-by-token via `handle_info/2` for the
   "typing" effect), then persists the assistant's reply once the stream
-  completes. The teacher's settings form (`Admin.Chatbot.PromptSettings`)
-  writes to the same `app_setting` row and takes effect immediately — no
-  reload needed since it's the same process/assigns driving the chat below.
+  completes. The teacher's settings form (`Admin.Chatbot.Settings`) takes
+  effect immediately — no reload needed since it's the same process/assigns
+  driving the chat below.
 
   Note: `item_id`/`account_id` must be real rows in the shared `graasp` DB
   for the message/action inserts to succeed (both are foreign keys). The dev
@@ -35,23 +33,10 @@ defmodule AdminWeb.Chatbot.PlayerLive do
   alias Admin.Apps.AppData
   alias Admin.Apps.Token
   alias Admin.Chatbot
-  alias Admin.Chatbot.Avatar
   alias Admin.Chatbot.Markdown
   alias Admin.Chatbot.OpenAI
-  alias Admin.Chatbot.PromptSettings
-
-  defp default_cue, do: dgettext("chatbot", "Hi! Ask me anything about this activity.")
-  defp default_chatbot_name, do: dgettext("chatbot", "Chatbot")
-
-  defp default_settings do
-    %{
-      initial_prompt: nil,
-      cue: default_cue(),
-      name: default_chatbot_name(),
-      starter_suggestions: [],
-      avatar_data_url: nil
-    }
-  end
+  alias Admin.Chatbot.Scope
+  alias Admin.Chatbot.Settings
 
   @impl true
   def mount(params, _session, socket) do
@@ -63,15 +48,10 @@ defmodule AdminWeb.Chatbot.PlayerLive do
       |> assign(:app_key, Application.fetch_env!(:admin, :graasp_app_key))
       |> assign(:status, if(item_id, do: :awaiting_context, else: :missing_item_id))
       |> assign(:account_id, nil)
-      |> assign(:permission, nil)
-      |> assign(:is_teacher?, false)
+      |> assign(:scope, nil)
       |> assign(:error, nil)
-      |> assign(:settings, default_settings())
-      |> assign(
-        :settings_form,
-        to_form(PromptSettings.changeset(%PromptSettings{}, %{}), as: :prompt_settings)
-      )
-      |> assign(:starter_suggestions, [])
+      |> assign(:settings, nil)
+      |> assign(:settings_form, nil)
       |> assign(:view, :conversations)
       |> assign(:conversations, [])
       |> assign(:active_conversation_id, nil)
@@ -96,8 +76,7 @@ defmodule AdminWeb.Chatbot.PlayerLive do
     case Token.verify(token, socket.assigns.item_id) do
       {:ok, %{account_id: account_id}} ->
         item_id = socket.assigns.item_id
-        permission = Map.get(context, "permission")
-        app_context = Map.get(context, "context")
+        scope = Scope.new(item_id, account_id, context)
 
         # sets the Gettext locale for this LiveView process (it's process-scoped
         # in Gettext, so this persists for every subsequent render/flash here)
@@ -119,13 +98,8 @@ defmodule AdminWeb.Chatbot.PlayerLive do
           socket
           |> assign(:status, :ready)
           |> assign(:account_id, account_id)
-          |> assign(:permission, permission)
-          # mirrors the React app: App.tsx routes the "builder" context to
-          # BuilderView, which itself only shows the teacher (Admin) view for
-          # PermissionLevel.Admin — everything else (player context, or
-          # builder context with write/read permission) is the student view.
-          |> assign(:is_teacher?, app_context == "builder" and permission == "admin")
-          |> refresh_settings()
+          |> assign(:scope, scope)
+          |> assign_settings(Settings.load(scope))
           |> assign(:conversations, Chatbot.list_conversations(item_id, account_id))
 
         {:noreply, socket}
@@ -176,12 +150,12 @@ defmodule AdminWeb.Chatbot.PlayerLive do
     {:noreply, socket}
   end
 
-  def handle_event("validate_settings", %{"prompt_settings" => params}, socket) do
+  def handle_event("validate_settings", %{"settings" => params}, socket) do
     form =
-      %PromptSettings{}
-      |> PromptSettings.changeset(params)
+      socket.assigns.settings
+      |> Settings.change(params)
       |> Map.put(:action, :validate)
-      |> to_form(as: :prompt_settings)
+      |> to_form()
 
     {:noreply, assign(socket, :settings_form, form)}
   end
@@ -195,90 +169,37 @@ defmodule AdminWeb.Chatbot.PlayerLive do
     {:noreply, assign(socket, :conversations, Chatbot.list_conversations(item_id, account_id))}
   end
 
-  def handle_event("save_settings", %{"prompt_settings" => params}, socket) do
-    changeset = PromptSettings.changeset(%PromptSettings{}, params)
-
-    case Ecto.Changeset.apply_action(changeset, :update) do
-      {:ok, _prompt_settings} ->
-        %{item_id: item_id, account_id: account_id, starter_suggestions: starter_suggestions} =
-          socket.assigns
-
-        {:ok, _app_setting} =
-          Chatbot.upsert_setting(
-            item_id,
-            "chatbot-prompt",
-            PromptSettings.to_data(changeset, Enum.map(starter_suggestions, & &1.value)),
-            account_id
-          )
-
+  def handle_event("save_settings", %{"settings" => params}, socket) do
+    case Settings.save(socket.assigns.scope, params) do
+      {:ok, settings} ->
         socket =
           socket
-          |> refresh_settings()
+          |> assign_settings(settings)
           |> put_flash(:info, dgettext("chatbot", "Chatbot settings saved."))
 
         {:noreply, socket}
 
-      {:error, changeset} ->
-        {:noreply, assign(socket, :settings_form, to_form(changeset, as: :prompt_settings))}
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, :settings_form, to_form(changeset))}
+
+      {:error, reason} ->
+        {:noreply, put_settings_error(socket, reason)}
     end
-  end
-
-  # Structure-only edits to the starter-suggestion rows (add/remove/edit) —
-  # mirrors the React app's local `starterSuggestions` state
-  # (ChatbotEditingView.tsx), kept outside the `:settings_form` changeset
-  # since it isn't a plain field. Ids are assigned once per row (max existing
-  # id + 1, like the React app) so removing/reordering rows doesn't reuse an
-  # id another row still owns.
-  def handle_event("add_starter_suggestion", _params, socket) do
-    next_id =
-      case socket.assigns.starter_suggestions do
-        [] -> 0
-        list -> 1 + Enum.max_by(list, & &1.id).id
-      end
-
-    {:noreply, update(socket, :starter_suggestions, &(&1 ++ [%{id: next_id, value: ""}]))}
-  end
-
-  def handle_event("remove_starter_suggestion", %{"id" => id}, socket) do
-    id = String.to_integer(id)
-    {:noreply, update(socket, :starter_suggestions, &Enum.reject(&1, fn s -> s.id == id end))}
-  end
-
-  # Each row's input has its own unique `name` ("starter_suggestion_<id>")
-  # rather than a shared name + `phx-value-id`, because nesting phx-change
-  # inside the settings `<.form>` makes LiveView serialize it as a form
-  # field change — `_target`/the field's own name are what's reliably sent,
-  # not sibling phx-value-* attributes.
-  def handle_event("edit_starter_suggestion", %{"_target" => [target_name]} = params, socket) do
-    "starter_suggestion_" <> id_str = target_name
-    id = String.to_integer(id_str)
-    value = Map.get(params, target_name, "")
-
-    socket =
-      update(socket, :starter_suggestions, fn list ->
-        Enum.map(list, fn
-          %{id: ^id} = s -> %{s | value: value}
-          s -> s
-        end)
-      end)
-
-    {:noreply, socket}
   end
 
   # required by LiveView uploads even though we only care about the final
   # submit — this is what drives upload progress/entry tracking
   def handle_event("validate_avatar", _params, socket), do: {:noreply, socket}
 
+  # Only replaces `:settings` (what the chat shows), never `:settings_form`:
+  # rebuilding the form would wipe out unsaved edits in the Name/Prompt/Cue/
+  # Starter suggestions fields, which from the teacher's perspective looks
+  # exactly like the avatar change reset (or "submitted") the settings form.
   def handle_event("remove_avatar", _params, socket) do
-    %{item_id: item_id, account_id: account_id} = socket.assigns
-
-    case Chatbot.get_setting(item_id, "chatbot-avatar") do
-      %{id: setting_id} -> :ok = Avatar.delete(item_id, setting_id)
-      nil -> :ok
+    case Settings.remove_avatar(socket.assigns.scope) do
+      {:ok, settings} -> {:noreply, assign(socket, :settings, settings)}
+      {:error, reason} -> {:noreply, put_settings_error(socket, reason)}
     end
-
-    {:ok, _app_setting} = Chatbot.upsert_setting(item_id, "chatbot-avatar", %{}, account_id)
-    {:noreply, refresh_avatar(socket)}
   end
 
   def handle_event("send_suggestion", %{"content" => content}, socket) do
@@ -318,7 +239,7 @@ defmodule AdminWeb.Chatbot.PlayerLive do
            "content" => content
          }) do
       {:ok, user_message} ->
-        prompt = OpenAI.build_prompt(settings.initial_prompt, prompt_history, content)
+        prompt = OpenAI.build_prompt(settings.system_prompt, prompt_history, content)
         ref = OpenAI.stream_completion(prompt)
 
         socket
@@ -433,98 +354,50 @@ defmodule AdminWeb.Chatbot.PlayerLive do
     |> assign(:sending?, false)
   end
 
-  # Reloads both the plain map the chat UI/prompt-building reads (`:settings`)
-  # and the teacher's edit form (`:settings_form`) from the same app_setting
-  # rows ("chatbot-prompt" and "chatbot-avatar"), so a save takes effect in
-  # the chat below without a page reload.
-  defp refresh_settings(socket) do
-    item_id = socket.assigns.item_id
-
-    data =
-      case Chatbot.get_setting(item_id, "chatbot-prompt") do
-        nil -> %{}
-        %{data: data} -> data
-      end
-
-    prompt_settings = PromptSettings.from_data(data)
-    starter_suggestions = Map.get(data, "starterSuggestions", [])
-
-    settings = %{
-      initial_prompt: prompt_settings.initialPrompt,
-      cue: prompt_settings.chatbotCue,
-      name: prompt_settings.chatbotName || default_chatbot_name(),
-      starter_suggestions: starter_suggestions,
-      avatar_data_url: fetch_avatar_data_url(item_id)
-    }
-
+  defp assign_settings(socket, settings) do
     socket
     |> assign(:settings, settings)
-    |> assign(
-      :starter_suggestions,
-      starter_suggestions
-      |> Enum.with_index()
-      |> Enum.map(fn {value, id} -> %{id: id, value: value} end)
-    )
-    |> assign(
-      :settings_form,
-      to_form(PromptSettings.changeset(prompt_settings, %{}), as: :prompt_settings)
+    |> assign(:settings_form, to_form(Settings.change(settings)))
+  end
+
+  defp put_settings_error(socket, :forbidden) do
+    put_flash(
+      socket,
+      :error,
+      dgettext("chatbot", "Only teachers can change the chatbot settings.")
     )
   end
 
-  # Narrower than refresh_settings/1: only updates the avatar's display URL.
-  # handle_avatar_progress/3 and remove_avatar must not touch :settings_form —
-  # rebuilding it from the DB would wipe out any unsaved edits sitting in the
-  # Name/System prompt/Cue/Starter suggestions fields, which from the
-  # teacher's perspective looks exactly like the avatar upload reset (or
-  # "submitted") the settings form even though it never did.
-  defp refresh_avatar(socket) do
-    item_id = socket.assigns.item_id
-    update(socket, :settings, &Map.put(&1, :avatar_data_url, fetch_avatar_data_url(item_id)))
-  end
-
-  defp fetch_avatar_data_url(item_id) do
-    case Chatbot.get_setting(item_id, "chatbot-avatar") do
-      nil -> nil
-      %{data: %{"file" => %{"path" => path}}} -> Avatar.url(path)
-      _no_avatar_set -> nil
-    end
+  defp put_settings_error(socket, _reason) do
+    put_flash(
+      socket,
+      :error,
+      dgettext("chatbot", "Could not save the chatbot settings, please try again.")
+    )
   end
 
   # Called by LiveView as chunks of the selected file stream in (auto_upload:
-  # true starts this as soon as a file is chosen, no submit needed). Persists
-  # the avatar to S3 and the app_setting once the entry finishes uploading.
+  # true starts this as soon as a file is chosen, no submit needed). Stores
+  # the avatar once the entry finishes uploading; like "remove_avatar", it
+  # leaves `:settings_form` untouched.
   defp handle_avatar_progress(:avatar, entry, socket) do
     if entry.done? do
-      %{item_id: item_id, account_id: account_id} = socket.assigns
-
-      setting_id =
-        case Chatbot.get_setting(item_id, "chatbot-avatar") do
-          %{id: id} -> id
-          nil -> Ecto.UUID.generate()
-        end
-
-      key =
+      result =
         consume_uploaded_entry(socket, entry, fn %{path: path} ->
-          {:ok, Avatar.upload(item_id, setting_id, path)}
+          file = %{path: path, name: entry.client_name, mimetype: entry.client_type}
+          {:ok, Settings.put_avatar(socket.assigns.scope, file)}
         end)
 
-      {:ok, _app_setting} =
-        Chatbot.upsert_setting(
-          item_id,
-          "chatbot-avatar",
-          %{
-            "file" => %{
-              "name" => entry.client_name,
-              "path" => key,
-              "mimetype" => entry.client_type
-            }
-          },
-          account_id,
-          setting_id
-        )
+      case result do
+        {:ok, settings} ->
+          {:noreply,
+           socket
+           |> assign(:settings, settings)
+           |> put_flash(:info, dgettext("chatbot", "Avatar updated."))}
 
-      {:noreply,
-       socket |> refresh_avatar() |> put_flash(:info, dgettext("chatbot", "Avatar updated."))}
+        {:error, reason} ->
+          {:noreply, put_settings_error(socket, reason)}
+      end
     else
       {:noreply, socket}
     end
@@ -612,9 +485,9 @@ defmodule AdminWeb.Chatbot.PlayerLive do
         </div>
 
         <div :if={@status == :ready} class="flex flex-col gap-2 items-center max-w-5xl w-full">
-          <div :if={@is_teacher?} class="p-3 w-full">
+          <div :if={@scope.teacher?} class="p-3 w-full">
             <div
-              :if={@settings.initial_prompt in [nil, ""]}
+              :if={is_nil(@settings.system_prompt)}
               role="alert"
               class="alert alert-warning"
             >
@@ -639,12 +512,12 @@ defmodule AdminWeb.Chatbot.PlayerLive do
                   class="group relative size-12 shrink-0 cursor-pointer "
                 >
                   <img
-                    :if={@settings.avatar_data_url}
-                    src={@settings.avatar_data_url}
+                    :if={@settings.avatar_url}
+                    src={@settings.avatar_url}
                     class="size-12 rounded-lg shadow object-cover"
                   />
                   <div
-                    :if={!@settings.avatar_data_url}
+                    :if={!@settings.avatar_url}
                     class="flex size-12 items-center justify-center bg-base-200 text-base-content/50 group-hover:text-base-content/80 rounded-lg"
                   >
                     <.icon name="hero-photo" class="size-6" />
@@ -654,14 +527,14 @@ defmodule AdminWeb.Chatbot.PlayerLive do
                   </div>
                 </label>
 
-                <p :if={!@settings.avatar_data_url} class="text-sm opacity-70">
+                <p :if={!@settings.avatar_url} class="text-sm opacity-70">
                   {dgettext("chatbot", "Click the picture to upload a chatbot avatar.")}
                 </p>
 
                 <.live_file_input upload={@uploads.avatar} class="hidden" />
 
                 <button
-                  :if={@settings.avatar_data_url}
+                  :if={@settings.avatar_url}
                   type="button"
                   phx-click="remove_avatar"
                   class="btn btn-sm btn-ghost text-error"
@@ -677,17 +550,17 @@ defmodule AdminWeb.Chatbot.PlayerLive do
                 phx-submit="save_settings"
               >
                 <.input
-                  field={@settings_form[:chatbotName]}
+                  field={@settings_form[:name]}
                   type="text"
                   label={dgettext("chatbot", "Name")}
                 />
                 <.input
-                  field={@settings_form[:initialPrompt]}
+                  field={@settings_form[:system_prompt]}
                   type="textarea"
                   label={dgettext("chatbot", "Prompt")}
                 />
                 <.input
-                  field={@settings_form[:chatbotCue]}
+                  field={@settings_form[:cue]}
                   type="textarea"
                   label={dgettext("chatbot", "Conversation starter")}
                 />
@@ -699,31 +572,38 @@ defmodule AdminWeb.Chatbot.PlayerLive do
                   <p class="text-sm opacity-70">
                     {dgettext("chatbot", "Shown to students on a new conversation.")}
                   </p>
-                  <div
-                    :for={suggestion <- @starter_suggestions}
-                    class="flex flex-row gap-2 items-center"
-                  >
-                    <input
-                      type="text"
-                      name={"starter_suggestion_#{suggestion.id}"}
-                      value={suggestion.value}
-                      phx-change="edit_starter_suggestion"
-                      placeholder={dgettext("chatbot", "Starter suggestion")}
-                      class="input input-bordered input-sm w-full"
-                    />
-                    <button
-                      type="button"
-                      phx-click="remove_starter_suggestion"
-                      phx-value-id={suggestion.id}
-                      aria-label={dgettext("chatbot", "Remove starter suggestion")}
-                      class="btn btn-sm btn-ghost text-error"
-                    >
-                      <.icon name="hero-trash" class="size-4" />
-                    </button>
-                  </div>
+                  <.inputs_for :let={suggestion} field={@settings_form[:starter_suggestions]}>
+                    <div class="flex flex-row gap-2 items-center">
+                      <input
+                        type="hidden"
+                        name="settings[starter_suggestions_sort][]"
+                        value={suggestion.index}
+                      />
+                      <.input
+                        field={suggestion[:value]}
+                        type="text"
+                        placeholder={dgettext("chatbot", "Starter suggestion")}
+                        class="input input-bordered input-sm w-full"
+                      />
+                      <button
+                        type="button"
+                        name="settings[starter_suggestions_drop][]"
+                        value={suggestion.index}
+                        phx-click={JS.dispatch("change")}
+                        aria-label={dgettext("chatbot", "Remove starter suggestion")}
+                        class="btn btn-sm btn-ghost text-error"
+                      >
+                        <.icon name="hero-trash" class="size-4" />
+                      </button>
+                    </div>
+                  </.inputs_for>
+                  <input type="hidden" name="settings[starter_suggestions_drop][]" />
                   <button
+                    id="add-starter-suggestion"
                     type="button"
-                    phx-click="add_starter_suggestion"
+                    name="settings[starter_suggestions_sort][]"
+                    value="new"
+                    phx-click={JS.dispatch("change")}
                     class="btn btn-sm btn-outline"
                   >
                     <.icon name="hero-plus" class="size-4" />
@@ -758,13 +638,13 @@ defmodule AdminWeb.Chatbot.PlayerLive do
           </div>
 
           <div
-            :if={!@is_teacher?}
+            :if={!@scope.teacher?}
             class="flex flex-col items-center gap-2 py-4 max-w-[100ch] border border-neutral/40 rounded-lg w-full bg-white"
           >
             <div class="flex flex-col gap-2 items-center w-full">
               <img
-                :if={@settings.avatar_data_url}
-                src={@settings.avatar_data_url}
+                :if={@settings.avatar_url}
+                src={@settings.avatar_url}
                 class="size-14 rounded-full object-cover"
               />
 
@@ -815,7 +695,7 @@ defmodule AdminWeb.Chatbot.PlayerLive do
                   :if={@thread == [] and is_nil(@pending) and @settings.cue not in [nil, ""]}
                   class="chat chat-start"
                 >
-                  <.bot_avatar src={@settings.avatar_data_url} />
+                  <.bot_avatar src={@settings.avatar_url} />
                   <div class="chat-bubble">
                     <.raw_html
                       html={Markdown.to_html(@settings.cue)}
@@ -832,11 +712,11 @@ defmodule AdminWeb.Chatbot.PlayerLive do
                   <button
                     :for={suggestion <- @settings.starter_suggestions}
                     phx-click="send_suggestion"
-                    phx-value-content={suggestion}
+                    phx-value-content={suggestion.value}
                     disabled={@sending?}
                     class="btn btn-primary rounded-full"
                   >
-                    {suggestion}
+                    {suggestion.value}
                   </button>
                 </div>
 
@@ -844,14 +724,14 @@ defmodule AdminWeb.Chatbot.PlayerLive do
                   :for={message <- @thread}
                   class={["chat", if(message.role == :user, do: "chat-end", else: "chat-start")]}
                 >
-                  <.bot_avatar :if={message.role != :user} src={@settings.avatar_data_url} />
+                  <.bot_avatar :if={message.role != :user} src={@settings.avatar_url} />
                   <div class="chat-bubble">
                     <.raw_html html={message.html} class="max-w-none" size="base" />
                   </div>
                 </div>
 
                 <div :if={@pending} class="chat chat-start">
-                  <.bot_avatar src={@settings.avatar_data_url} />
+                  <.bot_avatar src={@settings.avatar_url} />
                   <div class="chat-bubble">
                     <span :if={@pending.content == ""} class="loading loading-dots loading-sm"></span>
                     <.raw_html

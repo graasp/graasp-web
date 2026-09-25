@@ -1,17 +1,16 @@
 defmodule Admin.Chatbot do
   @moduledoc """
-  Context for the chatbot app's data: conversation messages (`app_data`),
-  teacher-configured settings (`app_setting`), and usage logging
-  (`app_action`). All reads/writes are scoped by `item_id` (resolved from the
-  verified app token, see `Admin.Chatbot.Token`) so a bug here can't leak or
-  mutate another item's data.
+  Context for the chatbot app's data: conversation messages (`app_data`) and
+  usage logging (`app_action`); the Teacher's configuration lives in
+  `Admin.Chatbot.Settings`. All reads/writes are scoped by `item_id`
+  (resolved from the verified app token, see `Admin.Apps.Token`) so a bug
+  here can't leak or mutate another item's data.
   """
 
   import Ecto.Query, warn: false
 
   alias Admin.Apps.AppAction
   alias Admin.Apps.AppData
-  alias Admin.Apps.AppSetting
   alias Admin.Repo
 
   @message_types ~w(comment bot-comment)
@@ -109,48 +108,6 @@ defmodule Admin.Chatbot do
       visibility: "member"
     })
     |> Repo.insert()
-  end
-
-  @doc "Fetches a single named setting (e.g. `\"chatbot-prompt\"`) for an item, if it exists."
-  def get_setting(item_id, name) do
-    Repo.get_by(AppSetting, item_id: item_id, name: name)
-  end
-
-  @doc "Lists every setting configured for an item."
-  def list_settings(item_id) do
-    AppSetting
-    |> where([s], s.item_id == ^item_id)
-    |> Repo.all()
-  end
-
-  @doc """
-  Creates or updates the named setting for an item (there is at most one row
-  per `{item_id, name}` pair in practice, mirroring how the React app treats
-  app settings as a keyed map).
-
-  When creating the row, `id` (if given) is used as its primary key instead
-  of letting Ecto autogenerate one — useful when the id must be known before
-  the row exists, e.g. to derive an S3 key for a file the setting will
-  reference.
-  """
-  def upsert_setting(item_id, name, data, creator_id, id \\ nil) do
-    case get_setting(item_id, name) do
-      nil ->
-        %AppSetting{}
-        |> AppSetting.changeset(%{
-          id: id,
-          item_id: item_id,
-          name: name,
-          data: data,
-          creator_id: creator_id
-        })
-        |> Repo.insert()
-
-      setting ->
-        setting
-        |> AppSetting.changeset(%{data: data})
-        |> Repo.update()
-    end
   end
 
   @doc "Logs a chatbot usage action (analytics), scoped to an item."

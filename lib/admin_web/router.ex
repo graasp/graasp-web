@@ -45,7 +45,7 @@ defmodule AdminWeb.Router do
   # platform. Deliberately skips `put_secure_browser_headers` (which sends
   # `X-Frame-Options: SAMEORIGIN`, blocking cross-origin framing) in favor of
   # an explicit `frame-ancestors` CSP allow-list. Auth is per-item, via the
-  # Graasp app JWT verified in the LiveView itself (Admin.Chatbot.Token), not
+  # Graasp app JWT verified in the LiveView itself (Admin.Apps.Token), not
   # via admin's own user login, so this does not use `:fetch_current_scope_for_user`.
   pipeline :chatbot_frame do
     plug :accepts, ["html"]
