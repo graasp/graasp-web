@@ -3,7 +3,7 @@ defmodule AdminWeb.Dev.ChatbotMockController do
   Dev-only page that plays the role of the Graasp parent frame for the
   chatbot app (`/apps/chatbot`), so it can be exercised locally without a
   running core instance. Mints a valid app JWT itself via
-  `Admin.Chatbot.Token.sign_dev_token/1`, since there's no core around to
+  `Admin.Apps.Token.sign_dev_token/1`, since there's no core around to
   issue one.
 
   Visit `/dev/chatbot-mock`. Default is `admin` permission from the
