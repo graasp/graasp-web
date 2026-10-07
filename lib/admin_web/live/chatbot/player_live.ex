@@ -33,10 +33,12 @@ defmodule AdminWeb.Chatbot.PlayerLive do
   alias Admin.Apps.AppData
   alias Admin.Apps.Token
   alias Admin.Chatbot
+  alias Admin.Chatbot.ContextDocument
   alias Admin.Chatbot.Markdown
   alias Admin.Chatbot.OpenAI
   alias Admin.Chatbot.Scope
   alias Admin.Chatbot.Settings
+  alias Admin.Utils.FileSize
 
   @impl true
   def mount(params, _session, socket) do
@@ -66,6 +68,15 @@ defmodule AdminWeb.Chatbot.PlayerLive do
         max_file_size: 500_000,
         auto_upload: true,
         progress: &handle_avatar_progress/3
+      )
+      |> assign(:documents, [])
+      |> assign(:documents_form, to_form(%{}, as: :documents))
+      |> allow_upload(:documents,
+        accept: ~w(.pdf),
+        max_entries: ContextDocument.max_documents(),
+        max_file_size: ContextDocument.max_file_size(),
+        auto_upload: true,
+        progress: &handle_document_progress/3
       )
 
     {:ok, socket}
@@ -100,6 +111,7 @@ defmodule AdminWeb.Chatbot.PlayerLive do
           |> assign(:account_id, account_id)
           |> assign(:scope, scope)
           |> assign_settings(Settings.load(scope))
+          |> assign(:documents, if(scope.teacher?, do: ContextDocument.list(scope), else: []))
           |> assign(:conversations, Chatbot.list_conversations(item_id, account_id))
 
         {:noreply, socket}
@@ -202,6 +214,23 @@ defmodule AdminWeb.Chatbot.PlayerLive do
     end
   end
 
+  # required by LiveView uploads, like "validate_avatar"
+  def handle_event("validate_documents", _params, socket), do: {:noreply, socket}
+
+  def handle_event("cancel_document_upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :documents, ref)}
+  end
+
+  def handle_event("remove_document", %{"id" => id}, socket) do
+    %{scope: scope} = socket.assigns
+
+    case ContextDocument.remove(scope, id) do
+      :ok -> {:noreply, assign(socket, :documents, ContextDocument.list(scope))}
+      {:error, :forbidden} -> {:noreply, put_settings_error(socket, :forbidden)}
+      {:error, :not_found} -> {:noreply, assign(socket, :documents, ContextDocument.list(scope))}
+    end
+  end
+
   def handle_event("send_suggestion", %{"content" => content}, socket) do
     if socket.assigns.sending? do
       {:noreply, socket}
@@ -239,7 +268,12 @@ defmodule AdminWeb.Chatbot.PlayerLive do
            "content" => content
          }) do
       {:ok, user_message} ->
-        prompt = OpenAI.build_prompt(settings.system_prompt, prompt_history, content)
+        documents_context =
+          socket.assigns.scope |> ContextDocument.list() |> ContextDocument.prompt_context()
+
+        prompt =
+          OpenAI.build_prompt(settings.system_prompt, documents_context, prompt_history, content)
+
         ref = OpenAI.stream_completion(prompt)
 
         socket
@@ -403,6 +437,40 @@ defmodule AdminWeb.Chatbot.PlayerLive do
     end
   end
 
+  # Like the avatar, each PDF is stored as soon as it finishes uploading.
+  # Extraction runs here, in the LiveView process (bounded by
+  # PdfExtractor's timeout); each file is checked against the limits on its
+  # own, so one rejected file doesn't reject the others.
+  defp handle_document_progress(:documents, entry, socket) do
+    if entry.done? do
+      %{scope: scope} = socket.assigns
+
+      result =
+        consume_uploaded_entry(socket, entry, fn %{path: path} ->
+          file = %{path: path, name: entry.client_name, size: entry.client_size}
+          {:ok, ContextDocument.add(scope, file)}
+        end)
+
+      socket =
+        case result do
+          {:ok, document} ->
+            socket
+            |> assign(:documents, ContextDocument.list(scope))
+            |> put_flash(
+              :info,
+              dgettext("chatbot", "“%{name}” added.", name: document.name)
+            )
+
+          {:error, reason} ->
+            put_flash(socket, :error, document_error_to_string(reason, entry.client_name))
+        end
+
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
   defp load_thread(item_id, account_id, conversation_id) do
     item_id
     |> Chatbot.list_messages(account_id, conversation_id)
@@ -430,6 +498,54 @@ defmodule AdminWeb.Chatbot.PlayerLive do
 
   defp error_to_string(_other), do: dgettext("chatbot", "Could not upload that image.")
 
+  defp document_upload_error_to_string(:too_large),
+    do: dgettext("chatbot", "That file is too large (max 10MB).")
+
+  defp document_upload_error_to_string(:too_many_files),
+    do:
+      dgettext("chatbot", "Choose at most %{max} documents.",
+        max: ContextDocument.max_documents()
+      )
+
+  defp document_upload_error_to_string(:not_accepted),
+    do: dgettext("chatbot", "Only PDF files are supported.")
+
+  defp document_upload_error_to_string(_other),
+    do: dgettext("chatbot", "Could not upload that document.")
+
+  defp document_error_to_string(:forbidden, _name),
+    do: dgettext("chatbot", "Only teachers can change the chatbot settings.")
+
+  defp document_error_to_string(:too_many_documents, _name),
+    do:
+      dgettext("chatbot", "A chatbot can use at most %{max} documents.",
+        max: ContextDocument.max_documents()
+      )
+
+  defp document_error_to_string({:over_budget, tokens, remaining}, name) do
+    dgettext(
+      "chatbot",
+      "“%{name}” is too long: it uses about %{tokens} tokens, but only %{remaining} are left.",
+      name: name,
+      tokens: tokens,
+      remaining: remaining
+    )
+  end
+
+  defp document_error_to_string(:no_text, name) do
+    dgettext(
+      "chatbot",
+      "“%{name}” has no selectable text. Scanned documents are not supported.",
+      name: name
+    )
+  end
+
+  defp document_error_to_string(:storage_failed, name),
+    do: dgettext("chatbot", "Could not save “%{name}”, please try again.", name: name)
+
+  defp document_error_to_string(_extraction_failed, name),
+    do: dgettext("chatbot", "Could not read “%{name}”.", name: name)
+
   defp connection_error_to_string(reason) when reason in ["context_timeout", "token_timeout"] do
     dgettext(
       "chatbot",
@@ -452,6 +568,132 @@ defmodule AdminWeb.Chatbot.PlayerLive do
         <img src={@src} />
       </div>
     </div>
+    """
+  end
+
+  attr :documents, :list, required: true
+  attr :form, Phoenix.HTML.Form, required: true
+  attr :upload, Phoenix.LiveView.UploadConfig, required: true
+
+  defp context_documents(assigns) do
+    assigns =
+      assigns
+      |> assign(:used_tokens, ContextDocument.used_tokens(assigns.documents))
+      |> assign(:max_tokens, ContextDocument.max_tokens())
+      |> assign(:full?, length(assigns.documents) >= ContextDocument.max_documents())
+
+    ~H"""
+    <section id="context-documents" class="space-y-2 py-3">
+      <p class="font-medium text-sm">{dgettext("chatbot", "Context documents")}</p>
+      <p class="text-sm opacity-70">
+        {dgettext(
+          "chatbot",
+          "PDF documents the chatbot uses as reference material when answering students. Students don't see them."
+        )}
+      </p>
+      <div role="alert" class="alert alert-warning alert-soft text-xs">
+        <.icon name="hero-exclamation-triangle" class="size-5" />
+        <span>
+          {dgettext(
+            "chatbot",
+            "The text of these documents is sent to OpenAI with every student message. Don't upload documents containing personal data."
+          )}
+        </span>
+      </div>
+
+      <div id="context-documents-usage" class="text-sm">
+        <span class="opacity-70">
+          {dgettext("chatbot", "%{used} of %{max} tokens used",
+            used: @used_tokens,
+            max: @max_tokens
+          )}
+        </span>
+        <progress class="progress progress-primary w-full" value={@used_tokens} max={@max_tokens}>
+        </progress>
+      </div>
+
+      <ul id="context-document-list" class="flex flex-col gap-2">
+        <li
+          :for={document <- @documents}
+          id={"context-document-#{document.id}"}
+          class="border border-neutral/40 rounded-lg p-2"
+        >
+          <div class="flex flex-row items-center gap-2">
+            <.icon name="hero-document-text" class="size-5 shrink-0" />
+            <div class="flex-1 min-w-0">
+              <span class="font-medium text-sm block truncate">{document.name}</span>
+              <span :if={ContextDocument.available?(document)} class="text-xs opacity-60">
+                {FileSize.humanize_size(document.size)} · {dngettext(
+                  "chatbot",
+                  "%{count} page",
+                  "%{count} pages",
+                  document.pages
+                )} · {dgettext("chatbot", "~%{tokens} tokens", tokens: document.tokens)}
+              </span>
+              <span :if={!ContextDocument.available?(document)} class="text-xs text-warning">
+                {dgettext("chatbot", "Content unavailable, please re-upload.")}
+              </span>
+            </div>
+            <button
+              id={"remove-context-document-#{document.id}"}
+              type="button"
+              phx-click="remove_document"
+              phx-value-id={document.id}
+              data-confirm={dgettext("chatbot", "Remove this document?")}
+              aria-label={dgettext("chatbot", "Remove document")}
+              class="btn btn-sm btn-ghost text-error"
+            >
+              <.icon name="hero-trash" class="size-4" />
+            </button>
+          </div>
+          <details
+            :if={ContextDocument.available?(document)}
+            id={"context-document-preview-#{document.id}"}
+            phx-mounted={JS.ignore_attributes(["open"])}
+            class="mt-2"
+          >
+            <summary class="text-xs cursor-pointer opacity-70">
+              {dgettext("chatbot", "Preview extracted text")}
+            </summary>
+            <pre class="whitespace-pre-wrap text-xs max-h-64 overflow-auto bg-base-200 p-2 rounded mt-1">{document.text}</pre>
+          </details>
+        </li>
+      </ul>
+
+      <.form for={@form} id="documents-form" phx-change="validate_documents" multipart>
+        <label :if={!@full?} for={@upload.ref} class="btn btn-sm btn-outline">
+          <.icon name="hero-arrow-up-tray" class="size-4" />
+          {dgettext("chatbot", "Add PDF")}
+        </label>
+        <.live_file_input upload={@upload} class="hidden" />
+      </.form>
+
+      <div :for={entry <- @upload.entries} class="flex flex-row items-center gap-2 text-sm">
+        <span class="truncate">{entry.client_name}</span>
+        <progress
+          :if={upload_errors(@upload, entry) == []}
+          class="progress w-24"
+          value={entry.progress}
+          max="100"
+        >
+        </progress>
+        <span :for={err <- upload_errors(@upload, entry)} class="text-error">
+          {document_upload_error_to_string(err)}
+        </span>
+        <button
+          type="button"
+          phx-click="cancel_document_upload"
+          phx-value-ref={entry.ref}
+          aria-label={dgettext("chatbot", "Cancel")}
+          class="btn btn-xs btn-ghost"
+        >
+          <.icon name="hero-x-mark" class="size-4" />
+        </button>
+      </div>
+      <p :for={err <- upload_errors(@upload)} class="text-sm text-error">
+        {document_upload_error_to_string(err)}
+      </p>
+    </section>
     """
   end
 
@@ -617,6 +859,12 @@ defmodule AdminWeb.Chatbot.PlayerLive do
                   </button>
                 </div>
               </.form>
+
+              <.context_documents
+                documents={@documents}
+                form={@documents_form}
+                upload={@uploads.documents}
+              />
             </div>
 
             <div class="space-y-2">

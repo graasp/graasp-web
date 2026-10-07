@@ -16,6 +16,10 @@ _Avoid_: admin, builder
 The teacher's configuration of a chatbot item: its name, system prompt, cue, starter suggestions and avatar. One per item.
 _Avoid_: prompt settings, chatbot config
 
+**Context Document**:
+A PDF the teacher uploads, whose extracted text is given to the model as reference material on every student message. Students don't see it. Up to 5 per item.
+_Avoid_: source, attachment, context file
+
 **Cue**:
 The optional opening message the chatbot shows at the start of a new conversation. When the teacher leaves it empty, there is no cue.
 _Avoid_: conversation starter, greeting

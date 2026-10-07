@@ -94,6 +94,8 @@ RUN apt-get update \
   fontconfig fonts-dejavu-core \
   # for healthchecks
   curl \
+  # pdftotext, to extract the chatbot's context documents
+  poppler-utils \
   && rm -rf /var/lib/apt/lists/*
 
 # Set the locale

@@ -23,26 +23,25 @@ defmodule Admin.Chatbot.OpenAI do
 
   @doc """
   Builds the prompt: optional system message (the teacher's configured
-  initial prompt), then the existing thread history, then the new user
-  message. Mirrors the React app's `buildPrompt`
-  (graasp-apps-query-client/src/utils/chatbot.ts) — `thread_messages` must
-  NOT include `new_user_message`, it's appended here.
+  initial prompt), optional second system message with the Context
+  Documents (`Admin.Chatbot.ContextDocument.prompt_context/1`), then the
+  existing thread history, then the new user message. Mirrors the React
+  app's `buildPrompt` (graasp-apps-query-client/src/utils/chatbot.ts) —
+  `thread_messages` must NOT include `new_user_message`, it's appended here.
   """
-  @spec build_prompt(String.t() | nil, [message()], String.t()) :: [message()]
-  def build_prompt(initial_prompt, thread_messages, new_user_message) do
-    system_message =
-      if initial_prompt in [nil, ""] do
-        []
-      else
-        [%{role: :system, content: initial_prompt}]
+  @spec build_prompt(String.t() | nil, String.t() | nil, [message()], String.t()) :: [message()]
+  def build_prompt(initial_prompt, documents_context, thread_messages, new_user_message) do
+    system_messages =
+      for content <- [initial_prompt, documents_context], content not in [nil, ""] do
+        %{role: :system, content: content}
       end
 
-    system_message ++ thread_messages ++ [%{role: :user, content: new_user_message}]
+    system_messages ++ thread_messages ++ [%{role: :user, content: new_user_message}]
   end
 
   @doc """
   Starts streaming a chat completion for `messages` (as built by
-  `build_prompt/3`). Sends messages to `pid` (defaults to the caller):
+  `build_prompt/4`). Sends messages to `pid` (defaults to the caller):
 
     * `{:chatbot_delta, ref, text_chunk}` — for every token chunk received
     * `{:chatbot_done, ref, {:ok, full_text}}` — once the stream completes
