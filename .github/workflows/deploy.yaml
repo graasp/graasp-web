@@ -74,11 +74,17 @@ jobs:
         run: bash ./scripts/auth.sh ${{ vars.PRIVATE_ECR }} ${{ vars.AWS_REGION }}
         shell: bash
 
-      - name: Build image
-        run: |
-          docker build -t ${{ vars.PRIVATE_ECR }}/graasp/admin:latest .
-          docker push ${{ vars.PRIVATE_ECR }}/graasp/admin:latest
-        shell: bash
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ vars.PRIVATE_ECR }}/graasp/admin:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Restart Service
         run: |

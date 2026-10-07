@@ -39,6 +39,11 @@ WORKDIR /app
 
 ENV ERL_AFLAGS="-noinput"
 
+# cap compiler parallelism: exla's C++ bridge (cc1plus) is memory-hungry under
+# -O3, and letting `make` fan out to nproc jobs can OOM-kill the build on
+# memory-constrained runners
+ENV MAKEFLAGS="-j1"
+
 # install hex + rebar
 RUN mix local.hex --force \
   && mix local.rebar --force
