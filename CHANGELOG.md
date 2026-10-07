@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.12.0](https://github.com/graasp/graasp-web/compare/v0.11.0...v0.12.0) (2026-10-07)
+
+
+### Features
+
+* add chatbot app proto ([#272](https://github.com/graasp/graasp-web/issues/272)) ([78a8e3d](https://github.com/graasp/graasp-web/commit/78a8e3d68c1b33b38a4495bb54dd7b1f56ca701b))
+* add pdf to chatbot app ([#281](https://github.com/graasp/graasp-web/issues/281)) ([63205e9](https://github.com/graasp/graasp-web/commit/63205e97bfe93a1626d73bcd3b064d490d80ecd9))
+
+
+### Bug Fixes
+
+* add chatbot translations ([#273](https://github.com/graasp/graasp-web/issues/273)) ([1f969b0](https://github.com/graasp/graasp-web/commit/1f969b0e2f2488156570b682573b7a3e518fe617))
+* cache docker build layers and cap exla compile parallelism ([#280](https://github.com/graasp/graasp-web/issues/280)) ([35245da](https://github.com/graasp/graasp-web/commit/35245da5fda00039ad254a3a5fab34fc496e7ed4))
+* make some ui updates ([#274](https://github.com/graasp/graasp-web/issues/274)) ([bea58a2](https://github.com/graasp/graasp-web/commit/bea58a2b4d50f2ccc1c2de30abe0a381f6c1d276))
+* make the chatbot app look more like the old one ([#275](https://github.com/graasp/graasp-web/issues/275)) ([6d34216](https://github.com/graasp/graasp-web/commit/6d34216cbd84bca8bb6cb39df6790ecf264ded4a))
+* refactor player view for chatbot app ([#278](https://github.com/graasp/graasp-web/issues/278)) ([e407174](https://github.com/graasp/graasp-web/commit/e4071741cf32d2c06111d85d940628077acc8fc6))
+* update evision ([5953691](https://github.com/graasp/graasp-web/commit/5953691410d146e3f8d78cbd73dc10a5c2ae12ea))
+
+
+### Chores
+
+* bump action versions for node 24 ([#282](https://github.com/graasp/graasp-web/issues/282)) ([4cba81e](https://github.com/graasp/graasp-web/commit/4cba81e136bdf557c14d78ddf894c13d30651f53))
+* **docs:** add skills ([e1d58a0](https://github.com/graasp/graasp-web/commit/e1d58a008a27417973a86c637309882a7c4f917d))
+
 ## [0.11.0](https://github.com/graasp/graasp-web/compare/v0.10.8...v0.11.0) (2026-05-29)
 
 
