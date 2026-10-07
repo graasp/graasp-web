@@ -32,9 +32,7 @@ defmodule AdminWeb.Chatbot.PlayerLiveTest do
   defp prompt_setting(item), do: Repo.get_by(AppSetting, item_id: item.id, name: "chatbot-prompt")
 
   defp context_documents(item) do
-    Repo.all(
-      from s in AppSetting, where: s.item_id == ^item.id and s.name == "chatbot-context"
-    )
+    Repo.all(from s in AppSetting, where: s.item_id == ^item.id and s.name == "chatbot-context")
   end
 
   test "a teacher saves the settings", %{item: item, view: view} do

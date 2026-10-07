@@ -116,35 +116,37 @@ defmodule Admin.Chatbot.ContextDocument do
 
   def add(%Scope{} = scope, %{path: path, name: name, size: size}) do
     with {:ok, %{text: text, pages: pages}} <- PdfExtractor.extract(path) do
-      tokens = estimate_tokens(text)
-
       data = %{
         "text" => text,
-        "tokens" => tokens,
+        "tokens" => estimate_tokens(text),
         "pages" => pages,
         "size" => size
       }
 
-      Repo.transaction(fn ->
-        lock_item(scope.item_id)
-        id = Ecto.UUID.generate()
+      Repo.transaction(fn -> insert_locked(scope, path, name, data) end)
+    end
+  end
 
-        with :ok <- check_limits(list(scope), tokens),
-             {:ok, key} <- upload_file(scope.item_id, id, path) do
-          file = %{"name" => name, "path" => key, "mimetype" => "application/pdf"}
+  # Runs under the per-item advisory lock acquired by the caller's transaction, so the
+  # limit check and insert are atomic with respect to concurrent uploads for the same item.
+  defp insert_locked(scope, path, name, data) do
+    lock_item(scope.item_id)
+    id = Ecto.UUID.generate()
 
-          case insert_setting(scope, id, Map.put(data, "file", file)) do
-            {:ok, setting} ->
-              to_document(setting)
+    with :ok <- check_limits(list(scope), data["tokens"]),
+         {:ok, key} <- upload_file(scope.item_id, id, path) do
+      file = %{"name" => name, "path" => key, "mimetype" => "application/pdf"}
 
-            {:error, reason} ->
-              delete_file(scope.item_id, id)
-              Repo.rollback(reason)
-          end
-        else
-          {:error, reason} -> Repo.rollback(reason)
-        end
-      end)
+      case insert_setting(scope, id, Map.put(data, "file", file)) do
+        {:ok, setting} ->
+          to_document(setting)
+
+        {:error, reason} ->
+          delete_file(scope.item_id, id)
+          Repo.rollback(reason)
+      end
+    else
+      {:error, reason} -> Repo.rollback(reason)
     end
   end
 
