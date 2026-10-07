@@ -18,13 +18,13 @@ jobs:
     steps:
       - name: Release Please
         id: release
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
           token: ${{ secrets.RELEASE_PLEASE_PAT }}
           config-file: .github/release-please-config.json
           manifest-file: .github/.release-please-manifest.json
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build image
         if: ${{ steps.release.outputs.releases_created == 'true' }}
