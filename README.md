@@ -57,6 +57,11 @@ brew install elixir-ls
 
 </details>
 
+### Poppler
+
+The chatbot app extracts the text of uploaded PDFs with `pdftotext`, from [poppler](https://poppler.freedesktop.org/).
+On MacOS: `brew install poppler`. On Debian/Ubuntu: `apt-get install poppler-utils`.
+
 ### PostgreSQL
 
 The admin platform uses the same database as the core platform.
