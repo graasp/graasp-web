@@ -283,6 +283,7 @@ defmodule AdminWeb.Router do
       end
 
       live "/housekeeping", HousekeepingLive.Index, :index
+      live "/folder-exports", FolderExportLive.Index, :index
 
       scope "/validation" do
         live "/", ValidationLive.Poc, :index

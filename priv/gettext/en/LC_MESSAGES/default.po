@@ -59,44 +59,44 @@ msgstr "Read more"
 msgid "Recent Posts"
 msgstr "Recent Posts"
 
-#: lib/admin_web/components/layouts.ex:384
-#: lib/admin_web/components/layouts.ex:414
+#: lib/admin_web/components/layouts.ex:386
+#: lib/admin_web/components/layouts.ex:416
 #, elixir-autogen, elixir-format
 msgid "Admin"
 msgstr "Admin"
 
-#: lib/admin_web/components/layouts.ex:372
-#: lib/admin_web/components/layouts.ex:406
+#: lib/admin_web/components/layouts.ex:374
+#: lib/admin_web/components/layouts.ex:408
 #, elixir-autogen, elixir-format
 msgid "Blog"
 msgstr "Blog"
 
-#: lib/admin_web/components/layouts.ex:391
-#: lib/admin_web/components/layouts.ex:423
+#: lib/admin_web/components/layouts.ex:393
+#: lib/admin_web/components/layouts.ex:425
 #, elixir-autogen, elixir-format
 msgid "Get started"
 msgstr "Get started"
 
-#: lib/admin_web/components/layouts.ex:369
-#: lib/admin_web/components/layouts.ex:405
+#: lib/admin_web/components/layouts.ex:371
+#: lib/admin_web/components/layouts.ex:407
 #, elixir-autogen, elixir-format
 msgid "Library"
 msgstr "Library"
 
-#: lib/admin_web/components/layouts.ex:395
-#: lib/admin_web/components/layouts.ex:427
+#: lib/admin_web/components/layouts.ex:397
+#: lib/admin_web/components/layouts.ex:429
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr "Log in"
 
-#: lib/admin_web/components/layouts.ex:378
-#: lib/admin_web/components/layouts.ex:410
+#: lib/admin_web/components/layouts.ex:380
+#: lib/admin_web/components/layouts.ex:412
 #, elixir-autogen, elixir-format
 msgid "About"
 msgstr "About"
 
-#: lib/admin_web/components/layouts.ex:381
-#: lib/admin_web/components/layouts.ex:411
+#: lib/admin_web/components/layouts.ex:383
+#: lib/admin_web/components/layouts.ex:413
 #, elixir-autogen, elixir-format
 msgid "Contact"
 msgstr "Contact"
@@ -273,8 +273,8 @@ msgctxt "page_title"
 msgid "Documentation"
 msgstr "Documentation"
 
-#: lib/admin_web/components/layouts.ex:375
-#: lib/admin_web/components/layouts.ex:408
+#: lib/admin_web/components/layouts.ex:377
+#: lib/admin_web/components/layouts.ex:410
 #, elixir-autogen, elixir-format
 msgid "Support"
 msgstr ""
