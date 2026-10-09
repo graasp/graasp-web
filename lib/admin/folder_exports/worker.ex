@@ -10,6 +10,7 @@ defmodule Admin.FolderExports.Worker do
   alias Admin.FolderExports
   alias Admin.FolderExports.FolderExport
   alias Admin.FolderExports.Plan
+  alias Admin.FolderExports.PlanEntry
   alias Admin.FolderExports.Visibility
   alias Admin.FolderExports.ZipStream
   alias Admin.Repo
@@ -73,11 +74,11 @@ defmodule Admin.FolderExports.Worker do
     FolderExports.mark_done(Repo.reload!(export), key)
   end
 
-  defp to_zip_entry(%Plan.Entry{data: {:s3, bucket, key}} = entry) do
+  defp to_zip_entry(%PlanEntry{data: {:s3, bucket, key}} = entry) do
     %{path: entry.path, data: Admin.S3.stream_object(bucket, key), item?: entry.item?}
   end
 
-  defp to_zip_entry(%Plan.Entry{} = entry) do
+  defp to_zip_entry(%PlanEntry{} = entry) do
     %{path: entry.path, data: entry.data, item?: entry.item?}
   end
 

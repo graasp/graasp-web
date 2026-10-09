@@ -15,19 +15,12 @@ defmodule Admin.FolderExports.Plan do
   sanitized so that they cannot escape the archive, and a file without any
   extension keeps its name as is.
   """
+  alias Admin.FolderExports.PlanEntry, as: Entry
   alias Admin.Items.Item
 
   @description_extension ".description.html"
 
-  defmodule Entry do
-    @moduledoc false
-    # `data` is `:dir`, a binary or `{:s3, bucket, key}`.
-    # `item?` tells whether the entry is an item that counts for the progress
-    # (a description file or a directory does not).
-    defstruct [:path, :data, item?: false]
-  end
-
-  @type entry :: %Entry{}
+  @type entry :: Entry.t()
 
   @doc """
   Builds the entries for a visible tree (as returned by

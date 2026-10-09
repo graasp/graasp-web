@@ -6,8 +6,6 @@ defmodule Admin.FolderExports.FolderExport do
 
   @type t :: %__MODULE__{}
 
-  @statuses ~w(pending running done failed)
-
   schema "folder_exports" do
     field :status, :string, default: "pending"
     field :processed_count, :integer, default: 0
@@ -20,11 +18,6 @@ defmodule Admin.FolderExports.FolderExport do
 
     timestamps(type: :utc_datetime)
   end
-
-  def statuses, do: @statuses
-
-  @doc "An export is in flight while it is waiting for or being built by the worker."
-  def in_flight?(%__MODULE__{status: status}), do: status in ["pending", "running"]
 
   @doc "An export is expired once its 24 hours are over."
   def expired?(%__MODULE__{expires_at: expires_at}, now \\ DateTime.utc_now()) do

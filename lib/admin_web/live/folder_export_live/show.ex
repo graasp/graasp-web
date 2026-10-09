@@ -11,15 +11,16 @@ defmodule AdminWeb.FolderExportLive.Show do
 
   @impl Phoenix.LiveView
   def mount(%{"id" => id}, _session, socket) do
+    # subscribe before reading, so that no update is lost in between
+    if connected?(socket) and match?({:ok, _}, Ecto.UUID.cast(id)),
+      do: FolderExports.subscribe(id)
+
     case FolderExports.get_export(id) do
       nil ->
         raise Ecto.NoResultsError, queryable: FolderExport
 
       export ->
-        if connected?(socket) do
-          FolderExports.subscribe(export.id)
-          schedule_expiry(export)
-        end
+        if connected?(socket), do: schedule_expiry(export)
 
         {:ok, socket |> assign(:page_title, gettext("Download zip")) |> assign_export(export)}
     end
