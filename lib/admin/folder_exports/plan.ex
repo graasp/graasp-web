@@ -119,7 +119,7 @@ defmodule Admin.FolderExports.Plan do
 
   defp description_entries(%Item{description: description} = item, dir)
        when is_binary(description) and description != "" do
-    [%Entry{path: join(dir, sanitize(item.name) <> @description_extension), data: description}]
+    [item_entry(dir, sanitize(item.name) <> @description_extension, description)]
   end
 
   defp description_entries(_item, _dir), do: []
