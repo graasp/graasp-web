@@ -28,10 +28,14 @@ runs:
       run: bash ./scripts/auth.sh ${{ inputs.aws-ecr-uri }} ${{ inputs.aws-region }}
       shell: bash
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
     - name: Build and push the images
-      env:
-        TAG: ${{ inputs.aws-ecr-uri }}:${{ inputs.tag }}
-      run: |
-        docker build -t $TAG .
-        docker push $TAG
-      shell: bash
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        push: true
+        tags: ${{ inputs.aws-ecr-uri }}:${{ inputs.tag }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
