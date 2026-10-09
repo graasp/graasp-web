@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.13.0](https://github.com/graasp/graasp-web/compare/v0.12.0...v0.13.0) (2026-10-09)
+
+
+### Features
+
+* public folder export with progress page and streamed zip ([fd49254](https://github.com/graasp/graasp-web/commit/fd49254137ac394bd531ddb8ed044d4040de8e22))
+
+
+### Bug Fixes
+
+* folder descriptions count in export ([#293](https://github.com/graasp/graasp-web/issues/293)) ([1da33bd](https://github.com/graasp/graasp-web/commit/1da33bd62aec83c7a928c14874997a08be309aad))
+* subscribe before reading the export, move plan entry to its own module ([6192143](https://github.com/graasp/graasp-web/commit/61921437bdad1a586656563e739d24e39a14205e))
+
+
+### Chores
+
+* add adr ([81f0d8e](https://github.com/graasp/graasp-web/commit/81f0d8ef5b86f449d67d412078e74120476a2295))
+* add rule for git workflow ([88761ec](https://github.com/graasp/graasp-web/commit/88761ec78afaedd82506424f0d023588fa2791ef))
+
 ## [0.12.0](https://github.com/graasp/graasp-web/compare/v0.11.0...v0.12.0) (2026-10-07)
 
 
