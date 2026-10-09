@@ -8,7 +8,7 @@
 ### to merge POT files into PO files.
 msgid ""
 msgstr ""
-"Language: fr\n"
+"Language: en\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: lib/admin_web/components/core_components.ex:389
@@ -321,13 +321,13 @@ msgstr "Flux Atom du blog Graasp"
 #: lib/admin_web/controllers/docs_html/show.html.heex:48
 #, elixir-autogen, elixir-format
 msgid "Next"
-msgstr ""
+msgstr "Suivant"
 
 #: lib/admin/docs.ex:13
 #, elixir-autogen, elixir-format
 msgctxt "documentation section"
 msgid "intro"
-msgstr ""
+msgstr "intro"
 
 #: lib/admin_web/controllers/landing_html.ex:573
 #: lib/admin_web/live/library_live/show.ex:160
@@ -338,13 +338,13 @@ msgstr "Langue"
 #: lib/admin_web/components/layouts.ex:214
 #, elixir-autogen, elixir-format
 msgid "Open navigation menu"
-msgstr ""
+msgstr "Ouvrir le menu de navigation"
 
 #: lib/admin_web/live/trash_live/index.ex:52
 #, elixir-autogen, elixir-format
 msgctxt "page title"
 msgid "Trash Management"
-msgstr ""
+msgstr "Gestion des déchets"
 
 #: lib/admin_web/live/library_live/show.ex:51
 #, elixir-autogen, elixir-format
@@ -355,7 +355,7 @@ msgstr "Retour"
 #: lib/admin_web/live/library_live/index.ex:22
 #, elixir-autogen, elixir-format
 msgid "Published Items"
-msgstr ""
+msgstr "Articles publiés"
 
 #: lib/admin_web/live/library_live/show.ex:103
 #, elixir-autogen, elixir-format
@@ -390,7 +390,7 @@ msgstr "Graasp"
 #: lib/admin_web/live/library_live/show.ex:69
 #, elixir-autogen, elixir-format
 msgid "Preview"
-msgstr ""
+msgstr "Aperçu"
 
 #: lib/admin_web/live/library_live/member.ex:28
 #, elixir-autogen, elixir-format
@@ -398,29 +398,29 @@ msgid "Most recent publications"
 msgstr "Publications récentes"
 
 #: lib/admin_web/live/library_live/member.ex:19
-#, elixir-autogen, elixir-format
+#, elixir-autogen, elixir-format, fuzzy
 msgid "Joined on %{date}"
 msgstr "Membre depuis le %{date}"
 
 #: lib/admin_web/live/library_live/show.ex:138
 #, elixir-autogen, elixir-format
 msgid "Table of contents"
-msgstr ""
+msgstr "Table des matières"
 
 #: lib/admin_web/controllers/docs_html/index_dev.html.heex:8
 #, elixir-autogen, elixir-format
 msgid "Developer Documentation"
-msgstr ""
+msgstr "Documentation pour les développeurs"
 
 #: lib/admin_web/controllers/docs_html/index.html.heex:29
 #, elixir-autogen, elixir-format
 msgid "Developer documentation"
-msgstr ""
+msgstr "Documentation pour les développeurs"
 
 #: lib/admin_web/controllers/docs_html/index.html.heex:26
 #, elixir-autogen, elixir-format
 msgid "Looking for developer documentation?"
-msgstr ""
+msgstr "Vous recherchez de la documentation pour développeurs ?"
 
 #: lib/admin_web/controllers/docs_html/index.html.heex:10
 #, elixir-autogen, elixir-format, fuzzy
@@ -430,118 +430,118 @@ msgstr "Bienvenue sur la page de documentation. Ici, vous pouvez trouver des inf
 #: lib/admin_web/controllers/docs_html/index_dev.html.heex:10
 #, elixir-autogen, elixir-format
 msgid "Welcome to the developer documentation page. Here you can find technical information about developing our products and services."
-msgstr ""
+msgstr "Bienvenue sur la page de documentation pour développeurs. Vous y trouverez des informations techniques sur le développement de nos produits et services."
 
 #: lib/admin/developer_docs.ex:13
 #, elixir-autogen, elixir-format
 msgctxt "documentation section"
 msgid "apps"
-msgstr ""
+msgstr "applications"
 
 #: lib/admin/developer_docs.ex:13
 #, elixir-autogen, elixir-format
 msgctxt "documentation section"
 msgid "architecture"
-msgstr ""
+msgstr "architecture"
 
 #: lib/admin/developer_docs.ex:13
 #, elixir-autogen, elixir-format
 msgctxt "documentation section"
 msgid "etiquette"
-msgstr ""
+msgstr "étiquette"
 
 #: lib/admin/developer_docs.ex:13
 #, elixir-autogen, elixir-format
 msgctxt "documentation section"
 msgid "guides"
-msgstr ""
+msgstr "guides"
 
 #: lib/admin/developer_docs.ex:13
 #, elixir-autogen, elixir-format
 msgctxt "documentation section"
 msgid "how-to"
-msgstr ""
+msgstr "comment"
 
 #: lib/admin/developer_docs.ex:13
 #, elixir-autogen, elixir-format
 msgctxt "documentation section"
 msgid "references"
-msgstr ""
+msgstr "références"
 
 #: lib/admin_web/controllers/docs_controller.ex:37
 #, elixir-autogen, elixir-format
 msgctxt "page_description"
 msgid "The documentation for the developer to work on and improve the Graasp platformand services."
-msgstr ""
+msgstr "La documentation destinée aux développeurs pour travailler sur et améliorer la plateforme et les services Graasp."
 
 #: lib/admin_web/controllers/docs_controller.ex:35
 #, elixir-autogen, elixir-format
 msgctxt "page_title"
 msgid "Developer Documentation"
-msgstr ""
+msgstr "Documentation pour les développeurs"
 
 #: lib/admin_web/live/housekeeping_live/index.ex:16
 #, elixir-autogen, elixir-format
 msgid "Busted %{count} cache entries"
-msgstr ""
+msgstr "%{count} entrées de cache corrompues"
 
 #: lib/admin_web/live/folder_export_live/show.ex:109
 #, elixir-autogen, elixir-format
 msgid "%{processed} of %{total} items"
-msgstr ""
+msgstr "%{traités} sur %{total} articles"
 
 #: lib/admin_web/live/folder_export_live/show.ex:89
 #, elixir-autogen, elixir-format
 msgid "Download %{name} as a zip"
-msgstr ""
+msgstr "Télécharger %{name} au format zip"
 
 #: lib/admin_web/live/folder_export_live/show.ex:25
 #: lib/admin_web/live/folder_export_live/show.ex:123
 #, elixir-autogen, elixir-format
 msgid "Download zip"
-msgstr ""
+msgstr "Télécharger le fichier zip"
 
 #: lib/admin_web/live/folder_export_live/show.ex:114
 #, elixir-autogen, elixir-format
 msgid "Preparing the export…"
-msgstr ""
+msgstr "Préparation de l'exportation…"
 
 #: lib/admin_web/live/folder_export_live/show.ex:140
 #, elixir-autogen, elixir-format
 msgid "The export failed. You can try again."
-msgstr ""
+msgstr "L'exportation a échoué. Veuillez réessayer."
 
 #: lib/admin_web/live/folder_export_live/show.ex:148
 #, elixir-autogen, elixir-format
 msgid "This export has expired. Exports are kept for 24 hours, go back to the folder to start a new one."
-msgstr ""
+msgstr "Cette exportation a expiré. Les exportations sont conservées pendant 24 heures ; retournez dans le dossier pour en créer une nouvelle."
 
 #: lib/admin_web/live/folder_export_live/show.ex:133
 #, elixir-autogen, elixir-format
 msgid "This folder has nothing to export: it contains no files, documents, links or descriptions."
-msgstr ""
+msgstr "Ce dossier ne contient rien à exporter : aucun fichier, document, lien ou description."
 
 #: lib/admin_web/live/folder_export_live/show.ex:154
 #, elixir-autogen, elixir-format
 msgid "This folder is not available anymore."
-msgstr ""
+msgstr "Ce dossier n'est plus disponible."
 
 #: lib/admin_web/live/folder_export_live/show.ex:126
 #, elixir-autogen, elixir-format
 msgid "This link is valid for 24 hours. You can bookmark this page and come back later."
-msgstr ""
+msgstr "Ce lien est valable 24 heures. Vous pouvez ajouter cette page à vos favoris et y revenir plus tard."
 
 #: lib/admin_web/live/folder_export_live/show.ex:143
 #, elixir-autogen, elixir-format
 msgid "Try again"
-msgstr ""
+msgstr "Essayer à nouveau"
 
 #: lib/admin_web/live/folder_export_live/show.ex:96
 #, elixir-autogen, elixir-format
 msgid "Your export is queued. It will start in a moment."
-msgstr ""
+msgstr "Votre exportation est en attente. Elle démarrera dans un instant."
 
 #: lib/admin_web/live/folder_export_live/show.ex:120
 #, elixir-autogen, elixir-format
 msgid "Your zip is ready."
-msgstr ""
+msgstr "Votre fermeture éclair est prête."
