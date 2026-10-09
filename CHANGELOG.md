@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.14.0](https://github.com/graasp/graasp-web/compare/v0.13.0...v0.14.0) (2026-10-09)
+
+
+### Features
+
+* admin page for folder exports with on-demand cleanup ([#297](https://github.com/graasp/graasp-web/issues/297)) ([0dcd4c6](https://github.com/graasp/graasp-web/commit/0dcd4c6823753f1eb3e8d2f03da793c367e57f21))
+
+
+### Bug Fixes
+
+* **fr:** translations ([#296](https://github.com/graasp/graasp-web/issues/296)) ([1597197](https://github.com/graasp/graasp-web/commit/15971975d6d343d944cc6751c95b09534b848db0))
+
+
+### Chores
+
+* add docker build cache to release-please build ([1e5765c](https://github.com/graasp/graasp-web/commit/1e5765c2b1eeb65abfad8dcec75eccd8f75ac4bf))
+
 ## [0.13.0](https://github.com/graasp/graasp-web/compare/v0.12.0...v0.13.0) (2026-10-09)
 
 
