@@ -31,3 +31,21 @@ _Avoid_: suggestion, quick reply
 **System Prompt**:
 The teacher's instructions sent to the model ahead of every conversation.
 _Avoid_: initial prompt
+
+### Public folder export
+
+**Public Folder**:
+A folder that is publicly visible: it, or one of its ancestors, carries the public tag. Anyone can browse it without logging in.
+_Avoid_: shared folder, published folder (publishing is a separate library concept)
+
+**Folder Export**:
+A zip of a Public Folder's contents requested by a visitor, built in the background and kept for 24 hours. It uses the same raw layout as the logged-in export (files, documents, links), without the Graasp manifest.
+_Avoid_: download, archive
+
+**Visitor**:
+A person without a login using a Public Folder. A Visitor has no email, so they follow a Folder Export on its progress page instead of being emailed.
+_Avoid_: anonymous user, public user
+
+**Export Progress Page**:
+The page, reached by an unguessable link, where a Visitor watches a Folder Export advance and then gets its download link. It shows an expired state once the 24 hours are over.
+_Avoid_: status page
