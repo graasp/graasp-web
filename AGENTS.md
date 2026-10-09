@@ -373,3 +373,7 @@ Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 ### Domain docs
 
 Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Git workflow
+
+Before committing anything (including during `/implement`), read `docs/agents/git-workflow.md`: work goes on a ticket-named branch, never on `main`, and ends with an offer to open a pull request.
