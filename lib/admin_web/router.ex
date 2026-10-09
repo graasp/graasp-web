@@ -184,9 +184,15 @@ defmodule AdminWeb.Router do
 
     get "/library/collections/:item_id/thumbnail", ThumbnailController, :show
 
+    # starts (or joins) the export of a Public Folder, no login needed
+    get "/public/folders/:item_id/export", FolderExportController, :create
+
     live_session :public,
       session: {AdminWeb.Public, :session, [[locale: "fr"]]},
       on_mount: [{AdminWeb.UserAuth, :mount_current_scope}, AdminWeb.RestoreLocale] do
+      # progress page of a Folder Export, the unguessable id is the access control
+      live "/export/:id", FolderExportLive.Show, :show
+
       scope "/library-beta" do
         live "/", LibraryLive.Index, :index
         live "/collections/:item_id", LibraryLive.Show, :show

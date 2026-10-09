@@ -16,12 +16,14 @@ config :admin, Oban,
     # periodic jobs
     {Oban.Plugins.Cron,
      crontab: [
-       {"0 1 * * *", Admin.TrashCleanupWorker, max_attempts: 1}
+       {"0 1 * * *", Admin.TrashCleanupWorker, max_attempts: 1},
+       {"*/30 * * * *", Admin.FolderExports.CleanupWorker}
      ]}
   ],
   engine: Oban.Engines.Basic,
   notifier: Oban.Notifiers.Postgres,
-  queues: [default: 10, mailing: 2, trash_schedule: 1],
+  # exports have a low concurrency so that they can not starve the other jobs
+  queues: [default: 10, mailing: 2, trash_schedule: 1, exports: 2],
   repo: Admin.Repo
 
 config :admin, :scopes,

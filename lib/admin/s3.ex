@@ -63,11 +63,42 @@ defmodule Admin.S3 do
 
   def get_object_url(bucket, key, opts \\ []) do
     expires_in = Keyword.get(opts, :expires_in, 3600)
+    query_params = Keyword.get(opts, :query_params, [])
 
     {:ok, url} =
-      :s3 |> ExAws.Config.new([]) |> S3.presigned_url(:get, bucket, key, expires_in: expires_in)
+      :s3
+      |> ExAws.Config.new([])
+      |> S3.presigned_url(:get, bucket, key, expires_in: expires_in, query_params: query_params)
 
     url
+  end
+
+  @download_chunk_size 8 * 1024 * 1024
+
+  @doc """
+  Streams an object by reading it in ranges of `chunk_size` bytes, so that big
+  files are never held in memory at once. Raises if the object can not be read.
+  """
+  def stream_object(bucket, key, chunk_size \\ @download_chunk_size) do
+    Stream.resource(
+      fn -> 0 end,
+      fn
+        :done ->
+          {:halt, :done}
+
+        offset ->
+          range = "bytes=#{offset}-#{offset + chunk_size - 1}"
+
+          case S3.get_object(bucket, key, range: range) |> @ex_aws_mod.request() do
+            {:ok, %{body: body}} when byte_size(body) < chunk_size -> {[body], :done}
+            {:ok, %{body: body}} -> {[body], offset + chunk_size}
+            # the object size is a multiple of the chunk size
+            {:error, {:http_error, 416, _}} -> {:halt, :done}
+            {:error, reason} -> raise "could not read #{bucket}/#{key}: #{inspect(reason)}"
+          end
+      end,
+      fn _ -> :ok end
+    )
   end
 
   def download(bucket, key) do

@@ -9,6 +9,8 @@ defmodule Admin.Items.Item do
   alias Admin.Items.PathUtils
   alias EctoLtree.LabelTree, as: Ltree
 
+  @type t :: %__MODULE__{}
+
   schema "item" do
     field :name, :string
     field :description, :string
