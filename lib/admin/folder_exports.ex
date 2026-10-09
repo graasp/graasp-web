@@ -71,6 +71,24 @@ defmodule Admin.FolderExports do
     |> Repo.one()
   end
 
+  @doc """
+  The most recent exports, newest first, with their folder. `status` narrows
+  the list to one status, `nil` or `""` keeps them all.
+  """
+  @spec list_recent(String.t() | nil, pos_integer()) :: [FolderExport.t()]
+  def list_recent(status \\ nil, limit \\ 200) do
+    from(e in FolderExport,
+      order_by: [desc: e.created_at, desc: e.id],
+      limit: ^limit,
+      preload: :item
+    )
+    |> filter_status(status)
+    |> Repo.all()
+  end
+
+  defp filter_status(query, status) when status in [nil, ""], do: query
+  defp filter_status(query, status), do: where(query, [e], e.status == ^status)
+
   def subscribe(export_id) do
     Phoenix.PubSub.subscribe(Admin.PubSub, topic(export_id))
   end
