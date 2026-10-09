@@ -227,6 +227,17 @@ defmodule Admin.FolderExportsTest do
       refute_received {:uploaded, _, _, _}
     end
 
+    test "a folder with only a description is exported", %{scope: scope} do
+      folder = public_tree(scope, %{description: "about it"}, [])
+      stub_s3()
+
+      export = run_export(folder)
+
+      assert export.status == "done"
+      assert export.total_count == 1
+      assert %{"Root.description.html" => "about it"} = uploaded_zip()
+    end
+
     test "fails when the upload fails", %{scope: scope} do
       folder = public_tree(scope, [{file_attrs("a.txt", "files/a"), []}])
 
@@ -314,8 +325,8 @@ defmodule Admin.FolderExportsTest do
 
       export = run_export(folder)
       assert export.status == "done"
-      # the 6 non-folder items
-      assert export.total_count == 6
+      # the 6 non-folder items and the 2 descriptions
+      assert export.total_count == 8
 
       assert %{
                "Root.description.html" => "<p>root description</p>",

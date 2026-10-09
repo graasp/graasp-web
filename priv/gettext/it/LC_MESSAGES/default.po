@@ -485,63 +485,63 @@ msgstr ""
 msgid "Busted %{count} cache entries"
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:108
+#: lib/admin_web/live/folder_export_live/show.ex:109
 #, elixir-autogen, elixir-format
 msgid "%{processed} of %{total} items"
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:88
+#: lib/admin_web/live/folder_export_live/show.ex:89
 #, elixir-autogen, elixir-format
 msgid "Download %{name} as a zip"
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:24
-#: lib/admin_web/live/folder_export_live/show.ex:122
+#: lib/admin_web/live/folder_export_live/show.ex:25
+#: lib/admin_web/live/folder_export_live/show.ex:123
 #, elixir-autogen, elixir-format
 msgid "Download zip"
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:113
+#: lib/admin_web/live/folder_export_live/show.ex:114
 #, elixir-autogen, elixir-format
 msgid "Preparing the export…"
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:137
+#: lib/admin_web/live/folder_export_live/show.ex:140
 #, elixir-autogen, elixir-format
 msgid "The export failed. You can try again."
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:145
+#: lib/admin_web/live/folder_export_live/show.ex:148
 #, elixir-autogen, elixir-format
 msgid "This export has expired. Exports are kept for 24 hours, go back to the folder to start a new one."
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:132
+#: lib/admin_web/live/folder_export_live/show.ex:133
 #, elixir-autogen, elixir-format
-msgid "This folder has nothing to export: it contains no files, documents or links."
+msgid "This folder has nothing to export: it contains no files, documents, links or descriptions."
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:151
+#: lib/admin_web/live/folder_export_live/show.ex:154
 #, elixir-autogen, elixir-format
 msgid "This folder is not available anymore."
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:125
+#: lib/admin_web/live/folder_export_live/show.ex:126
 #, elixir-autogen, elixir-format
 msgid "This link is valid for 24 hours. You can bookmark this page and come back later."
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:140
+#: lib/admin_web/live/folder_export_live/show.ex:143
 #, elixir-autogen, elixir-format
 msgid "Try again"
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:95
+#: lib/admin_web/live/folder_export_live/show.ex:96
 #, elixir-autogen, elixir-format
 msgid "Your export is queued. It will start in a moment."
 msgstr ""
 
-#: lib/admin_web/live/folder_export_live/show.ex:119
+#: lib/admin_web/live/folder_export_live/show.ex:120
 #, elixir-autogen, elixir-format
 msgid "Your zip is ready."
 msgstr ""

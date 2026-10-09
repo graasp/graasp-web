@@ -42,6 +42,10 @@ _Avoid_: shared folder, published folder (publishing is a separate library conce
 A zip of a Public Folder's contents requested by a visitor, built in the background and kept for 24 hours. It uses the same raw layout as the logged-in export (files, documents, links), without the Graasp manifest.
 _Avoid_: download, archive
 
+**Exportable Content**:
+What makes a Folder Export worth building: at least one file, document, link or description. Empty folders alone do not count.
+_Avoid_: items (a description counts even though it is not an item)
+
 **Visitor**:
 A person without a login using a Public Folder. A Visitor has no email, so they follow a Folder Export on its progress page instead of being emailed.
 _Avoid_: anonymous user, public user

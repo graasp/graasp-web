@@ -130,7 +130,9 @@ defmodule AdminWeb.FolderExportLive.Show do
             </div>
           <% :empty -> %>
             <p id="export-empty">
-              {gettext("This folder has nothing to export: it contains no files, documents or links.")}
+              {gettext(
+                "This folder has nothing to export: it contains no files, documents, links or descriptions."
+              )}
             </p>
           <% :failed -> %>
             <div id="export-failed" class="flex flex-col gap-4 items-start">
