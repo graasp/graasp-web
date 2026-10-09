@@ -8,8 +8,8 @@
 ### to merge POT files into PO files.
 msgid ""
 msgstr ""
-"Language: en\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
 
 #: lib/admin_web/components/core_components.ex:389
 #: lib/admin_web/live/notification_live/show.ex:71
@@ -544,4 +544,4 @@ msgstr "Votre exportation est en attente. Elle démarrera dans un instant."
 #: lib/admin_web/live/folder_export_live/show.ex:120
 #, elixir-autogen, elixir-format
 msgid "Your zip is ready."
-msgstr "Votre fermeture éclair est prête."
+msgstr "Votre zip est prêt."

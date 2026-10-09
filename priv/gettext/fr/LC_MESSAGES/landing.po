@@ -8,8 +8,8 @@
 ### to merge POT files into PO files.
 msgid ""
 msgstr ""
-"Language: fr\n"
-"Plural-Forms: nplurals=2; plural=(n>1);\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: lib/admin_web/controllers/landing_html/index.html.heex:27
 #, elixir-autogen, elixir-format
@@ -177,7 +177,7 @@ msgid "Ease access for participants"
 msgstr "Accès simplifié pour les participants"
 
 #: lib/admin_web/controllers/landing_html/index.html.heex:156
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgid "Easily share with your class and collegues"
 msgstr "Partager facilement avec les apprenants"
 
@@ -462,7 +462,7 @@ msgid "Interactive Apps"
 msgstr "Applications interactives"
 
 #: lib/admin_web/controllers/landing_html/about.html.heex:39
-#, elixir-autogen, elixir-format, fuzzy
+#, elixir-autogen, elixir-format
 msgid "Pedagogical Templates"
 msgstr "Modèles pédagogiques"
 
@@ -474,7 +474,7 @@ msgstr "Capsules publiées"
 #: lib/admin_web/controllers/landing_html/index.html.heex:174
 #, elixir-autogen, elixir-format
 msgid "Find the best sharing option for your use case"
-msgstr ""
+msgstr "Trouvez la meilleure option de partage pour votre cas d'utilisation"
 
 #: lib/admin_web/controllers/landing_html/index.html.heex:134
 #, elixir-autogen, elixir-format, fuzzy
