@@ -28,6 +28,21 @@ defmodule AdminWeb.LocaleTest do
     assert redirected_to(conn) == "/other"
   end
 
+  test "set locale without referer redirects to home", %{conn: conn} do
+    conn = post(conn, ~p"/locale", %{"locale" => "de"})
+
+    assert redirected_to(conn) == ~p"/"
+  end
+
+  test "set locale keeps only path and query of an absolute referer", %{conn: conn} do
+    conn =
+      conn
+      |> put_req_header("referer", "https://evil.example/about-us?tab=team")
+      |> post(~p"/locale", %{"locale" => "de"})
+
+    assert redirected_to(conn) == "/about-us?tab=team"
+  end
+
   test "get locale page", %{conn: conn} do
     conn = get(conn, ~p"/locale")
     assert html_response(conn, 200) =~ "lang=\"en\""
