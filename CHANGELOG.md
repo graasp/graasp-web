@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.14.1](https://github.com/graasp/graasp-web/compare/v0.14.0...v0.14.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* locale switch crash without Referer (Sentry ADMIN-6H) + Sentry investigation doc ([#299](https://github.com/graasp/graasp-web/issues/299)) ([3390904](https://github.com/graasp/graasp-web/commit/339090483d2222ca8fd60b6dc25e1cd2be0d28d6))
+* translation fixes ([1461aa3](https://github.com/graasp/graasp-web/commit/1461aa3ed60503dba998aa3810e0885b72fa21b9))
+
+
+### Chores
+
+* add commit sha to the sentry release ([#300](https://github.com/graasp/graasp-web/issues/300)) ([0b8be65](https://github.com/graasp/graasp-web/commit/0b8be6597ee00d9c9944d28641bb30516c05265d))
+
 ## [0.14.0](https://github.com/graasp/graasp-web/compare/v0.13.0...v0.14.0) (2026-10-09)
 
 
