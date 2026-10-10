@@ -1,4 +1,10 @@
-# Release Please
+%{
+title: "Release Please",
+description: "How we use release-please and how to fix a failed release",
+order: 2
+}
+
+---
 
 In this document we compile the behavior of the [`release-please`](https://github.com/googleapis/release-please) component.
 This component is provided by Google. We use [the Github Action provided by Google](https://github.com/googleapis/release-please-action). The repo contains some general documentation that is of interest to understand the general behavior of the tool.
@@ -18,7 +24,7 @@ We rely on `release-please` to:
 
 Let's break these down and explain each one.
 
-### Detect releasable changes {#releasable-changes}
+### Detect releasable changes {: #releasable-changes}
 
 `release-please` relies on [conventional commits](https://www.conventionalcommits.org/en/v1.0.0) to detect the type of change that is made on your main branch.
 
@@ -28,10 +34,10 @@ When a releasable change is detected on your main branch, `release-please` creat
 Commits tagged with `fix`, `feat`, `docs` are considered releasable changes.
 Commits that are `chore`, `build`, `ci` etc... are **not** considered releasable changes.
 
-::::WARNING
-Make sure you merge commits with explicitly releasable names following the conventional commit nomenclature since `release-please` will not create a release if you tag them with `awesome feature !` for example.
-Make sure your PR title follows the conventional commits !
-::::
+> #### Warning {: .warning}
+>
+> Make sure you merge commits with explicitly releasable names following the conventional commit nomenclature since `release-please` will not create a release if you tag them with `awesome feature !` for example.
+> Make sure your PR title follows the conventional commits !
 
 ### Generate releases in GitHub
 
@@ -45,7 +51,7 @@ Given the information state in the previous section, failure to completely execu
 
 To fix this issue, we outline the steps that need to be taken to manually create the tag, release, and notify the deployment pipeline of the new version.
 
-### Fixing a failed release {#fix-release-please}
+### Fixing a failed release {: #fix-release-please}
 
 First check if:
 

@@ -15,7 +15,7 @@ By the end of this guide you should have a working version of the Graasp platfor
 > This guide helps you set up your local development environment for the Graasp platform.
 >
 > If you only need to develop a **Graasp app**, you don't need the full setup.
-> You can head over to [the Graasp App Development section](apps/intro).
+> You can head over to [the Graasp App Development section](intro).
 
 > #### Prerequisites {: .warning}
 >

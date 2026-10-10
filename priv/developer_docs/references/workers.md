@@ -1,4 +1,10 @@
-# Queues and Workers
+%{
+title: "Queues and Workers",
+description: "Background jobs offloaded to queues and workers",
+order: 3
+}
+
+---
 
 Graasp sometimes performs high-computation operations that can be resource-intensive and time-consuming. If executed on the main thread alongside the core application, these operations would block the main process, negatively impacting performance and responsiveness of Graasp.
 

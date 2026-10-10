@@ -1,4 +1,10 @@
-# Deployment
+%{
+title: "Deployment",
+description: "How the Graasp platform is packaged and deployed",
+order: 1
+}
+
+---
 
 In this reference document we discuss the deployment of the Graasp platform.
 By deployment we understand the process of packaging the source code and making it available world wide to users.
@@ -16,12 +22,12 @@ This makes the infrastructure specific to hosting with the services provided by 
 In order to be independent of the cloud provider, the infrastructure should use abstractions that are available on all cloud providers.
 In our case the development cost to implement such cloud-agnostic architecture was not worth it.
 
-:::note
-We do provide alternative ways of running Graasp on non-AWS infrastructure.
-See [the docker compose file for standalone installation](https://github.com/graasp/graasp/blob/main/docker/compose.yml).
-Be warned that it will require so work on your side and that technical knowledge
-is required.
-:::
+> #### Note {: .info}
+>
+> We do provide alternative ways of running Graasp on non-AWS infrastructure.
+> See [the docker compose file for standalone installation](https://github.com/graasp/graasp/blob/main/docker/compose.yml).
+> Be warned that it will require so work on your side and that technical knowledge
+> is required.
 
 The infrastructure code can be found in [the Graasp infrastructure repository on GitHub](https://github.com/graasp/graasp-infrastructure).
 
@@ -84,16 +90,8 @@ are not in use.
 
 A deployment usually follows these steps:
 
-```mermaid
-flowchart TB
-    start[Initial state, normal operation]
-    drain[Redirect users to Maintenance, drain connections]
-    migrate[Run migrations, stop all graasp services]
-    test[Run graasp services, accept only connections from devs]
-    done[Final state, normal operation with new code]
-
-    start -- "Apply restricted" --> drain
-    drain -- "Apply db-only" --> migrate
-    migrate -- "Apply restricted" --> test
-    test -- "Apply running" --> done
-```
+1. Initial state, normal operation.
+2. Apply `restricted`: redirect users to Maintenance, drain connections.
+3. Apply `db-only`: run migrations, stop all graasp services.
+4. Apply `restricted`: run graasp services, accept only connections from devs.
+5. Apply `running`: final state, normal operation with new code.
