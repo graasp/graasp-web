@@ -483,12 +483,12 @@ msgstr "Documentation pour les développeurs"
 #: lib/admin_web/live/housekeeping_live/index.ex:16
 #, elixir-autogen, elixir-format
 msgid "Busted %{count} cache entries"
-msgstr "%{count} entrées de cache corrompues"
+msgstr "%{count} entrées de cache supprimées"
 
 #: lib/admin_web/live/folder_export_live/show.ex:109
 #, elixir-autogen, elixir-format
 msgid "%{processed} of %{total} items"
-msgstr "%{traités} sur %{total} articles"
+msgstr "%{processed} sur %{total} éléments"
 
 #: lib/admin_web/live/folder_export_live/show.ex:89
 #, elixir-autogen, elixir-format

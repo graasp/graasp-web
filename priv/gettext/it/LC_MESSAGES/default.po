@@ -42,7 +42,7 @@ msgstr "vicino"
 #: lib/admin_web/controllers/blog_html/show.html.heex:14
 #, elixir-autogen, elixir-format
 msgid " by %{authors}"
-msgstr "di %{autori}"
+msgstr "di %{authors}"
 
 #: lib/admin_web/controllers/blog_html/show.html.heex:9
 #, elixir-autogen, elixir-format
