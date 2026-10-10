@@ -1,6 +1,6 @@
 [tools]
 elixir = "1.19.5-otp-28"
-erlang = "28.3"
+erlang = "28.3.3"
 node = '24'
 
 [hooks]
