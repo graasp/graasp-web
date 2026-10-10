@@ -5,25 +5,14 @@ defmodule Admin.SentryFilter do
   In this module we define sentry hooks that allow to filter events based on their data.
   """
 
-  def before_send(event, _hint) do
-    spans = Map.get(event, "spans", [])
-    module_opts = Application.get_env(:admin, Admin.SentryFilter, [])
-
-    keep_db_spans = Keyword.get(module_opts, :keep_db_spans, true)
-
-    filtered_spans = spans |> process_db_spans(keep_db_spans)
-
-    event
-    |> Map.put("spans", filtered_spans)
+  @doc """
+  Drops events for exceptions rendered as a 404 (missing pages, bots probing urls),
+  they are expected and only add noise to Sentry.
+  """
+  def before_send(%Sentry.Event{original_exception: exception} = event)
+      when is_exception(exception) do
+    if Plug.Exception.status(exception) == 404, do: nil, else: event
   end
 
-  defp process_db_spans(spans, true), do: spans
-
-  defp process_db_spans(spans, false) do
-    Enum.reject(spans, fn
-      %{"op" => "db"} -> true
-      %{:op => "db"} -> true
-      _ -> false
-    end)
-  end
+  def before_send(event), do: event
 end
