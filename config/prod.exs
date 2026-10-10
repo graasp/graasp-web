@@ -22,7 +22,12 @@ config :sentry,
   # To enable, simply provide an env var `SENTRY_DSN`
   # To disable ensure no env var with `SENTRY_DSN` is set
   # dsn: "https://b4c2635dfa3bb58ad2cded33d1201e57@o244065.ingest.us.sentry.io/4509863475740672",
-  release: Mix.Project.config()[:version],
+  # the commit SHA (GIT_SHA build arg) distinguishes builds made between two version bumps
+  release:
+    (case System.get_env("GIT_SHA") do
+       sha when sha in [nil, ""] -> Mix.Project.config()[:version]
+       sha -> "#{Mix.Project.config()[:version]}+#{String.slice(sha, 0, 7)}"
+     end),
   enable_source_code_context: true,
   root_source_code_paths: [File.cwd!()],
   # sample 20% of transactions
