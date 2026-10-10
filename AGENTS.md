@@ -374,6 +374,10 @@ Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 
 Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
 
+### Sentry
+
+Sentry issue URL or short ID (`ADMIN-3F`) to investigate: read `docs/agents/sentry.md` for the URL → `sentry-cli` command map.
+
 ### Git workflow
 
 Before committing anything (including during `/implement`), read `docs/agents/git-workflow.md`: work goes on a ticket-named branch, never on `main`, and ends with an offer to open a pull request.
