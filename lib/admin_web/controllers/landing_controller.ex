@@ -54,8 +54,24 @@ defmodule AdminWeb.LandingController do
 
     conn
     |> Locale.set_locale(locale)
-    |> redirect(external: referrer)
+    |> redirect(to: local_path(referrer))
   end
+
+  # keep only the path and query of the referer so we never redirect off-site,
+  # browsers may also omit the header entirely
+  defp local_path(referrer) when is_binary(referrer) do
+    case URI.parse(referrer) do
+      # "//" would be read as a protocol-relative url pointing to another host
+      %URI{path: "//" <> _} -> ~p"/"
+      %URI{path: "/" <> _ = path, query: query} -> with_query(path, query)
+      _ -> ~p"/"
+    end
+  end
+
+  defp local_path(_referrer), do: ~p"/"
+
+  defp with_query(path, nil), do: path
+  defp with_query(path, query), do: path <> "?" <> query
 
   def remove_locale(conn, _params) do
     conn
