@@ -37,7 +37,7 @@ App data are all data the app might save. App Data are created by a member and a
 >
 > Have look at the [permissions section](./apps-permissions) for more details on the visibility of app data and the associated permissions.
 
-### App Settings
+### App Settings {: #app-settings}
 
 App settings store the app configuration. Only members with the admin permission can create, update and delete them. The other members can only fetch the app settings.
 

@@ -1,8 +1,10 @@
----
-sidebar_position: 3
----
+%{
+title: "DevOps",
+description: "How Graasp is operated and deployed",
+order: 3
+}
 
-# DevOps
+---
 
 In this section we describe how the Graasp cloud deployment is handled by going through the steps needed to deploy a new version.
 
@@ -39,7 +41,7 @@ Github Pages used to host storybook (design system)
 
 ## Infrastructure
 
-You can read the full [deployment reference](../references/deployment.md) for more information on how the infrastructure is deployed and maintained.
+You can read the full [deployment reference](deployment) for more information on how the infrastructure is deployed and maintained.
 Deploys on AWS
 
 ## Workers
@@ -50,4 +52,4 @@ In a local environment, the worker service runs within the same container as the
 
 In production, the worker service is launched as a separate task, allowing it to use its own CPU and resources independently.
 
-For more details, read more about [Queues and Workers in our references](../references/workers.md).
+For more details, read more about [Queues and Workers in our references](workers).

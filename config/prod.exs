@@ -28,6 +28,7 @@ config :sentry,
        sha when sha in [nil, ""] -> Mix.Project.config()[:version]
        sha -> "#{Mix.Project.config()[:version]}+#{String.slice(sha, 0, 7)}"
      end),
+  before_send: {Admin.SentryFilter, :before_send},
   enable_source_code_context: true,
   root_source_code_paths: [File.cwd!()],
   # sample 20% of transactions
@@ -49,8 +50,6 @@ config :admin, :logger, [
      }
    }}
 ]
-
-config :admin, Admin.SentryFilter, keep_db_spans: true
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.

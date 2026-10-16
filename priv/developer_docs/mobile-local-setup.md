@@ -1,15 +1,21 @@
-# 📱 Mobile Development
+%{
+title: "Mobile Development",
+description: "Set up the unmaintained Graasp mobile app for local development",
+order: 30
+}
 
-::::warning Unmaintained target
-The mobile app development has stopped. The native mobile platform is not a currently supported target.
-We recommend the use of the web version which is actively maintained.
-::::
+---
+
+> #### Unmaintained target {: .warning}
+>
+> The mobile app development has stopped. The native mobile platform is not a currently supported target.
+> We recommend the use of the web version which is actively maintained.
 
 This document describes the steps needed to develop on the Graasp mobile app locally.
 
-::::info
-For simplicity we will assume that you are using **macOS** as your operating system and that you have administrator rights.
-::::
+> #### Info {: .info}
+>
+> For simplicity we will assume that you are using **macOS** as your operating system and that you have administrator rights.
 
 ## Pre-requisite
 

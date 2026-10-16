@@ -151,7 +151,7 @@ const Root: FC = () => {
 
 The hooks are special functions that you can use to fetch data. To understand the general concept of hooks in React, see [the hooks documentation](https://react.dev/reference/react/hooks).
 
-Hooks are available for the three data domains, [app data](./1-general-concepts.md#app-data), [app settings](./1-general-concepts.md#app-settings), and [app actions](./1-general-concepts.md#app-actions). The `hooks` object contains all the hooks.
+Hooks are available for the three data domains, [app data](apps-general-concepts#app-data), [app settings](apps-general-concepts#app-settings), and [app actions](apps-general-concepts#app-actions). The `hooks` object contains all the hooks.
 
 <!-- TODO: complete links -->
 

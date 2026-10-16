@@ -8,9 +8,9 @@ description: "This descibes the process of deploying a new core version of the a
 This guide shows you **how to deploy a new backend version**.
 We will provide steps for applying migrations.
 
-1. Create a release for the changes you want to deploy. The backend uses release-please for this purpose. If you have releasable changes you will find an open pull-request with a title similar to: `chore(main): release 1.66.0`. If you do not find an open pull-request refer to [the troubleshooting guide for release-please](../references/release-please.md)
+1. Create a release for the changes you want to deploy. The backend uses release-please for this purpose. If you have releasable changes you will find an open pull-request with a title similar to: `chore(main): release 1.66.0`. If you do not find an open pull-request refer to [the troubleshooting guide for release-please](release-please)
    1. Review the changes in the PR.
-   1. Merge the PR. The release please action will now push a new tag and create a GitHub release. For more information on how release please works see [the Release-please reference](../references/release-please.md).
+   1. Merge the PR. The release please action will now push a new tag and create a GitHub release. For more information on how release please works see [the Release-please reference](release-please).
 1. Deploy the maintenance to block traffic to the services.
    1. Run the [`Apply infrastructure on env`](https://github.com/graasp/graasp-infrastructure/actions/workflows/infrastructure-deploy-env.yml) workflow inside the Graasp infra repo. Select the environment you want to target (dev, stage, prod) and choose the `restricted` state.
    1. If deploying to stage or prod, validate the deployment.
@@ -23,7 +23,7 @@ We will provide steps for applying migrations.
 1. Deploy the migration.
    1. Run the [`Apply Migration`](https://github.com/graasp/graasp-infrastructure/actions/workflows/apply-migration.yml) workflow in the graasp infrastructure repo. Select the environment that you want to use (dev, stage, prod) and the name of the version you want to deploy. If you deployed with release-please, it is something like: `v1.66.0`, if you created a version manually, use the label you provided `drizzle-init` for example.
    1. If deploying to stage or prod, validate the deployment.
-   1. Wait for the CI to be done. It will look for the logs of the migration task and exist once the migration is done. You can observe the tasks inside the cluster in AWS to see what is going on. Refer to [the migration reference for more information on how migrations are performed](../architecture/devops.md).
+   1. Wait for the CI to be done. It will look for the logs of the migration task and exist once the migration is done. You can observe the tasks inside the cluster in AWS to see what is going on. Refer to [the migration reference for more information on how migrations are performed](devops).
    1. Wait for the load on the database to settle. Some vacuuming operations may take place after a large migration.
 1. Deploy the new backend version.
    1. Run the [`Deploy new core version`](https://github.com/graasp/graasp-infrastructure/actions/workflows/deploy-core-version.yml) workflow from the graasp infrastructure repo. Choose the right environment and select the `restricted` state to deploy with maintenance enabled.
