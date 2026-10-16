@@ -32,6 +32,28 @@ _Avoid_: suggestion, quick reply
 The teacher's instructions sent to the model ahead of every conversation.
 _Avoid_: initial prompt
 
+### Member storage
+
+**Member**:
+A Graasp account of type individual: a person with an email who can create items. Distinct from an admin user of this app.
+_Avoid_: user (reserved for admin users), account (also covers guests)
+
+**Storage Usage**:
+The total size of the files a Member created. Only files count.
+_Avoid_: quota, used space
+
+**Default Storage Limit**:
+The maximum Storage Usage for every Member without a Storage Limit Override.
+_Avoid_: max storage, quota
+
+**Storage Limit Override**:
+A Member-specific limit set by an admin, above or below the default. Removing it puts the Member back on the Default Storage Limit. A limit below the current Storage Usage only blocks new uploads; nothing is deleted.
+_Avoid_: custom quota, storage plan
+
+**Effective Storage Limit**:
+The limit that applies to a Member: their Storage Limit Override if they have one, otherwise the Default Storage Limit. It is what the Member sees in their account, without being told whether it is an override.
+_Avoid_: max storage
+
 ### Public folder export
 
 **Public Folder**:
