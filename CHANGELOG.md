@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.14.2](https://github.com/graasp/graasp-web/compare/v0.14.1...v0.14.2) (2026-10-17)
+
+
+### Bug Fixes
+
+* publish mdx developer docs, fix broken links, stop reporting 404s to Sentry (ADMIN-6E) ([#301](https://github.com/graasp/graasp-web/issues/301)) ([c6c9299](https://github.com/graasp/graasp-web/commit/c6c9299acc0a1a531df8cf958a39b807470e93fd))
+
+
+### Documentation
+
+* amend ADR 0002 with migration ownership transition details ([#306](https://github.com/graasp/graasp-web/issues/306)) ([2c45807](https://github.com/graasp/graasp-web/commit/2c45807ac84e29a09e72aa3ca3ea313bd7ca1d7b))
+
+
+### Chores
+
+* add member storage docs ([645dad5](https://github.com/graasp/graasp-web/commit/645dad521e352b88a81cc8515ee088dd3b11f999))
+* **deps:** update dependency elixir to v1.19.6 ([#276](https://github.com/graasp/graasp-web/issues/276)) ([fe95084](https://github.com/graasp/graasp-web/commit/fe9508411674da7a5115339167ff7d7a95961e62))
+* **deps:** update dependency erlang to v28.3.3 ([#268](https://github.com/graasp/graasp-web/issues/268)) ([4ae7767](https://github.com/graasp/graasp-web/commit/4ae776740fa9b03bcc29d806b88550ef919adbf8))
+
 ## [0.14.1](https://github.com/graasp/graasp-web/compare/v0.14.0...v0.14.1) (2026-10-10)
 
 
