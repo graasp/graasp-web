@@ -149,7 +149,7 @@ defmodule Admin.MixProject do
       {:timex, "~> 3.0"},
 
       # allow to use the ltree type with ecto
-      {:ecto_ltree, "~> 0.3.0"},
+      {:ecto_ltree, "~> 0.4.0"},
 
       # allow to see ecto metrics in live dashboard
       {:ecto_psql_extras, "~> 0.6"},
