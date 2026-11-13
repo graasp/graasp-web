@@ -1,13 +1,10 @@
 defmodule Admin.Repo.Migrations.CreateMaintenance do
   use Ecto.Migration
 
-  def change do
-    create table(:maintenance, primary_key: false) do
-      add :slug, :string, primary_key: true, null: false, max_length: 100
-      add :start_at, :utc_datetime, null: false
-      add :end_at, :utc_datetime, null: false
-    end
+  # Superseded by 20250806000000_core_baseline (ADR 0002). This migration created the maintenance table,
+  # which the baseline now creates as it exists in production. Databases that
+  # already ran it never run it again (Ecto keeps no checksums).
+  def up, do: :ok
 
-    create unique_index(:maintenance, [:slug], name: "UQ_maintenance_slug")
-  end
+  def down, do: :ok
 end

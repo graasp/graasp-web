@@ -22,7 +22,9 @@ Written after checking both repositories against the plan above.
 
 ### Where things stand
 
-- `schema_migrations` is created by core (drizzle `0011`), and core migrations `0011` to `0013` insert fake rows for admin migrations up to `20251014122320`. One of them, `20250904072624`, has no matching file in admin and shows as "file not found" in `Admin.Release.migration_status/0`. That is harmless.
+- `schema_migrations` is created by core (drizzle `0011`), and core migrations `0011` to `0013` insert fake rows for admin migrations up to `20251014122320`. One of them, `20250904072624`, has no matching file in admin. It is not in production's `schema_migrations` (checked on the 2026-11-12 dump), so it only shows up as "file not found" on databases built by drizzle. That is harmless.
+- Production is at drizzle `0020`, not `0021`: `0021` (`member_password.member_id SET NOT NULL`) was never applied there, although no row has a NULL `member_id`.
+- Production started as a TypeORM database, so replaying core's drizzle history does not reproduce it: about 25 primary keys are named differently (`PK_<hash>` against `<table>_pkey`), 6 unique constraints list their columns in another order, and production has a few objects of its own (`UQ_item_tag`, an unused `trigger_set_timestamp()` function, an autovacuum setting on `item`).
 - Admin migrations after `20251014122320` are applied by hand: someone opens a remote shell on the ECS task and runs `Admin.Release.migrate()`. Nothing runs them automatically on deploy.
 - Admin's history holds partial copies of core tables (`account`, `item`, memberships, tags, actions, app tables, `maintenance`, `item_visibility`). They don't match core exactly, for example the `item_visibility` unique constraint is named `item-visibility` in admin and `UQ_item_visibility_item_type` in core.
 - `schema.ts` already lags behind production: the `name` and `language` columns admin added to `admins` (`20251217123725`) and admin's indexes on `item` are missing from it.
@@ -31,18 +33,23 @@ Written after checking both repositories against the plan above.
 
 - **Its version is older than every existing migration** (before `20250806110912`). Ecto runs every pending migration in version order, older ones included. With a later version, a fresh database would first build admin's partial copies, the baseline would find `item` already there, skip itself, and leave a broken schema.
 - **It checks the database state three ways**, never just "does `item` exist":
-  - drizzle recorded all 22 migrations (`drizzle.__drizzle_migrations`): do nothing;
+  - drizzle recorded migration `0020` or later (`drizzle.__drizzle_migrations`): do nothing;
   - the schema is empty: create the full schema;
-  - anything else (core below `0021`, or a database built by admin alone): raise, and say how to fix it (upgrade core to the last drizzle release first, or drop and recreate the database).
+  - anything else (core below `0020`, or a database built by admin alone): raise, and say how to fix it (upgrade core to the last drizzle release first, or drop and recreate the database).
 - Its `down` raises: there is no going back from it.
-- It is a schema-only dump of a database migrated by core to `0021`. It leaves out `schema_migrations` and the `drizzle` schema and keeps the `ltree`, `uuid-ossp` and `citext` extensions.
-- Every existing migration that creates or reshapes a core table becomes a no-op: `20250806110912` (the `account` part only), `20250807113759`, `20250818111736`, `20250819070000`, `20250828053810`, `20250901102230`, `20250902085812`, `20250904060051`, `20251014122320` and `20260601090000`. This is safe because Ecto keeps no checksums, so databases that already ran them never run them again.
+- **It is cut from a production dump**, not from a database replayed through drizzle, which would not match production (see above). `scripts/generate_core_baseline.sh` restores the dump's schema, drops what admin's own migrations after `20251014122320` create (oban, notifications, emails, pixels, folder exports, `admins.name`/`language`, the `item` indexes), and writes `priv/repo/baseline/core_schema.sql`. It leaves out `schema_migrations` and the `drizzle` schema and keeps the `ltree`, `uuid-ossp` and `citext` extensions.
+- Core's `0021` becomes admin migration `20261113100000`. Setting NOT NULL again is a no-op on databases where drizzle already applied it.
+- Every existing migration that creates or reshapes a core table becomes a no-op: `20250806110912` (all of it: `users` and `users_tokens` became the `admins` tables the baseline creates), `20250807113759`, `20250818111736`, `20250819070000`, `20250828053810`, `20250901102230`, `20250902085812`, `20250904060051`, `20251014122320` and `20260601090000`. This is safe because Ecto keeps no checksums, so databases that already ran them never run them again.
+- **Checked against the 2026-11-12 production dump** (Postgres 17):
+  - a fresh database migrated by admin matches production, apart from `member_id NOT NULL` (the `0021` migration) and two `IN (...)` expressions that Postgres 16 and 17 print differently;
+  - migrating a copy of production runs only the baseline, which does nothing, and `20261113100000`.
+  - `oban_count_estimate()` exists in production but not in a fresh database: `oban_met` creates it when the app starts.
 
 ### Before switching
 
 1. Bring `schema.ts` up to date with production. The drift check can't be turned on until it matches.
-2. Check that production is at drizzle `0021` and that `Admin.Release.migration_status/0` shows nothing pending.
-3. Tag the last core release that still ships the drizzle `migrate` image. It is the upgrade path for databases below `0021`.
+2. Check that production is at drizzle `0020` or later and that `Admin.Release.migration_status/0` shows only the baseline and `20261113100000` pending.
+3. Tag the last core release that still ships the drizzle `migrate` image. It is the upgrade path for databases below `0020`.
 
 ### Deploy order
 
@@ -56,8 +63,8 @@ Admin migrations are still run by hand on the ECS task, so a release that needs 
 
 ### Effect on each kind of database
 
-- **Production and the dev environment:** the baseline is pending because of its old version. It runs, finds core at `0021`, does nothing and records its row. The no-op migrations are already recorded and never run. No hand edits to `schema_migrations` are needed. The dev environment can be recreated from scratch instead.
-- **Self-hosted databases:** `core/docker/compose.yml` ships a drizzle-only `migrate` image. After the switch, migrating requires the admin image even for people who don't run admin, so the compose file gets an admin migrate service. A database below `0021` first runs the last drizzle release's `migrate` image. The baseline raises if that step was skipped.
+- **Production and the dev environment:** the baseline is pending because of its old version. It runs, finds core at `0020` or later, does nothing and records its row. The no-op migrations are already recorded and never run. No hand edits to `schema_migrations` are needed. The dev environment can be recreated from scratch instead.
+- **Self-hosted databases:** `core/docker/compose.yml` ships a drizzle-only `migrate` image. After the switch, migrating requires the admin image even for people who don't run admin, so the compose file gets an admin migrate service. A database below `0020` first runs the last drizzle release's `migrate` image. The baseline raises if that step was skipped.
 - **Local core databases (dev container):** same as production. New ones need the admin image or an admin checkout, because `drizzle-kit migrate` no longer sets up a database.
 - **Local admin-only databases** (built only from admin's migrations): they hold the partial copies, so the baseline raises. Run `mix ecto.reset` once.
 - **Admin test databases:** `mix test` only runs `ecto.create` and `ecto.migrate`, so existing local `admin_test` databases keep their partial copies and the baseline raises. Run `MIX_ENV=test mix ecto.reset` once. CI starts from an empty Postgres and is not affected. Tests that relied on quirks of the partial copies (constraint names, missing `NOT NULL` columns in factories) need fixing once, after which admin tests run against the real core schema.

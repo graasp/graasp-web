@@ -20,6 +20,13 @@ if System.get_env("PHX_SERVER") do
   config :admin, AdminWeb.Endpoint, server: true
 end
 
+# Lets the core repository migrate its own database with admin's migrations
+# (admin owns the schema, ADR 0002): `DATABASE_URL=... mix ecto.migrate`.
+# The URL takes precedence over the credentials in dev.exs and test.exs.
+if config_env() in [:dev, :test] and System.get_env("DATABASE_URL") do
+  config :admin, Admin.Repo, url: System.get_env("DATABASE_URL")
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

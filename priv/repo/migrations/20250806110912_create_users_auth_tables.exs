@@ -1,47 +1,10 @@
 defmodule Admin.Repo.Migrations.CreateUsersAuthTables do
   use Ecto.Migration
 
-  def change do
-    execute "CREATE EXTENSION IF NOT EXISTS citext", ""
-    execute "CREATE EXTENSION IF NOT EXISTS ltree", "DROP EXTENSION IF EXISTS ltree"
+  # Superseded by 20250806000000_core_baseline (ADR 0002). This migration created the users, users_tokens and account tables,
+  # which the baseline now creates as it exists in production. Databases that
+  # already ran it never run it again (Ecto keeps no checksums).
+  def up, do: :ok
 
-    create table(:users, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :email, :citext, null: false
-      add :hashed_password, :string
-      add :confirmed_at, :utc_datetime
-
-      timestamps(type: :utc_datetime)
-    end
-
-    create unique_index(:users, [:email])
-
-    create table(:users_tokens, primary_key: false) do
-      add :id, :binary_id, primary_key: true
-      add :user_id, references(:users, type: :binary_id, on_delete: :delete_all), null: false
-      add :token, :binary, null: false
-      add :context, :string, null: false
-      add :sent_to, :string
-      add :authenticated_at, :utc_datetime
-
-      timestamps(type: :utc_datetime, updated_at: false)
-    end
-
-    create index(:users_tokens, [:user_id])
-    create unique_index(:users_tokens, [:context, :token])
-
-    # this is the accounts table for graasp users (created by drizzle)
-    create table(:account) do
-      add :name, :string
-      add :email, :string
-      add :type, :string
-      add :extra, :map
-      add :last_authenticated_at, :utc_datetime
-      add :marketing_emails_subscribed_at, :utc_datetime, default: fragment("NOW()")
-
-      timestamps(type: :utc_datetime)
-    end
-
-    create unique_index(:account, [:email], name: "member_email_key1")
-  end
+  def down, do: :ok
 end

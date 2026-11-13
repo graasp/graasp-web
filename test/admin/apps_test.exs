@@ -199,6 +199,15 @@ defmodule Admin.AppsTest do
       assert {:error, %Ecto.Changeset{}} = Apps.create_publisher(@invalid_attrs)
     end
 
+    test "create_publisher/2 with a taken name returns error changeset" do
+      publisher = publisher_fixture()
+
+      assert {:error, %Ecto.Changeset{} = changeset} =
+               Apps.create_publisher(%{name: publisher.name, origins: ["http://example.com"]})
+
+      assert %{name: ["has already been taken"]} = errors_on(changeset)
+    end
+
     test "update_publisher/3 with valid data updates the publisher" do
       user_scope_fixture()
       publisher = publisher_fixture()

@@ -5,7 +5,7 @@ defmodule Admin.ItemsTest do
 
   alias Admin.Items.Item
 
-  import Admin.AccountsFixtures, only: [user_scope_fixture: 0]
+  import Admin.AccountsFixtures, only: [member_fixture: 0, user_scope_fixture: 0]
   import Admin.ItemsFixtures
 
   describe "item" do
@@ -40,7 +40,7 @@ defmodule Admin.ItemsTest do
         path: "1234.5678",
         description: "some description",
         settings: %{},
-        creator_id: Ecto.UUID.generate()
+        creator_id: member_fixture().id
       }
 
       scope = user_scope_fixture()

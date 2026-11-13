@@ -1,16 +1,10 @@
 defmodule Admin.Repo.Migrations.CreateRemovalNotices do
   use Ecto.Migration
 
-  def change do
-    create table(:removal_notices) do
-      add :publication_name, :string
-      add :reason, :text
-      add :user_id, references(:users, type: :binary_id, on_delete: :delete_all)
-      add :creator_id, references(:users, type: :binary_id, on_delete: :nilify_all)
+  # Superseded by 20250806000000_core_baseline (ADR 0002). This migration created the removal_notices table,
+  # which the baseline now creates as it exists in production. Databases that
+  # already ran it never run it again (Ecto keeps no checksums).
+  def up, do: :ok
 
-      timestamps(type: :utc_datetime, updated_at: false)
-    end
-
-    create index(:removal_notices, [:user_id])
-  end
+  def down, do: :ok
 end
