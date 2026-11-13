@@ -9,6 +9,7 @@ config :ash_item_permissions, Spike.Repo,
   log: false,
   types: Spike.PostgresTypes
 
-config :ash_item_permissions, ecto_repos: [Spike.Repo], ash_domains: [Spike.Items]
+config :ash_item_permissions, ecto_repos: [Spike.Repo], ash_domains: [Spike.Items, Spike.Native]
+config :ash, custom_expressions: [Spike.Native.AncestorOrSelf]
 config :ash, disable_async?: true, default_string_length_count: :codepoints
 config :logger, level: :warning

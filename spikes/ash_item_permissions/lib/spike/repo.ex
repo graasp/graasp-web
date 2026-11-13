@@ -3,6 +3,8 @@ defmodule Spike.Repo do
   # side of the spike uses this same repo.
   use AshPostgres.Repo, otp_app: :ash_item_permissions, warn_on_missing_ash_functions?: false
 
-  def installed_extensions, do: ["ltree", "uuid-ossp", "citext"]
+  # "ash-functions" lets AshPostgres raise errors in SQL (authorize_with: :error);
+  # installed from priv/ash_functions.sql, a hand-written migration in admin
+  def installed_extensions, do: ["ltree", "uuid-ossp", "citext", "ash-functions"]
   def min_pg_version, do: %Version{major: 16, minor: 0, patch: 0}
 end
