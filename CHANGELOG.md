@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0](https://github.com/graasp/graasp-web/compare/v0.14.2...v0.15.0) (2026-11-13)
+
+
+### Features
+
+* add core schema baseline migration ([#309](https://github.com/graasp/graasp-web/issues/309)) ([fa99f94](https://github.com/graasp/graasp-web/commit/fa99f94050a871c7563fc813b83a9fe57e6b7609))
+
+
+### Documentation
+
+* add generated inventory of core routes and their side effects ([#311](https://github.com/graasp/graasp-web/issues/311)) ([056a892](https://github.com/graasp/graasp-web/commit/056a892545cf1b556520b571e7ab449c58645dfa))
+
 ## [0.14.2](https://github.com/graasp/graasp-web/compare/v0.14.1...v0.14.2) (2026-11-01)
 
 
