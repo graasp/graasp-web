@@ -108,6 +108,10 @@ _Avoid_: legacy route, passthrough
 A switch an admin flips to send a Ported Route back to core, without a deploy, while a problem is fixed.
 _Avoid_: feature flag, kill switch
 
+**Websocket Wave**:
+The single cutover in which core's notification socket and every Core Route that publishes on it move to admin at the same moment, and roll back together. Clients only receive a route's notifications when the same backend serves both the route and the socket.
+_Avoid_: websocket migration, realtime port
+
 **Actor**:
 The account a Ported Route request acts for: a Member or a guest, identified by core's session cookie. Item operations are authorized against the Actor. A request without a valid session has no Actor. Distinct from an admin user.
 _Avoid_: current user, scope (reserved for admin users), caller
