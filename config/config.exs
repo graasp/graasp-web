@@ -111,6 +111,9 @@ config :logger, :default_formatter,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Pin ex_aws to Jason, our only JSON library (Poison is not a dependency)
+config :ex_aws, json_codec: Jason
+
 # Open telemetry configuration
 config :opentelemetry, span_processor: {Sentry.OpenTelemetry.SpanProcessor, []}
 config :opentelemetry, sampler: {Sentry.OpenTelemetry.Sampler, []}
