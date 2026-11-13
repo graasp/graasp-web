@@ -83,7 +83,7 @@ defmodule Admin.MixProject do
        depth: 1},
       {:swoosh, "~> 1.16"},
       {:gen_smtp, "~> 1.0"},
-      {:req, "~> 0.5"},
+      {:req, "~> 0.6"},
       # verifies the JWTs that Graasp core issues to iframed apps (chatbot app auth)
       {:joken, "~> 2.6"},
       # OpenAI client for the chatbot app's streaming chat completions
