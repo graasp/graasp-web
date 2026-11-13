@@ -1,0 +1,36 @@
+== base filter: soft-deleted a4 visible? false
+== decision matrix: 360 cases (actors x permission x items), batch = 1 query each side, mismatches: 0
+
+   read decisions per actor (core == ash == plain unless listed above):
+   anon   A:x-access a1:x-access a1x:x-access a1y:x-access a2:ok a2x:x-access a2y:ok a2y1:ok a3:x-access a3x:x-access B:ok b1:x-access b1x:x-access b2:ok C:x-access
+   alice  A:ok a1:ok a1x:ok a1y:ok a2:ok a2x:ok a2y:ok a2y1:ok a3:ok a3x:ok B:ok b1:x-access b1x:x-access b2:ok C:x-access
+   bob    A:x-access a1:ok a1x:x-access a1y:ok a2:ok a2x:x-access a2y:ok a2y1:ok a3:ok a3x:ok B:ok b1:x-access b1x:x-access b2:ok C:x-access
+   carol  A:ok a1:ok a1x:x-access a1y:ok a2:ok a2x:x-access a2y:ok a2y1:ok a3:x-access a3x:x-access B:ok b1:x-access b1x:x-access b2:ok C:x-access
+   dave   A:x-access a1:x-access a1x:x-access a1y:x-access a2:ok a2x:x-access a2y:ok a2y1:ok a3:x-access a3x:x-access B:ok b1:ok b1x:ok b2:ok C:x-access
+   erin   A:x-access a1:x-access a1x:x-access a1y:x-access a2:ok a2x:x-access a2y:ok a2y1:ok a3:x-access a3x:x-access B:ok b1:x-access b1x:x-access b2:ok C:x-access
+   frank  A:x-access a1:ok a1x:x-access a1y:ok a2:ok a2x:x-access a2y:ok a2y1:ok a3:x-access a3x:x-access B:ok b1:x-access b1x:x-access b2:ok C:x-access
+   gwen   A:x-access a1:x-access a1x:x-access a1y:x-access a2:ok a2x:x-access a2y:ok a2y1:ok a3:x-access a3x:x-access B:ok b1:x-access b1x:x-access b2:ok C:x-access
+
+== children: 64 cases, mismatches: 0
+   carol children of a2: {:ok, ["a2y"]}
+   anon children of a2: {:ok, ["a2y"]}
+
+== accessible(min_permission): 24 cases, mismatches: 0
+
+== what the authorized read does with an inaccessible item (erin, item C)
+   Ash.get (filter policy): {:error, %Ash.Error.Invalid{errors: [%Ash.Error.Query.NotFound{...}]}}
+   Ash.get authorize_with: :error: :error
+
+== matchOne(validatedMember, guest) as a second policy
+   anon: forbidden Ash.Error.Forbidden.Policy; policy descriptions on the error: ["item_access_read", "match_one_validated_member_or_guest"]
+   alice: ok, 12 rows
+   bob: ok, 9 rows
+   carol: ok, 8 rows
+   dave: ok, 7 rows
+   erin: ok, 5 rows
+   frank: forbidden Ash.Error.Forbidden.Policy; policy descriptions on the error: ["item_access_read", "match_one_validated_member_or_guest"]
+   gwen: ok, 5 rows
+
+== Q3 ltree foreign keys
+   membership belongs_to item: [{"admin", "A"}, {"write", "a3"}, {"read", "a1"}]
+   item A has_many memberships: ["admin", "read"]

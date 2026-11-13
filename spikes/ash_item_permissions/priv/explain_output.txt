@@ -1,0 +1,721 @@
+
+
+===== core: getInherited + getByItemPath (2 queries)
+select m.* from item_membership m join item i on m.item_path = i.path and m.item_path @> $2::ltree
+join account a on m.account_id = a.id where m.account_id = $1 order by nlevel(m.item_path) desc
+
+-- params: [<<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "r1.c1.g2"]
+Sort  (cost=25.69..25.69 rows=1 width=91) (actual time=0.061..0.062 rows=1 loops=1)
+  Sort Key: (nlevel(m.item_path)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=16
+  ->  Nested Loop  (cost=9.62..25.68 rows=1 width=91) (actual time=0.052..0.053 rows=1 loops=1)
+        Buffers: shared hit=13
+        ->  Nested Loop  (cost=9.33..17.36 rows=1 width=87) (actual time=0.022..0.023 rows=1 loops=1)
+              Buffers: shared hit=10
+              ->  Bitmap Heap Scan on item_membership m  (cost=8.90..12.92 rows=1 width=87) (actual time=0.018..0.019 rows=1 loops=1)
+                    Recheck Cond: ((item_path @> 'r1.c1.g2'::ltree) AND (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid))
+                    Heap Blocks: exact=1
+                    Buffers: shared hit=6
+                    ->  BitmapAnd  (cost=8.90..8.90 rows=1 width=0) (actual time=0.016..0.016 rows=0 loops=1)
+                          Buffers: shared hit=5
+                          ->  Bitmap Index Scan on "IDX_gist_item_membership_path"  (cost=0.00..4.33 rows=6 width=0) (actual time=0.012..0.012 rows=2 loops=1)
+                                Index Cond: (item_path @> 'r1.c1.g2'::ltree)
+                                Buffers: shared hit=3
+                          ->  Bitmap Index Scan on "IDX_item_membership_account_id"  (cost=0.00..4.33 rows=5 width=0) (actual time=0.003..0.003 rows=1 loops=1)
+                                Index Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                                Buffers: shared hit=2
+              ->  Index Only Scan using item_path_key1 on item i  (cost=0.42..4.44 rows=1 width=27) (actual time=0.002..0.002 rows=1 loops=1)
+                    Index Cond: (path = m.item_path)
+                    Heap Fetches: 0
+                    Buffers: shared hit=4
+        ->  Index Only Scan using account_pkey on account a  (cost=0.29..8.30 rows=1 width=16) (actual time=0.029..0.029 rows=1 loops=1)
+              Index Cond: (id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+              Heap Fetches: 0
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=416
+Planning Time: 0.787 ms
+Execution Time: 0.096 ms
+
+===== core: getInherited + getByItemPath (2 queries)
+select * from item_visibility v where v.item_path @> $1::ltree
+-- params: ["r1.c1.g2"]
+Bitmap Heap Scan on item_visibility v  (cost=4.29..11.65 rows=2 width=64) (actual time=0.021..0.021 rows=0 loops=1)
+  Recheck Cond: (item_path @> 'r1.c1.g2'::ltree)
+  Buffers: shared hit=3
+  ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..4.29 rows=2 width=0) (actual time=0.018..0.019 rows=0 loops=1)
+        Index Cond: (item_path @> 'r1.c1.g2'::ltree)
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=9
+Planning Time: 0.025 ms
+Execution Time: 0.025 ms
+
+===== ash: get one item + access calc
+SELECT i0."id", i0."name", i0."type", i0."path", i0."order", i0."created_at", i0."deleted_at", (CASE WHEN ((((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $1::uuid) AND (si0."permission" = $2) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $3::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $4::uuid) AND (si0."permission" = $5) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $6::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $7::uuid) AND (si0."permission" = $8) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $9::text ELSE NULL::text END)::text = $10) OR (((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $11::uuid) AND (si0."permission" = $12) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $13::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $14::uuid) AND (si0."permission" = $15) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $16::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $17::uuid) AND (si0."permission" = $18) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $19::text ELSE NULL::text END)::text IS NULL) AND exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $20) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean)) AND exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $21) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean) THEN $22::text WHEN NOT ((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $23::uuid) AND (si0."permission" = $24) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $25::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $26::uuid) AND (si0."permission" = $27) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $28::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $29::uuid) AND (si0."permission" = $30) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $31::text ELSE NULL::text END)::text IS NULL) THEN $32::text WHEN exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $33) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean THEN $34::text WHEN ((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $35::uuid) AND (si0."permission" = $36) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $37::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $38::uuid) AND (si0."permission" = $39) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $40::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $41::uuid) AND (si0."permission" = $42) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $43::text ELSE NULL::text END)::text IS NULL) THEN $44::text ELSE $45::text END)::text FROM "item" AS i0 WHERE (i0."deleted_at"::timestamp IS NULL) AND (i0."id"::uuid = $46::uuid)
+-- params: [<<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "admin", "admin", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "write", "write", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "read", "read", "read", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "admin", "admin", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "write", "write", <<242, 103, 99, ...>>, ...]
+Index Scan using item_pkey on item i0  (cost=0.42..173.56 rows=1 width=113) (actual time=0.020..0.021 rows=1 loops=1)
+  Index Cond: (id = '9ed5b2cd-4ac9-4350-91c0-c0a05c17059c'::uuid)
+  Filter: ((deleted_at)::timestamp without time zone IS NULL)
+  Buffers: shared hit=16
+  SubPlan 1
+    ->  Bitmap Heap Scan on item_membership si0  (cost=4.44..12.17 rows=1 width=0) (actual time=0.006..0.006 rows=1 loops=1)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=1
+          Buffers: shared hit=4
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.003..0.003 rows=1 loops=1)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=3
+  SubPlan 2
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_1  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 3
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_2  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 4
+    ->  Bitmap Heap Scan on item_membership si0_3  (cost=4.44..12.17 rows=1 width=0) (actual time=0.002..0.002 rows=1 loops=1)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=1
+          Buffers: shared hit=4
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.001..0.001 rows=1 loops=1)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=3
+  SubPlan 5
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_4  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 6
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_5  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 7
+    ->  Bitmap Heap Scan on item_visibility si0_6  (cost=19.50..26.87 rows=2 width=0) (never executed)
+          Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+          ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (never executed)
+                ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (never executed)
+                      Index Cond: (item_path @> i0.path)
+                ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                      Index Cond: (type = 'public'::item_visibility_type)
+  SubPlan 8
+    ->  Seq Scan on item_visibility si0_7  (cost=0.00..397.59 rows=155 width=0) (never executed)
+          Filter: ((item_path @> i0.path) AND (type = 'hidden'::item_visibility_type))
+  SubPlan 9
+    ->  Bitmap Heap Scan on item_membership si0_8  (cost=4.44..12.17 rows=1 width=0) (actual time=0.001..0.001 rows=1 loops=1)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=1
+          Buffers: shared hit=4
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.001..0.001 rows=1 loops=1)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=3
+  SubPlan 10
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_9  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 11
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_10  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 12
+    ->  Bitmap Heap Scan on item_visibility si0_11  (cost=19.50..26.87 rows=2 width=0) (never executed)
+          Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+          ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (never executed)
+                ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (never executed)
+                      Index Cond: (item_path @> i0.path)
+                ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                      Index Cond: (type = 'public'::item_visibility_type)
+  SubPlan 13
+    ->  Bitmap Heap Scan on item_membership si0_12  (cost=4.44..12.17 rows=1 width=0) (never executed)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+  SubPlan 14
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_13  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 15
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_14  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+Planning:
+  Buffers: shared hit=52
+Planning Time: 0.406 ms
+Execution Time: 0.066 ms
+
+===== plain: get one item + access
+SELECT i0."id", i0."name", i0."type", i0."path", i0."order", i0."deleted_at", i0."created_at", CASE
+  WHEN (s1."rank" = 1 OR (s1."rank" IS NULL AND s2."public")) AND s2."hidden" THEN 'member_cannot_access'
+  WHEN coalesce(s1."rank", 0) >= $1 THEN 'ok'
+  WHEN $2 = 1 AND s2."public" THEN 'ok'
+  WHEN s1."rank" IS NULL THEN 'member_cannot_access'
+  ELSE $3
+END
+ FROM "item" AS i0 LEFT OUTER JOIN LATERAL (SELECT max(CASE si0."permission"::text WHEN 'read' THEN 1 WHEN 'write' THEN 2 WHEN 'admin' THEN 3 END) AS "rank" FROM "item_membership" AS si0 WHERE ((si0."account_id" = $4) AND si0."item_path" @> i0."path")) AS s1 ON TRUE LEFT OUTER JOIN LATERAL (SELECT coalesce(bool_or(si0."type"::text = 'hidden'), FALSE) AS "hidden", coalesce(bool_or(si0."type"::text = 'public'), FALSE) AS "public" FROM "item_visibility" AS si0 WHERE (si0."item_path" @> i0."path")) AS s2 ON TRUE WHERE (i0."deleted_at" IS NULL) AND (i0."id" = $5)
+-- params: [1, 1, "member_cannot_read", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, <<158, 213, 178, 205, 74, 201, 67, 80, 145, 192, 192, 160, 92, 23, 5, 156>>]
+Nested Loop Left Join  (cost=205.01..213.09 rows=1 width=113) (actual time=0.033..0.034 rows=1 loops=1)
+  Buffers: shared hit=13
+  ->  Nested Loop Left Join  (cost=23.65..31.69 rows=1 width=85) (actual time=0.019..0.019 rows=1 loops=1)
+        Buffers: shared hit=10
+        ->  Index Scan using item_pkey on item i0  (cost=0.42..8.44 rows=1 width=81) (actual time=0.006..0.006 rows=1 loops=1)
+              Index Cond: (id = '9ed5b2cd-4ac9-4350-91c0-c0a05c17059c'::uuid)
+              Filter: (deleted_at IS NULL)
+              Buffers: shared hit=4
+        ->  Aggregate  (cost=23.23..23.24 rows=1 width=4) (actual time=0.012..0.012 rows=1 loops=1)
+              Buffers: shared hit=6
+              ->  Bitmap Heap Scan on item_membership si0  (cost=4.33..23.21 rows=1 width=4) (actual time=0.002..0.002 rows=1 loops=1)
+                    Recheck Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                    Filter: (item_path @> i0.path)
+                    Heap Blocks: exact=1
+                    Buffers: shared hit=3
+                    ->  Bitmap Index Scan on "IDX_item_membership_account_id"  (cost=0.00..4.33 rows=5 width=0) (actual time=0.001..0.001 rows=1 loops=1)
+                          Index Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                          Buffers: shared hit=2
+  ->  Aggregate  (cost=181.36..181.37 rows=1 width=2) (actual time=0.013..0.013 rows=1 loops=1)
+        Buffers: shared hit=3
+        ->  Bitmap Heap Scan on item_visibility si0_1  (cost=9.49..178.22 rows=157 width=4) (actual time=0.012..0.012 rows=0 loops=1)
+              Recheck Cond: (item_path @> i0.path)
+              Buffers: shared hit=3
+              ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (actual time=0.011..0.011 rows=0 loops=1)
+                    Index Cond: (item_path @> i0.path)
+                    Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=67
+Planning Time: 0.207 ms
+Execution Time: 0.063 ms
+
+===== ash: get one item, anonymous
+SELECT i0."id", i0."name", i0."type", i0."path", i0."order", i0."created_at", i0."deleted_at", (CASE WHEN ((((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $1) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $2::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $3) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $4::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $5) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $6::text ELSE NULL::text END)::text = $7) OR (((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $8) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $9::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $10) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $11::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $12) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $13::text ELSE NULL::text END)::text IS NULL) AND exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $14) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean)) AND exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $15) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean) THEN $16::text WHEN NOT ((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $17) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $18::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $19) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $20::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $21) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $22::text ELSE NULL::text END)::text IS NULL) THEN $23::text WHEN exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $24) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean THEN $25::text WHEN ((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $26) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $27::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $28) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $29::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = NULL::uuid::uuid) AND (si0."permission" = $30) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $31::text ELSE NULL::text END)::text IS NULL) THEN $32::text ELSE $33::text END)::text FROM "item" AS i0 WHERE (i0."deleted_at"::timestamp IS NULL) AND (i0."id"::uuid = $34::uuid)
+-- params: ["admin", "admin", "write", "write", "read", "read", "read", "admin", "admin", "write", "write", "read", "read", "public", "hidden", "member_cannot_access", "admin", "admin", "write", "write", "read", "read", "ok", "public", "ok", "admin", "admin", "write", "write", "read", "read", "member_cannot_access", "member_cannot_read", <<158, 213, 178, 205, 74, 201, 67, 80, 145, 192, 192, 160, 92, 23, 5, 156>>]
+Index Scan using item_pkey on item i0  (cost=0.42..57.38 rows=1 width=113) (actual time=1.195..1.196 rows=1 loops=1)
+  Index Cond: (id = '9ed5b2cd-4ac9-4350-91c0-c0a05c17059c'::uuid)
+  Filter: ((deleted_at)::timestamp without time zone IS NULL)
+  Buffers: shared hit=172
+  InitPlan 1
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 2
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 3
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 4
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 5
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 6
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 9
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 10
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 11
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 13
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 14
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  InitPlan 15
+    ->  Result  (cost=0.00..0.00 rows=0 width=0) (actual time=0.000..0.000 rows=0 loops=1)
+          One-Time Filter: false
+  SubPlan 7
+    ->  Bitmap Heap Scan on item_visibility si0  (cost=19.50..26.87 rows=2 width=0) (actual time=0.010..0.010 rows=0 loops=1)
+          Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+          Buffers: shared hit=3
+          ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (actual time=0.009..0.010 rows=0 loops=1)
+                Buffers: shared hit=3
+                ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (actual time=0.009..0.009 rows=0 loops=1)
+                      Index Cond: (item_path @> i0.path)
+                      Buffers: shared hit=3
+                ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                      Index Cond: (type = 'public'::item_visibility_type)
+  SubPlan 8
+    ->  Seq Scan on item_visibility si0_1  (cost=0.00..397.59 rows=155 width=0) (actual time=1.166..1.166 rows=0 loops=1)
+          Filter: ((item_path @> i0.path) AND (type = 'hidden'::item_visibility_type))
+          Rows Removed by Filter: 15706
+          Buffers: shared hit=162
+  SubPlan 12
+    ->  Bitmap Heap Scan on item_visibility si0_2  (cost=19.50..26.87 rows=2 width=0) (actual time=0.010..0.010 rows=0 loops=1)
+          Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+          Buffers: shared hit=3
+          ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (actual time=0.009..0.009 rows=0 loops=1)
+                Buffers: shared hit=3
+                ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (actual time=0.009..0.009 rows=0 loops=1)
+                      Index Cond: (item_path @> i0.path)
+                      Buffers: shared hit=3
+                ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                      Index Cond: (type = 'public'::item_visibility_type)
+Planning Time: 0.155 ms
+Execution Time: 1.220 ms
+
+===== plain: get one item, anonymous
+SELECT i0."id", i0."name", i0."type", i0."path", i0."order", i0."deleted_at", i0."created_at", CASE
+  WHEN (s1."rank" = 1 OR (s1."rank" IS NULL AND s2."public")) AND s2."hidden" THEN 'member_cannot_access'
+  WHEN coalesce(s1."rank", 0) >= $1 THEN 'ok'
+  WHEN $2 = 1 AND s2."public" THEN 'ok'
+  WHEN s1."rank" IS NULL THEN 'member_cannot_access'
+  ELSE $3
+END
+ FROM "item" AS i0 LEFT OUTER JOIN LATERAL (SELECT max(1) AS "rank" FROM "item_membership" AS si0 WHERE (FALSE)) AS s1 ON TRUE LEFT OUTER JOIN LATERAL (SELECT coalesce(bool_or(si0."type"::text = 'hidden'), FALSE) AS "hidden", coalesce(bool_or(si0."type"::text = 'public'), FALSE) AS "public" FROM "item_visibility" AS si0 WHERE (si0."item_path" @> i0."path")) AS s2 ON TRUE WHERE (i0."deleted_at" IS NULL) AND (i0."id" = $4)
+-- params: [1, 1, "member_cannot_read", <<158, 213, 178, 205, 74, 201, 67, 80, 145, 192, 192, 160, 92, 23, 5, 156>>]
+Nested Loop Left Join  (cost=181.79..189.86 rows=1 width=113) (actual time=0.015..0.016 rows=1 loops=1)
+  Buffers: shared hit=7
+  ->  Nested Loop Left Join  (cost=0.42..8.46 rows=1 width=85) (actual time=0.003..0.004 rows=1 loops=1)
+        Buffers: shared hit=4
+        ->  Index Scan using item_pkey on item i0  (cost=0.42..8.44 rows=1 width=81) (actual time=0.002..0.002 rows=1 loops=1)
+              Index Cond: (id = '9ed5b2cd-4ac9-4350-91c0-c0a05c17059c'::uuid)
+              Filter: (deleted_at IS NULL)
+              Buffers: shared hit=4
+        ->  Result  (cost=0.00..0.01 rows=1 width=4) (actual time=0.001..0.001 rows=1 loops=1)
+              InitPlan 1
+                ->  Limit  (cost=0.00..0.00 rows=1 width=4) (actual time=0.000..0.000 rows=0 loops=1)
+                      ->  Result  (cost=0.00..0.00 rows=0 width=4) (actual time=0.000..0.000 rows=0 loops=1)
+                            One-Time Filter: false
+  ->  Aggregate  (cost=181.36..181.37 rows=1 width=2) (actual time=0.010..0.011 rows=1 loops=1)
+        Buffers: shared hit=3
+        ->  Bitmap Heap Scan on item_visibility si0  (cost=9.49..178.22 rows=157 width=4) (actual time=0.010..0.010 rows=0 loops=1)
+              Recheck Cond: (item_path @> i0.path)
+              Buffers: shared hit=3
+              ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (actual time=0.009..0.009 rows=0 loops=1)
+                    Index Cond: (item_path @> i0.path)
+                    Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=12
+Planning Time: 0.120 ms
+Execution Time: 0.028 ms
+
+===== ash: batch of 50 decisions
+SELECT i0."id", i0."name", i0."type", i0."path", i0."order", i0."created_at", i0."deleted_at", (CASE WHEN ((((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $1::uuid) AND (si0."permission" = $2) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $3::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $4::uuid) AND (si0."permission" = $5) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $6::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $7::uuid) AND (si0."permission" = $8) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $9::text ELSE NULL::text END)::text = $10) OR (((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $11::uuid) AND (si0."permission" = $12) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $13::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $14::uuid) AND (si0."permission" = $15) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $16::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $17::uuid) AND (si0."permission" = $18) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $19::text ELSE NULL::text END)::text IS NULL) AND exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $20) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean)) AND exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $21) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean) THEN $22::text WHEN (CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $23::uuid) AND (si0."permission" = $24) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $25::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $26::uuid) AND (si0."permission" = $27) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $28::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $29::uuid) AND (si0."permission" = $30) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $31::text ELSE NULL::text END)::text = ANY($32::text[]) THEN $33::text WHEN ((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $34::uuid) AND (si0."permission" = $35) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $36::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $37::uuid) AND (si0."permission" = $38) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $39::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $40::uuid) AND (si0."permission" = $41) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $42::text ELSE NULL::text END)::text IS NULL) THEN $43::text ELSE $44::text END)::text FROM "item" AS i0 WHERE (i0."deleted_at"::timestamp IS NULL) AND (i0."id"::uuid = ANY($45::uuid[]))
+-- params: [<<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "admin", "admin", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "write", "write", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "read", "read", "read", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "admin", "admin", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "write", "write", <<242, 103, 99, ...>>, ...]
+Bitmap Heap Scan on item i0  (cost=221.75..554.16 rows=1 width=113) (actual time=0.126..0.327 rows=50 loops=1)
+  Recheck Cond: (id = ANY ('{a9e53904-25e7-4e80-89de-b3658a4dc740,b81be6da-f4f8-42a1-802f-1d6116eb1303,bba4e6e5-fc8e-4e28-80a6-a9ad15dcf289,2241e74e-4442-40a6-981c-422a10bd75f9,b83dd714-41f4-4a26-a5e6-a5dcf5e77941,c650957e-5eb1-499f-8d8d-f53e969d7643,94fd5691-3631-42d6-a6e5-bf74b61bbdae,9ed5b2cd-4ac9-4350-91c0-c0a05c17059c,50b56c24-2f74-4bf6-aaea-f701c782af6b,f1cd85bb-323d-41d6-a1f1-54778357d36f,867c6570-eff1-495d-9d27-5212798b6ad8,72301b30-b620-4d5e-9e28-80f99dadeb90,385d8cfe-0825-4187-8765-0376e2724a28,19557a95-7bd1-442e-86e2-da19ae4bc256,71edf466-4d99-48c4-afd0-1ffe88b395af,3fafeb21-f89d-48d3-9108-b25c9c61c482,e0098fa5-ba5b-4438-ae81-a6c62c0b60ed,97f32173-a72e-46ff-b2d5-e340e28cbd24,9038b8ba-a4ce-4ad7-bf23-98c0c819f482,b878f546-e5dd-4a06-92b0-10669b25c10b,c9b37ab0-b066-4096-804a-6fe7d0fb22cc,49ca96f0-db3d-4f8b-a272-c02a0538169f,eca7449d-b604-46b3-bf2f-0d2fa359ad8e,8c8adf0f-4b37-4b64-95af-b4678be5c590,355d218f-2f0b-43e4-b4e3-5374daa80537,94d6ae3d-46ee-4969-a346-37266d7f24d1,2e159c6f-7ba6-4313-a0a5-94fb0413683f,b84cb0fd-1601-473c-ace5-937ceec7bed8,f1acff43-15c3-426e-8b47-bde416e41703,dfe12328-2e74-4b67-a2be-ec86b5207668,ffeec196-fe8a-4a71-afe7-f89255e8c8a7,7f17862a-0f42-4f5e-b400-b5653a79fece,408f71f2-6414-4511-b04d-290753d73a86,45ff0ced-ea1a-40cf-992b-83227c4021e9,e79cf9b7-b76b-4272-a323-f82fad61081d,66779eb6-a0cd-43e7-bff5-d4ee85063bf2,b3e49d37-5ccd-4154-8a00-758002f197e9,cd52446b-313f-4832-8912-107ef472df0f,d3c1a32b-c3b0-4ca5-91a9-c597287f1885,4fb77006-f2c5-4a5b-9ecb-30fc95d42cc7,ad21b2f6-b44f-4135-9895-c18a8cf966a3,98f00de6-a37a-4c69-8bf1-85b7b47fd218,9ec9b4f9-f511-4390-a529-882dc78768ef,aada9e10-134e-4072-a255-8d50b8eef7d7,58d47912-5af2-48e0-ba5f-fc594bec3491,72f0678a-f661-475b-ac90-468bb451bb0e,3d707110-63ec-41ac-91fe-867c795bc5e7,2b7a2efa-f994-44c9-b3dd-5effdfc7b7a8,ed0980f2-0e56-44de-8d04-fe0b37e42401,ce5b76cb-56ef-4a5a-8f9c-9598ad6d5326}'::uuid[]))
+  Filter: ((deleted_at)::timestamp without time zone IS NULL)
+  Heap Blocks: exact=13
+  Buffers: shared hit=760
+  ->  Bitmap Index Scan on item_pkey  (cost=0.00..221.62 rows=50 width=0) (actual time=0.109..0.109 rows=50 loops=1)
+        Index Cond: (id = ANY ('{a9e53904-25e7-4e80-89de-b3658a4dc740,b81be6da-f4f8-42a1-802f-1d6116eb1303,bba4e6e5-fc8e-4e28-80a6-a9ad15dcf289,2241e74e-4442-40a6-981c-422a10bd75f9,b83dd714-41f4-4a26-a5e6-a5dcf5e77941,c650957e-5eb1-499f-8d8d-f53e969d7643,94fd5691-3631-42d6-a6e5-bf74b61bbdae,9ed5b2cd-4ac9-4350-91c0-c0a05c17059c,50b56c24-2f74-4bf6-aaea-f701c782af6b,f1cd85bb-323d-41d6-a1f1-54778357d36f,867c6570-eff1-495d-9d27-5212798b6ad8,72301b30-b620-4d5e-9e28-80f99dadeb90,385d8cfe-0825-4187-8765-0376e2724a28,19557a95-7bd1-442e-86e2-da19ae4bc256,71edf466-4d99-48c4-afd0-1ffe88b395af,3fafeb21-f89d-48d3-9108-b25c9c61c482,e0098fa5-ba5b-4438-ae81-a6c62c0b60ed,97f32173-a72e-46ff-b2d5-e340e28cbd24,9038b8ba-a4ce-4ad7-bf23-98c0c819f482,b878f546-e5dd-4a06-92b0-10669b25c10b,c9b37ab0-b066-4096-804a-6fe7d0fb22cc,49ca96f0-db3d-4f8b-a272-c02a0538169f,eca7449d-b604-46b3-bf2f-0d2fa359ad8e,8c8adf0f-4b37-4b64-95af-b4678be5c590,355d218f-2f0b-43e4-b4e3-5374daa80537,94d6ae3d-46ee-4969-a346-37266d7f24d1,2e159c6f-7ba6-4313-a0a5-94fb0413683f,b84cb0fd-1601-473c-ace5-937ceec7bed8,f1acff43-15c3-426e-8b47-bde416e41703,dfe12328-2e74-4b67-a2be-ec86b5207668,ffeec196-fe8a-4a71-afe7-f89255e8c8a7,7f17862a-0f42-4f5e-b400-b5653a79fece,408f71f2-6414-4511-b04d-290753d73a86,45ff0ced-ea1a-40cf-992b-83227c4021e9,e79cf9b7-b76b-4272-a323-f82fad61081d,66779eb6-a0cd-43e7-bff5-d4ee85063bf2,b3e49d37-5ccd-4154-8a00-758002f197e9,cd52446b-313f-4832-8912-107ef472df0f,d3c1a32b-c3b0-4ca5-91a9-c597287f1885,4fb77006-f2c5-4a5b-9ecb-30fc95d42cc7,ad21b2f6-b44f-4135-9895-c18a8cf966a3,98f00de6-a37a-4c69-8bf1-85b7b47fd218,9ec9b4f9-f511-4390-a529-882dc78768ef,aada9e10-134e-4072-a255-8d50b8eef7d7,58d47912-5af2-48e0-ba5f-fc594bec3491,72f0678a-f661-475b-ac90-468bb451bb0e,3d707110-63ec-41ac-91fe-867c795bc5e7,2b7a2efa-f994-44c9-b3dd-5effdfc7b7a8,ed0980f2-0e56-44de-8d04-fe0b37e42401,ce5b76cb-56ef-4a5a-8f9c-9598ad6d5326}'::uuid[]))
+        Buffers: shared hit=147
+  SubPlan 1
+    ->  Bitmap Heap Scan on item_membership si0  (cost=4.44..12.17 rows=1 width=0) (actual time=0.001..0.001 rows=1 loops=50)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=50
+          Buffers: shared hit=200
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.001..0.001 rows=1 loops=50)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=150
+  SubPlan 2
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_1  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 3
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_2  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 4
+    ->  Bitmap Heap Scan on item_membership si0_3  (cost=4.44..12.17 rows=1 width=0) (actual time=0.001..0.001 rows=1 loops=50)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=50
+          Buffers: shared hit=200
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.001..0.001 rows=1 loops=50)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=150
+  SubPlan 5
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_4  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 6
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_5  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 7
+    ->  Bitmap Heap Scan on item_visibility si0_6  (cost=19.50..26.87 rows=2 width=0) (never executed)
+          Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+          ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (never executed)
+                ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (never executed)
+                      Index Cond: (item_path @> i0.path)
+                ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                      Index Cond: (type = 'public'::item_visibility_type)
+  SubPlan 8
+    ->  Seq Scan on item_visibility si0_7  (cost=0.00..397.59 rows=155 width=0) (never executed)
+          Filter: ((item_path @> i0.path) AND (type = 'hidden'::item_visibility_type))
+  SubPlan 9
+    ->  Bitmap Heap Scan on item_membership si0_8  (cost=4.44..12.17 rows=1 width=0) (actual time=0.001..0.001 rows=1 loops=50)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=50
+          Buffers: shared hit=200
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.001..0.001 rows=1 loops=50)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=150
+  SubPlan 10
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_9  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 11
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_10  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 12
+    ->  Bitmap Heap Scan on item_membership si0_11  (cost=4.44..12.17 rows=1 width=0) (never executed)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+  SubPlan 13
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_12  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 14
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_13  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+Planning:
+  Buffers: shared hit=76
+Planning Time: 0.374 ms
+Execution Time: 0.359 ms
+
+===== plain: batch of 50 decisions
+SELECT CASE
+  WHEN (s1."rank" = 1 OR (s1."rank" IS NULL AND s2."public")) AND s2."hidden" THEN 'member_cannot_access'
+  WHEN coalesce(s1."rank", 0) >= $1 THEN 'ok'
+  WHEN $2 = 1 AND s2."public" THEN 'ok'
+  WHEN s1."rank" IS NULL THEN 'member_cannot_access'
+  ELSE $3
+END
+, i0."id" FROM "item" AS i0 LEFT OUTER JOIN LATERAL (SELECT max(CASE si0."permission"::text WHEN 'read' THEN 1 WHEN 'write' THEN 2 WHEN 'admin' THEN 3 END) AS "rank" FROM "item_membership" AS si0 WHERE ((si0."account_id" = $4) AND si0."item_path" @> i0."path")) AS s1 ON TRUE LEFT OUTER JOIN LATERAL (SELECT coalesce(bool_or(si0."type"::text = 'hidden'), FALSE) AS "hidden", coalesce(bool_or(si0."type"::text = 'public'), FALSE) AS "public" FROM "item_visibility" AS si0 WHERE (si0."item_path" @> i0."path")) AS s2 ON TRUE WHERE (i0."deleted_at" IS NULL) AND (i0."id" = ANY($5))
+-- params: [2, 2, "member_cannot_write", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, [<<140, 138, 223, 15, 75, 55, 75, 100, 149, 175, 180, 103, 139, 229, 197, 144>>, <<144, 56, 184, 186, 164, 206, 74, 215, 191, 35, 152, 192, 200, 25, 244, 130>>, <<170, 218, 158, 16, 19, 78, 64, 114, 162, 85, 141, 80, 184, 238, 247, 215>>, <<224, 9, 143, 165, 186, 91, 68, 56, 174, 129, 166, 198, 44, 11, 96, 237>>, <<255, 238, 193, 150, 254, 138, 74, 113, 175, 231, ...>>, ...]]
+Nested Loop Left Join  (cost=426.35..10644.31 rows=50 width=48) (actual time=0.102..0.688 rows=50 loops=1)
+  Buffers: shared hit=460
+  ->  Nested Loop Left Join  (cost=244.99..1574.37 rows=50 width=47) (actual time=0.090..0.183 rows=50 loops=1)
+        Buffers: shared hit=310
+        ->  Bitmap Heap Scan on item i0  (cost=221.76..412.11 rows=50 width=43) (actual time=0.085..0.099 rows=50 loops=1)
+              Recheck Cond: (id = ANY ('{8c8adf0f-4b37-4b64-95af-b4678be5c590,9038b8ba-a4ce-4ad7-bf23-98c0c819f482,aada9e10-134e-4072-a255-8d50b8eef7d7,e0098fa5-ba5b-4438-ae81-a6c62c0b60ed,ffeec196-fe8a-4a71-afe7-f89255e8c8a7,e79cf9b7-b76b-4272-a323-f82fad61081d,94d6ae3d-46ee-4969-a346-37266d7f24d1,dfe12328-2e74-4b67-a2be-ec86b5207668,72301b30-b620-4d5e-9e28-80f99dadeb90,b81be6da-f4f8-42a1-802f-1d6116eb1303,355d218f-2f0b-43e4-b4e3-5374daa80537,d3c1a32b-c3b0-4ca5-91a9-c597287f1885,408f71f2-6414-4511-b04d-290753d73a86,66779eb6-a0cd-43e7-bff5-d4ee85063bf2,72f0678a-f661-475b-ac90-468bb451bb0e,c650957e-5eb1-499f-8d8d-f53e969d7643,f1cd85bb-323d-41d6-a1f1-54778357d36f,3d707110-63ec-41ac-91fe-867c795bc5e7,b83dd714-41f4-4a26-a5e6-a5dcf5e77941,b878f546-e5dd-4a06-92b0-10669b25c10b,b84cb0fd-1601-473c-ace5-937ceec7bed8,9ed5b2cd-4ac9-4350-91c0-c0a05c17059c,7f17862a-0f42-4f5e-b400-b5653a79fece,bba4e6e5-fc8e-4e28-80a6-a9ad15dcf289,ce5b76cb-56ef-4a5a-8f9c-9598ad6d5326,ed0980f2-0e56-44de-8d04-fe0b37e42401,50b56c24-2f74-4bf6-aaea-f701c782af6b,2241e74e-4442-40a6-981c-422a10bd75f9,385d8cfe-0825-4187-8765-0376e2724a28,97f32173-a72e-46ff-b2d5-e340e28cbd24,4fb77006-f2c5-4a5b-9ecb-30fc95d42cc7,ad21b2f6-b44f-4135-9895-c18a8cf966a3,3fafeb21-f89d-48d3-9108-b25c9c61c482,c9b37ab0-b066-4096-804a-6fe7d0fb22cc,58d47912-5af2-48e0-ba5f-fc594bec3491,71edf466-4d99-48c4-afd0-1ffe88b395af,a9e53904-25e7-4e80-89de-b3658a4dc740,9ec9b4f9-f511-4390-a529-882dc78768ef,2e159c6f-7ba6-4313-a0a5-94fb0413683f,867c6570-eff1-495d-9d27-5212798b6ad8,eca7449d-b604-46b3-bf2f-0d2fa359ad8e,98f00de6-a37a-4c69-8bf1-85b7b47fd218,b3e49d37-5ccd-4154-8a00-758002f197e9,cd52446b-313f-4832-8912-107ef472df0f,2b7a2efa-f994-44c9-b3dd-5effdfc7b7a8,94fd5691-3631-42d6-a6e5-bf74b61bbdae,45ff0ced-ea1a-40cf-992b-83227c4021e9,f1acff43-15c3-426e-8b47-bde416e41703,49ca96f0-db3d-4f8b-a272-c02a0538169f,19557a95-7bd1-442e-86e2-da19ae4bc256}'::uuid[]))
+              Filter: (deleted_at IS NULL)
+              Heap Blocks: exact=13
+              Buffers: shared hit=160
+              ->  Bitmap Index Scan on item_pkey  (cost=0.00..221.62 rows=50 width=0) (actual time=0.083..0.083 rows=50 loops=1)
+                    Index Cond: (id = ANY ('{8c8adf0f-4b37-4b64-95af-b4678be5c590,9038b8ba-a4ce-4ad7-bf23-98c0c819f482,aada9e10-134e-4072-a255-8d50b8eef7d7,e0098fa5-ba5b-4438-ae81-a6c62c0b60ed,ffeec196-fe8a-4a71-afe7-f89255e8c8a7,e79cf9b7-b76b-4272-a323-f82fad61081d,94d6ae3d-46ee-4969-a346-37266d7f24d1,dfe12328-2e74-4b67-a2be-ec86b5207668,72301b30-b620-4d5e-9e28-80f99dadeb90,b81be6da-f4f8-42a1-802f-1d6116eb1303,355d218f-2f0b-43e4-b4e3-5374daa80537,d3c1a32b-c3b0-4ca5-91a9-c597287f1885,408f71f2-6414-4511-b04d-290753d73a86,66779eb6-a0cd-43e7-bff5-d4ee85063bf2,72f0678a-f661-475b-ac90-468bb451bb0e,c650957e-5eb1-499f-8d8d-f53e969d7643,f1cd85bb-323d-41d6-a1f1-54778357d36f,3d707110-63ec-41ac-91fe-867c795bc5e7,b83dd714-41f4-4a26-a5e6-a5dcf5e77941,b878f546-e5dd-4a06-92b0-10669b25c10b,b84cb0fd-1601-473c-ace5-937ceec7bed8,9ed5b2cd-4ac9-4350-91c0-c0a05c17059c,7f17862a-0f42-4f5e-b400-b5653a79fece,bba4e6e5-fc8e-4e28-80a6-a9ad15dcf289,ce5b76cb-56ef-4a5a-8f9c-9598ad6d5326,ed0980f2-0e56-44de-8d04-fe0b37e42401,50b56c24-2f74-4bf6-aaea-f701c782af6b,2241e74e-4442-40a6-981c-422a10bd75f9,385d8cfe-0825-4187-8765-0376e2724a28,97f32173-a72e-46ff-b2d5-e340e28cbd24,4fb77006-f2c5-4a5b-9ecb-30fc95d42cc7,ad21b2f6-b44f-4135-9895-c18a8cf966a3,3fafeb21-f89d-48d3-9108-b25c9c61c482,c9b37ab0-b066-4096-804a-6fe7d0fb22cc,58d47912-5af2-48e0-ba5f-fc594bec3491,71edf466-4d99-48c4-afd0-1ffe88b395af,a9e53904-25e7-4e80-89de-b3658a4dc740,9ec9b4f9-f511-4390-a529-882dc78768ef,2e159c6f-7ba6-4313-a0a5-94fb0413683f,867c6570-eff1-495d-9d27-5212798b6ad8,eca7449d-b604-46b3-bf2f-0d2fa359ad8e,98f00de6-a37a-4c69-8bf1-85b7b47fd218,b3e49d37-5ccd-4154-8a00-758002f197e9,cd52446b-313f-4832-8912-107ef472df0f,2b7a2efa-f994-44c9-b3dd-5effdfc7b7a8,94fd5691-3631-42d6-a6e5-bf74b61bbdae,45ff0ced-ea1a-40cf-992b-83227c4021e9,f1acff43-15c3-426e-8b47-bde416e41703,49ca96f0-db3d-4f8b-a272-c02a0538169f,19557a95-7bd1-442e-86e2-da19ae4bc256}'::uuid[]))
+                    Buffers: shared hit=147
+        ->  Aggregate  (cost=23.23..23.24 rows=1 width=4) (actual time=0.001..0.002 rows=1 loops=50)
+              Buffers: shared hit=150
+              ->  Bitmap Heap Scan on item_membership si0  (cost=4.33..23.21 rows=1 width=4) (actual time=0.001..0.001 rows=1 loops=50)
+                    Recheck Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                    Filter: (item_path @> i0.path)
+                    Heap Blocks: exact=50
+                    Buffers: shared hit=150
+                    ->  Bitmap Index Scan on "IDX_item_membership_account_id"  (cost=0.00..4.33 rows=5 width=0) (actual time=0.000..0.000 rows=1 loops=50)
+                          Index Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                          Buffers: shared hit=100
+  ->  Aggregate  (cost=181.36..181.37 rows=1 width=2) (actual time=0.010..0.010 rows=1 loops=50)
+        Buffers: shared hit=150
+        ->  Bitmap Heap Scan on item_visibility si0_1  (cost=9.49..178.22 rows=157 width=4) (actual time=0.009..0.009 rows=0 loops=50)
+              Recheck Cond: (item_path @> i0.path)
+              Buffers: shared hit=150
+              ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (actual time=0.009..0.009 rows=0 loops=50)
+                    Index Cond: (item_path @> i0.path)
+                    Buffers: shared hit=150
+Planning:
+  Buffers: shared hit=61
+Planning Time: 0.142 ms
+Execution Time: 0.707 ms
+
+===== ash: children (policy filter)
+SELECT i0."id", i0."name", i0."type", i0."path", i0."order", i0."created_at", i0."deleted_at", (CASE WHEN ((((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $1::uuid) AND (si0."permission" = $2) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $3::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $4::uuid) AND (si0."permission" = $5) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $6::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $7::uuid) AND (si0."permission" = $8) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $9::text ELSE NULL::text END)::text = $10) OR (((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $11::uuid) AND (si0."permission" = $12) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $13::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $14::uuid) AND (si0."permission" = $15) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $16::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $17::uuid) AND (si0."permission" = $18) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $19::text ELSE NULL::text END)::text IS NULL) AND exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $20) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean)) AND exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $21) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean) THEN $22::text WHEN NOT ((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $23::uuid) AND (si0."permission" = $24) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $25::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $26::uuid) AND (si0."permission" = $27) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $28::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $29::uuid) AND (si0."permission" = $30) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $31::text ELSE NULL::text END)::text IS NULL) THEN $32::text WHEN exists((SELECT si0."id" AS "id", si0."type" AS "type", si0."item_path" AS "item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $33) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean THEN $34::text WHEN ((CASE WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $35::uuid) AND (si0."permission" = $36) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $37::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $38::uuid) AND (si0."permission" = $39) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $40::text WHEN exists((SELECT si0."id" AS "id", si0."permission" AS "permission", si0."account_id" AS "account_id", si0."item_path" AS "item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $41::uuid) AND (si0."permission" = $42) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $43::text ELSE NULL::text END)::text IS NULL) THEN $44::text ELSE $45::text END)::text FROM "item" AS i0 WHERE (i0."deleted_at"::timestamp IS NULL) AND (i0."id"::uuid = $46::uuid)
+-- params: [<<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "admin", "admin", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "write", "write", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "read", "read", "read", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "admin", "admin", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "write", "write", <<242, 103, 99, ...>>, ...]
+Index Scan using item_pkey on item i0  (cost=0.42..173.56 rows=1 width=113) (actual time=0.054..0.058 rows=1 loops=1)
+  Index Cond: (id = '9038b8ba-a4ce-4ad7-bf23-98c0c819f482'::uuid)
+  Filter: ((deleted_at)::timestamp without time zone IS NULL)
+  Buffers: shared hit=16
+  SubPlan 1
+    ->  Bitmap Heap Scan on item_membership si0  (cost=4.44..12.17 rows=1 width=0) (actual time=0.017..0.017 rows=1 loops=1)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=1
+          Buffers: shared hit=4
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.006..0.006 rows=1 loops=1)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=3
+  SubPlan 2
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_1  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 3
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_2  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 4
+    ->  Bitmap Heap Scan on item_membership si0_3  (cost=4.44..12.17 rows=1 width=0) (actual time=0.006..0.007 rows=1 loops=1)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=1
+          Buffers: shared hit=4
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.003..0.003 rows=1 loops=1)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=3
+  SubPlan 5
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_4  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 6
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_5  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 7
+    ->  Bitmap Heap Scan on item_visibility si0_6  (cost=19.50..26.87 rows=2 width=0) (never executed)
+          Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+          ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (never executed)
+                ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (never executed)
+                      Index Cond: (item_path @> i0.path)
+                ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                      Index Cond: (type = 'public'::item_visibility_type)
+  SubPlan 8
+    ->  Seq Scan on item_visibility si0_7  (cost=0.00..397.59 rows=155 width=0) (never executed)
+          Filter: ((item_path @> i0.path) AND (type = 'hidden'::item_visibility_type))
+  SubPlan 9
+    ->  Bitmap Heap Scan on item_membership si0_8  (cost=4.44..12.17 rows=1 width=0) (actual time=0.005..0.006 rows=1 loops=1)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          Heap Blocks: exact=1
+          Buffers: shared hit=4
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.003..0.003 rows=1 loops=1)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Buffers: shared hit=3
+  SubPlan 10
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_9  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 11
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_10  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 12
+    ->  Bitmap Heap Scan on item_visibility si0_11  (cost=19.50..26.87 rows=2 width=0) (never executed)
+          Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+          ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (never executed)
+                ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (never executed)
+                      Index Cond: (item_path @> i0.path)
+                ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                      Index Cond: (type = 'public'::item_visibility_type)
+  SubPlan 13
+    ->  Bitmap Heap Scan on item_membership si0_12  (cost=4.44..12.17 rows=1 width=0) (never executed)
+          Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+          Filter: (item_path @> i0.path)
+          ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+  SubPlan 14
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_13  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+          Filter: (item_path @> i0.path)
+  SubPlan 15
+    ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_14  (cost=0.41..8.44 rows=1 width=0) (never executed)
+          Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+          Filter: (item_path @> i0.path)
+Planning Time: 0.931 ms
+Execution Time: 0.195 ms
+
+===== ash: children (policy filter)
+SELECT i0."id", i0."name", i0."type", i0."path", i0."order", i0."created_at", i0."deleted_at" FROM "item" AS i0 WHERE ((i0."path"::ltree <@ $1::ltree)) AND ((nlevel(i0."path"::ltree) = nlevel($2::ltree) + 1)) AND (i0."deleted_at"::timestamp IS NULL) AND ((CASE WHEN ((((CASE WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $3::uuid) AND (si0."permission" = $4) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $5::text WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $6::uuid) AND (si0."permission" = $7) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $8::text WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $9::uuid) AND (si0."permission" = $10) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $11::text ELSE NULL::text END)::text = $12) OR (((CASE WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $13::uuid) AND (si0."permission" = $14) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $15::text WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $16::uuid) AND (si0."permission" = $17) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $18::text WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $19::uuid) AND (si0."permission" = $20) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $21::text ELSE NULL::text END)::text IS NULL) AND exists((SELECT si0."id", si0."type", si0."item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $22) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean)) AND exists((SELECT si0."id", si0."type", si0."item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $23) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean) THEN $24::text WHEN NOT ((CASE WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $25::uuid) AND (si0."permission" = $26) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $27::text WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $28::uuid) AND (si0."permission" = $29) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $30::text WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $31::uuid) AND (si0."permission" = $32) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $33::text ELSE NULL::text END)::text IS NULL) THEN $34::text WHEN exists((SELECT si0."id", si0."type", si0."item_path" FROM "item_visibility" AS si0 WHERE (si0."type" = $35) AND ((si0."item_path"::ltree @> i0."path"::ltree))))::boolean THEN $36::text WHEN ((CASE WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $37::uuid) AND (si0."permission" = $38) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $39::text WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $40::uuid) AND (si0."permission" = $41) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $42::text WHEN exists((SELECT si0."id", si0."permission", si0."account_id", si0."item_path" FROM "item_membership" AS si0 WHERE (si0."account_id"::uuid = $43::uuid) AND (si0."permission" = $44) AND ((si0."item_path"::ltree @> i0."path"::ltree)))) THEN $45::text ELSE NULL::text END)::text IS NULL) THEN $46::text ELSE $47::text END)::text = $48) ORDER BY i0."order", i0."created_at"
+-- params: ["r1.c1", "r1.c1", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "admin", "admin", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "write", "write", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "read", "read", "read", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "admin", "admin", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "write", "write", <<242, ...>>, ...]
+Sort  (cost=10321.81..10321.82 rows=1 width=81) (actual time=0.255..0.261 rows=5 loops=1)
+  Sort Key: i0."order", i0.created_at
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=73
+  ->  Index Scan using "IDX_gist_item_path" on item i0  (cost=0.29..10321.80 rows=1 width=81) (actual time=0.131..0.198 rows=5 loops=1)
+        Index Cond: (path <@ 'r1.c1'::ltree)
+        Filter: (((deleted_at)::timestamp without time zone IS NULL) AND (nlevel(path) = 3) AND (CASE WHEN (((CASE WHEN EXISTS(SubPlan 1) THEN 'admin'::text WHEN EXISTS(SubPlan 2) THEN 'write'::text WHEN EXISTS(SubPlan 3) THEN 'read'::text ELSE NULL::text END = 'read'::text) OR ((CASE WHEN EXISTS(SubPlan 4) THEN 'admin'::text WHEN EXISTS(SubPlan 5) THEN 'write'::text WHEN EXISTS(SubPlan 6) THEN 'read'::text ELSE NULL::text END IS NULL) AND EXISTS(SubPlan 7))) AND EXISTS(SubPlan 8)) THEN 'member_cannot_access'::text WHEN (CASE WHEN EXISTS(SubPlan 9) THEN 'admin'::text WHEN EXISTS(SubPlan 10) THEN 'write'::text WHEN EXISTS(SubPlan 11) THEN 'read'::text ELSE NULL::text END IS NOT NULL) THEN 'ok'::text WHEN EXISTS(SubPlan 12) THEN 'ok'::text WHEN (CASE WHEN EXISTS(SubPlan 13) THEN 'admin'::text WHEN EXISTS(SubPlan 14) THEN 'write'::text WHEN EXISTS(SubPlan 15) THEN 'read'::text ELSE NULL::text END IS NULL) THEN 'member_cannot_access'::text ELSE 'member_cannot_read'::text END = 'ok'::text))
+        Rows Removed by Filter: 1
+        Buffers: shared hit=67
+        SubPlan 1
+          ->  Bitmap Heap Scan on item_membership si0  (cost=4.44..12.17 rows=1 width=0) (actual time=0.005..0.005 rows=1 loops=5)
+                Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Filter: (item_path @> i0.path)
+                Heap Blocks: exact=5
+                Buffers: shared hit=20
+                ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.003..0.003 rows=1 loops=5)
+                      Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                      Buffers: shared hit=15
+        SubPlan 2
+          ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_1  (cost=0.41..8.44 rows=1 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+                Filter: (item_path @> i0.path)
+        SubPlan 3
+          ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_2  (cost=0.41..8.44 rows=1 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+                Filter: (item_path @> i0.path)
+        SubPlan 4
+          ->  Bitmap Heap Scan on item_membership si0_3  (cost=4.44..12.17 rows=1 width=0) (actual time=0.004..0.004 rows=1 loops=5)
+                Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Filter: (item_path @> i0.path)
+                Heap Blocks: exact=5
+                Buffers: shared hit=20
+                ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.002..0.002 rows=1 loops=5)
+                      Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                      Buffers: shared hit=15
+        SubPlan 5
+          ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_4  (cost=0.41..8.44 rows=1 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+                Filter: (item_path @> i0.path)
+        SubPlan 6
+          ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_5  (cost=0.41..8.44 rows=1 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+                Filter: (item_path @> i0.path)
+        SubPlan 7
+          ->  Bitmap Heap Scan on item_visibility si0_6  (cost=19.50..26.87 rows=2 width=0) (never executed)
+                Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+                ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (never executed)
+                      ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (never executed)
+                            Index Cond: (item_path @> i0.path)
+                      ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                            Index Cond: (type = 'public'::item_visibility_type)
+        SubPlan 8
+          ->  Seq Scan on item_visibility si0_7  (cost=0.00..397.59 rows=155 width=0) (never executed)
+                Filter: ((item_path @> i0.path) AND (type = 'hidden'::item_visibility_type))
+        SubPlan 9
+          ->  Bitmap Heap Scan on item_membership si0_8  (cost=4.44..12.17 rows=1 width=0) (actual time=0.003..0.004 rows=1 loops=5)
+                Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Filter: (item_path @> i0.path)
+                Heap Blocks: exact=5
+                Buffers: shared hit=20
+                ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (actual time=0.002..0.002 rows=1 loops=5)
+                      Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                      Buffers: shared hit=15
+        SubPlan 10
+          ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_9  (cost=0.41..8.44 rows=1 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+                Filter: (item_path @> i0.path)
+        SubPlan 11
+          ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_10  (cost=0.41..8.44 rows=1 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+                Filter: (item_path @> i0.path)
+        SubPlan 12
+          ->  Bitmap Heap Scan on item_visibility si0_11  (cost=19.50..26.87 rows=2 width=0) (never executed)
+                Recheck Cond: ((item_path @> i0.path) AND (type = 'public'::item_visibility_type))
+                ->  BitmapAnd  (cost=19.50..19.50 rows=2 width=0) (never executed)
+                      ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (never executed)
+                            Index Cond: (item_path @> i0.path)
+                      ->  Bitmap Index Scan on "UQ_item_visibility_item_type"  (cost=0.00..9.80 rows=202 width=0) (never executed)
+                            Index Cond: (type = 'public'::item_visibility_type)
+        SubPlan 13
+          ->  Bitmap Heap Scan on item_membership si0_12  (cost=4.44..12.17 rows=1 width=0) (never executed)
+                Recheck Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+                Filter: (item_path @> i0.path)
+                ->  Bitmap Index Scan on "IDX_item_membership_account_id_permission"  (cost=0.00..4.43 rows=2 width=0) (never executed)
+                      Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'admin'::permission_enum))
+        SubPlan 14
+          ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_13  (cost=0.41..8.44 rows=1 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'write'::permission_enum))
+                Filter: (item_path @> i0.path)
+        SubPlan 15
+          ->  Index Scan using "IDX_item_membership_account_id_permission" on item_membership si0_14  (cost=0.41..8.44 rows=1 width=0) (never executed)
+                Index Cond: ((account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid) AND (permission = 'read'::permission_enum))
+                Filter: (item_path @> i0.path)
+Planning:
+  Buffers: shared hit=35
+Planning Time: 1.246 ms
+Execution Time: 0.410 ms
+
+===== plain: children
+SELECT i0."id", i0."name", i0."type", i0."path", i0."order", i0."deleted_at", i0."created_at", CASE
+  WHEN (s1."rank" = 1 OR (s1."rank" IS NULL AND s2."public")) AND s2."hidden" THEN 'member_cannot_access'
+  WHEN coalesce(s1."rank", 0) >= $1 THEN 'ok'
+  WHEN $2 = 1 AND s2."public" THEN 'ok'
+  WHEN s1."rank" IS NULL THEN 'member_cannot_access'
+  ELSE $3
+END
+ FROM "item" AS i0 LEFT OUTER JOIN LATERAL (SELECT max(CASE si0."permission"::text WHEN 'read' THEN 1 WHEN 'write' THEN 2 WHEN 'admin' THEN 3 END) AS "rank" FROM "item_membership" AS si0 WHERE ((si0."account_id" = $4) AND si0."item_path" @> i0."path")) AS s1 ON TRUE LEFT OUTER JOIN LATERAL (SELECT coalesce(bool_or(si0."type"::text = 'hidden'), FALSE) AS "hidden", coalesce(bool_or(si0."type"::text = 'public'), FALSE) AS "public" FROM "item_visibility" AS si0 WHERE (si0."item_path" @> i0."path")) AS s2 ON TRUE WHERE (i0."deleted_at" IS NULL) AND (i0."id" = $5)
+-- params: [1, 1, "member_cannot_read", <<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, <<144, 56, 184, 186, 164, 206, 74, 215, 191, 35, 152, 192, 200, 25, 244, 130>>]
+Nested Loop Left Join  (cost=205.01..213.09 rows=1 width=113) (actual time=0.087..0.090 rows=1 loops=1)
+  Buffers: shared hit=10
+  ->  Nested Loop Left Join  (cost=23.65..31.69 rows=1 width=85) (actual time=0.042..0.044 rows=1 loops=1)
+        Buffers: shared hit=7
+        ->  Index Scan using item_pkey on item i0  (cost=0.42..8.44 rows=1 width=81) (actual time=0.018..0.019 rows=1 loops=1)
+              Index Cond: (id = '9038b8ba-a4ce-4ad7-bf23-98c0c819f482'::uuid)
+              Filter: (deleted_at IS NULL)
+              Buffers: shared hit=4
+        ->  Aggregate  (cost=23.23..23.24 rows=1 width=4) (actual time=0.017..0.018 rows=1 loops=1)
+              Buffers: shared hit=3
+              ->  Bitmap Heap Scan on item_membership si0  (cost=4.33..23.21 rows=1 width=4) (actual time=0.010..0.011 rows=1 loops=1)
+                    Recheck Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                    Filter: (item_path @> i0.path)
+                    Heap Blocks: exact=1
+                    Buffers: shared hit=3
+                    ->  Bitmap Index Scan on "IDX_item_membership_account_id"  (cost=0.00..4.33 rows=5 width=0) (actual time=0.004..0.004 rows=1 loops=1)
+                          Index Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                          Buffers: shared hit=2
+  ->  Aggregate  (cost=181.36..181.37 rows=1 width=2) (actual time=0.039..0.040 rows=1 loops=1)
+        Buffers: shared hit=3
+        ->  Bitmap Heap Scan on item_visibility si0_1  (cost=9.49..178.22 rows=157 width=4) (actual time=0.037..0.037 rows=0 loops=1)
+              Recheck Cond: (item_path @> i0.path)
+              Buffers: shared hit=3
+              ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (actual time=0.034..0.035 rows=0 loops=1)
+                    Index Cond: (item_path @> i0.path)
+                    Buffers: shared hit=3
+Planning Time: 0.308 ms
+Execution Time: 0.187 ms
+
+===== plain: children
+SELECT i0."name" FROM "item" AS i0 LEFT OUTER JOIN LATERAL (SELECT max(CASE si0."permission"::text WHEN 'read' THEN 1 WHEN 'write' THEN 2 WHEN 'admin' THEN 3 END) AS "rank" FROM "item_membership" AS si0 WHERE ((si0."account_id" = $1) AND si0."item_path" @> i0."path")) AS s1 ON TRUE LEFT OUTER JOIN LATERAL (SELECT coalesce(bool_or(si0."type"::text = 'hidden'), FALSE) AS "hidden", coalesce(bool_or(si0."type"::text = 'public'), FALSE) AS "public" FROM "item_visibility" AS si0 WHERE (si0."item_path" @> i0."path")) AS s2 ON TRUE WHERE (i0."deleted_at" IS NULL) AND (i0."path" <@ $2::ltree and nlevel(i0."path") = nlevel($3::ltree) + 1) AND (CASE
+  WHEN (s1."rank" = 1 OR (s1."rank" IS NULL AND s2."public")) AND s2."hidden" THEN 'member_cannot_access'
+  WHEN coalesce(s1."rank", 0) >= $4 THEN 'ok'
+  WHEN $5 = 1 AND s2."public" THEN 'ok'
+  WHEN s1."rank" IS NULL THEN 'member_cannot_access'
+  ELSE $6
+END
+ = 'ok') ORDER BY i0."order", i0."created_at"
+-- params: [<<242, 103, 99, 146, 24, 80, 75, 86, 168, 222, 8, 54, 208, 112, 217, 78>>, "r1.c1", "r1.c1", 1, 1, "member_cannot_read"]
+Sort  (cost=440.45..440.46 rows=1 width=22) (actual time=0.365..0.368 rows=5 loops=1)
+  Sort Key: i0."order", i0.created_at
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=43
+  ->  Nested Loop Left Join  (cost=209.33..440.44 rows=1 width=22) (actual time=0.150..0.337 rows=5 loops=1)
+        Filter: (CASE WHEN ((((max(CASE (si0.permission)::text WHEN 'read'::text THEN 1 WHEN 'write'::text THEN 2 WHEN 'admin'::text THEN 3 ELSE NULL::integer END)) = 1) OR (((max(CASE (si0.permission)::text WHEN 'read'::text THEN 1 WHEN 'write'::text THEN 2 WHEN 'admin'::text THEN 3 ELSE NULL::integer END)) IS NULL) AND (COALESCE(bool_or(((si0_1.type)::text = 'public'::text)), false)))) AND (COALESCE(bool_or(((si0_1.type)::text = 'hidden'::text)), false))) THEN 'member_cannot_access'::text WHEN (COALESCE((max(CASE (si0.permission)::text WHEN 'read'::text THEN 1 WHEN 'write'::text THEN 2 WHEN 'admin'::text THEN 3 ELSE NULL::integer END)), 0) >= 1) THEN 'ok'::text WHEN (COALESCE(bool_or(((si0_1.type)::text = 'public'::text)), false)) THEN 'ok'::text WHEN ((max(CASE (si0.permission)::text WHEN 'read'::text THEN 1 WHEN 'write'::text THEN 2 WHEN 'admin'::text THEN 3 ELSE NULL::integer END)) IS NULL) THEN 'member_cannot_access'::text ELSE 'member_cannot_read'::text END = 'ok'::text)
+        Buffers: shared hit=37
+        ->  Nested Loop Left Join  (cost=27.97..259.04 rows=1 width=53) (actual time=0.103..0.139 rows=5 loops=1)
+              Buffers: shared hit=22
+              ->  Bitmap Heap Scan on item i0  (cost=4.74..235.80 rows=1 width=49) (actual time=0.078..0.083 rows=5 loops=1)
+                    Recheck Cond: ((path <@ 'r1.c1'::ltree) AND (deleted_at IS NULL))
+                    Filter: (nlevel(path) = 3)
+                    Rows Removed by Filter: 1
+                    Heap Blocks: exact=3
+                    Buffers: shared hit=7
+                    ->  Bitmap Index Scan on "IDX_gist_item_path_deleted_at"  (cost=0.00..4.74 rows=61 width=0) (actual time=0.065..0.065 rows=6 loops=1)
+                          Index Cond: (path <@ 'r1.c1'::ltree)
+                          Buffers: shared hit=4
+              ->  Aggregate  (cost=23.23..23.24 rows=1 width=4) (actual time=0.010..0.010 rows=1 loops=5)
+                    Buffers: shared hit=15
+                    ->  Bitmap Heap Scan on item_membership si0  (cost=4.33..23.21 rows=1 width=4) (actual time=0.006..0.006 rows=1 loops=5)
+                          Recheck Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                          Filter: (item_path @> i0.path)
+                          Heap Blocks: exact=5
+                          Buffers: shared hit=15
+                          ->  Bitmap Index Scan on "IDX_item_membership_account_id"  (cost=0.00..4.33 rows=5 width=0) (actual time=0.004..0.004 rows=1 loops=5)
+                                Index Cond: (account_id = 'f2676392-1850-4b56-a8de-0836d070d94e'::uuid)
+                                Buffers: shared hit=10
+        ->  Aggregate  (cost=181.36..181.37 rows=1 width=2) (actual time=0.037..0.038 rows=1 loops=5)
+              Buffers: shared hit=15
+              ->  Bitmap Heap Scan on item_visibility si0_1  (cost=9.49..178.22 rows=157 width=4) (actual time=0.035..0.036 rows=0 loops=5)
+                    Recheck Cond: (item_path @> i0.path)
+                    Buffers: shared hit=15
+                    ->  Bitmap Index Scan on "IDX_gist_item_visibility_path"  (cost=0.00..9.45 rows=157 width=0) (actual time=0.034..0.034 rows=0 loops=5)
+                          Index Cond: (item_path @> i0.path)
+                          Buffers: shared hit=15
+Planning:
+  Buffers: shared hit=163
+Planning Time: 0.938 ms
+Execution Time: 0.463 ms

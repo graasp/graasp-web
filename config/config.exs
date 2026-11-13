@@ -121,3 +121,6 @@ config :nx, default_backend: EXLA.Backend
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
+
+# PROTOTYPE (Ecto 3.14 check): ex_aws defaults to Poison, which pins decimal ~> 2.1
+config :ex_aws, json_codec: Jason
