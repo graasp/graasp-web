@@ -54,6 +54,20 @@ _Avoid_: custom quota, storage plan
 The limit that applies to a Member: their Storage Limit Override if they have one, otherwise the Default Storage Limit. It is what the Member sees in their account, without being told whether it is an override.
 _Avoid_: max storage
 
+### Item permissions
+
+**Item Membership**:
+A permission (read, write or admin, in increasing order) granted to an account on an item. It applies to the item and everything below it. A membership below another one for the same account only ever raises the permission.
+_Avoid_: share, access, role
+
+**Effective Permission**:
+The highest permission an account holds on an item through Item Memberships on the item or its ancestors. An account without any has no Effective Permission, even on a public item.
+_Avoid_: access level, role
+
+**Hidden Item**:
+An item that is hidden, or sits below a hidden item. Readers and visitors of a public item can't see it; accounts with write or admin can.
+_Avoid_: private item (privacy is about memberships, not hiding)
+
 ### Public folder export
 
 **Public Folder**:
