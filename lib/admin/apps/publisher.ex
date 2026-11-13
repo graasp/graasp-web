@@ -25,6 +25,7 @@ defmodule Admin.Apps.Publisher do
     |> validate_length(:origins, min: 1)
     |> trim_array_values(:origins)
     |> Validators.validate_urls_array(:origins)
+    |> unique_constraint(:name, name: "publisher_name_key")
   end
 
   defp trim_array_values(changeset, field) do

@@ -32,7 +32,7 @@ defmodule Admin.AppsFixtures do
   def publisher_fixture(attrs \\ %{}) do
     attrs =
       Enum.into(attrs, %{
-        name: "some name",
+        name: "some name #{System.unique_integer([:positive])}",
         origins: ["http://example1.com", "http://example2.com"]
       })
 
