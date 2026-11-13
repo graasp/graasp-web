@@ -4,7 +4,7 @@ defmodule Admin.MixProject do
   def project do
     [
       app: :admin,
-      version: "0.15.0",
+      version: "0.15.1",
       elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
