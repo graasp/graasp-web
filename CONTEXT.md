@@ -107,3 +107,11 @@ _Avoid_: legacy route, passthrough
 **Route Override**:
 A switch an admin flips to send a Ported Route back to core, without a deploy, while a problem is fixed.
 _Avoid_: feature flag, kill switch
+
+**Actor**:
+The account a Ported Route request acts for: a Member or a guest, identified by core's session cookie. Item operations are authorized against the Actor. A request without a valid session has no Actor. Distinct from an admin user.
+_Avoid_: current user, scope (reserved for admin users), caller
+
+**App Token**:
+A short-lived grant core hands to an app running in an iframe, for one app item and one registered app origin. It may name an account, or none for an anonymous viewer of a public app. It only reaches that app item's own resources (app data, app settings, app actions), never items in general. Not an Actor.
+_Avoid_: app JWT, guest token
