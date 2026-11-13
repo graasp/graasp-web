@@ -89,3 +89,21 @@ _Avoid_: anonymous user, public user
 **Export Progress Page**:
 The page, reached by an unguessable link, where a Visitor watches a Folder Export advance and then gets its download link. It shows an expired state once the 24 hours are over.
 _Avoid_: status page
+
+### Core migration
+
+**Core Route**:
+One method and path template of core's API (`GET /api/items/:id`), as listed in the core inventory. Clients keep calling it unchanged throughout the migration.
+_Avoid_: endpoint, API
+
+**Ported Route**:
+A Core Route that admin serves itself, with the same contract as core.
+_Avoid_: migrated route, new route
+
+**Proxied Route**:
+A Core Route that admin forwards to core untouched, because it isn't ported yet or a Route Override sends it back.
+_Avoid_: legacy route, passthrough
+
+**Route Override**:
+A switch an admin flips to send a Ported Route back to core, without a deploy, while a problem is fixed.
+_Avoid_: feature flag, kill switch
