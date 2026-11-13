@@ -63,7 +63,7 @@ defmodule Admin.MixProject do
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.8.0"},
       {:phoenix_ecto, "~> 4.5"},
-      {:ecto_sql, "~> 3.13"},
+      {:ecto_sql, "~> 3.14"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -125,7 +125,6 @@ defmodule Admin.MixProject do
       # AWS services
       {:ex_aws, "~> 2.6"},
       {:ex_aws_s3, "~> 2.5"},
-      {:poison, "~> 6.0"},
       {:hackney, "~> 1.9"},
       # optional dependency to parse XML
       {:sweet_xml, "~> 0.7"},

@@ -162,4 +162,25 @@ defmodule Admin.S3Test do
       {:ok, _} = Admin.S3.delete_objects("my-bucket", ["object1", "object2"])
     end
   end
+
+  describe "ExAws JSON codec" do
+    setup :verify_on_exit!
+
+    # Runs the real ExAws request pipeline with only the HTTP transport stubbed.
+    # ExAws JSON-decodes every 4xx body (S3 itself answers in XML), so a JSON
+    # error body exercises the configured codec without touching the network.
+    test "an S3 request decodes a JSON error body without Poison" do
+      expect(ExAwsHttpMock, :request, fn :get, _url, _body, _headers, _opts ->
+        {:ok,
+         %{
+           status_code: 400,
+           headers: [{"content-type", "application/x-amz-json-1.1"}],
+           body: ~s({"__type":"AccessDeniedException","message":"Access denied"})
+         }}
+      end)
+
+      assert {:error, {"AccessDeniedException", "Access denied"}} =
+               ExAws.S3.list_buckets() |> ExAws.request(http_client: ExAwsHttpMock)
+    end
+  end
 end
