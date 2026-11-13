@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.15.1](https://github.com/graasp/graasp-web/compare/v0.15.0...v0.15.1) (2026-11-13)
+
+
+### Documentation
+
+* ADR 0003, Ash for the domain layer ([#327](https://github.com/graasp/graasp-web/issues/327)) ([e90d22c](https://github.com/graasp/graasp-web/commit/e90d22c0c7cd6525c5fe8988bc4e46452f01b7a3))
+* ADR 0004, admin proxies core from the endpoint ([#330](https://github.com/graasp/graasp-web/issues/330)) ([6a67e47](https://github.com/graasp/graasp-web/commit/6a67e474786979e7865483dafb1de99f3d18d178))
+* ADR 0005, admin reads core's session cookie ([#331](https://github.com/graasp/graasp-web/issues/331)) ([cc0fabf](https://github.com/graasp/graasp-web/commit/cc0fabf76ccdbd8db19ad688b1b211533e7d2c90))
+
+
+### Chores
+
+* **deps:** drop poison and upgrade to Ecto 3.14 ([#329](https://github.com/graasp/graasp-web/issues/329)) ([34fba6c](https://github.com/graasp/graasp-web/commit/34fba6cc66f8caedbafd7770cfbb31472baa2e76))
+
 ## [0.15.0](https://github.com/graasp/graasp-web/compare/v0.14.2...v0.15.0) (2026-11-13)
 
 
