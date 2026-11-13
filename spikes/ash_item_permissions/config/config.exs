@@ -2,7 +2,7 @@ import Config
 
 # PROTOTYPE: scratch database built from core's drizzle migrations 0000-0021.
 config :ash_item_permissions, Spike.Repo,
-  database: "graasp_ash_spike_prototype",
+  database: System.get_env("SPIKE_DB", "graasp_ash_spike_prototype"),
   hostname: "localhost",
   pool_size: 5,
   timeout: 300_000,

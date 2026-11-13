@@ -60,3 +60,55 @@ See `priv/matrix_output.txt`.
 - `base_filter expr(is_nil(deleted_at))` reproduces core's soft-delete filter on every Ash read.
 - Policies only guard calls that go through Ash. An `Ecto.Query` over the same table (an Ash resource *is* an Ecto schema) bypasses them silently.
 - Plain Ecto keeps the decision in one place too: one `dynamic` CASE (`Spike.Plain.access/1`) reused in `select` (error kind) and `where` (filter). Ecto only allows dynamics at the top level of `select`, hence the map of dynamics.
+
+# Round 2: Ash the native way, client audit, membership models, production data
+
+## What the frontend uses from the permission contract
+
+Checked client, library, sdk and apps-query-client (origin/main, 2026-11-13).
+
+- No frontend references the error codes (GERR002/003/004/016) or class names.
+- Control flow depends only on the status: 403 shows "request access" to a signed-in member (`ItemLoginWrapper`), 404 shows "forbidden".
+- `response.data.message` is only used as a toast translation key.
+- Batch `errors` are never read per item: `throwIfArrayContainsErrorOrReturn` throws the whole list if it isn't empty.
+- What matters: the packed item's `permission` (gates write/admin UI everywhere), `hidden`/`public` with the path they were set on (sharing screen), and the membership's `item.path` (only a membership granted on the item itself can be downgraded).
+
+## `Spike.Native`: Ash without copying core's error logic
+
+- `permission`: `max` aggregate over `ancestor_memberships`. Core's `permission_enum` is declared `read < write < admin`, so it's an `Ash.Type.Enum` with `storage_type :permission_enum`; no rank calculation.
+- ltree `@>` wrapped as a custom expression `ancestor_or_self/2` (`Spike.Native.AncestorOrSelf`), so resources don't contain fragments.
+- Read policy: `permission in [:write, :admin]` OR `not is_hidden and (not is_nil(permission) or is_public)`. Write/admin policies are a single comparison.
+- `authorize_with: :error` returns `Forbidden` for an existing but forbidden item and `NotFound` for a missing one, which is core's 403/404 split. It needs the AshPostgres SQL functions installed and `"ash-functions"` in the repo's `installed_extensions`; without them the read fails with an Unknown error.
+- `priv/native_matrix.exs`: 0 mismatches against core on read/write/admin sets, packed permission and get 403-vs-ok (8 actors × 15 items).
+- The home list hides items under a hidden folder from readers; core lists them and then answers 403 (accepted as a fix).
+- Adding a custom expression is `compile_env` for Ash, so changing that list recompiles the `ash` dependency.
+
+## Membership models (synthetic bulk data, heavy account with 2,050 memberships)
+
+| query | inherited (today) | materialized `(account, item)` |
+|---|---|---|
+| highest permission on one item | 0.84 ms | 0.21 ms |
+| children with permission | 0.44 ms | 0.29 ms |
+| home "my items" | core 292 ms, `NOT EXISTS` rewrite 25 ms | n/a |
+| every item I can write | 32 ms (narrowed) | 1.3 ms |
+| share a 61-item root | 1 row | 62 rows, plus upkeep on create/move/copy/delete |
+| storage | 25 MB | +138 MB |
+
+## Production snapshot (2026-11-12 dump, aggregates only)
+
+See `priv/prod_stats_output.txt`.
+
+- **Items:** 687,940 (647,243 live), 126,300 live roots, max depth 14, average 3.2. Root subtree size p50 1, p99 101, max 20,519.
+- **Memberships:** 143,735; 127k on roots (115,948 of them admin).
+  - 16,876 sit below a root: 13,900 are sub-folder shares with nothing above them, 2,923 upgrade an ancestor, 53 are redundant or downgrades (they break core's invariant; `max` handles them).
+  - Per account: p50 1, p99 116, p99.9 408, max 1,960 (one account with 1,960 root files).
+- **Visibilities:** public 5,717 on roots and 3,869 below; hidden 199 on roots and 4,215 below.
+- **Materialized table:** would hold 4.57M rows (32×).
+- **Timings, heaviest account:**
+  - home: core 445 ms, `NOT EXISTS` 65–91 ms;
+  - home with per-row permission, as the Ash policy does it: 81 ms, or 35 ms with a `btree_gist` index on `(account_id, item_path)`;
+  - point lookup: 0.5 ms.
+- **`Spike.Native` on the account with the most folder memberships (186):**
+  - get the deepest item with permission: 5–7 ms;
+  - children of its biggest folder: 5.9 ms with the composite index, 9.2 ms without;
+  - home page of 24 with count: 63 ms. That's a cold buffer cache: the same join in plain SQL takes 31 ms.

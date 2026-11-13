@@ -1,0 +1,43 @@
+== items
+ items  |  live  | max_depth | avg_depth | live_roots 
+--------+--------+-----------+-----------+------------
+ 687940 | 647243 |        14 |      3.21 |     126300
+
+== live subtree size per root (items)
+ p50_p90_p99 |  max  
+-------------+-------
+ {1,1,101}   | 20519
+
+== memberships by depth and permission
+   level    | permission | count  
+------------+------------+--------
+ below root | read       |  10888
+ below root | write      |   2060
+ below root | admin      |   3928
+ root       | read       |  10150
+ root       | write      |    761
+ root       | admin      | 115948
+
+== memberships per account
+ accounts | p50_p90_p99_p999 | max  
+----------+------------------+------
+    27707 | {1,4,116,408}    | 1960
+
+== below-root memberships: is there also one on an ancestor for the same account?
+ below_root | no_ancestor_membership | upgrade_of_ancestor | redundant_or_downgrade 
+------------+------------------------+---------------------+------------------------
+      16876 |                  13900 |                2923 |                     53
+
+== visibilities
+  type  |   level    | count 
+--------+------------+-------
+ public | below root |  3869
+ public | root       |  5717
+ hidden | below root |  4215
+ hidden | root       |   199
+
+== rows a materialized (item, account) table would hold (live items)
+  count  
+---------
+ 4570423
+
