@@ -37,18 +37,19 @@
     <% else %>
       <meta name="twitter:card" content="summary" />
     <% end %>
+    <%!-- ~p resolves to the digested URL that app.css references, so the preload is reused --%>
+    <link
+      rel="preload"
+      href={~p"/fonts/nunito-latin-wght-normal.woff2"}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicons/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico?v=3" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png" />
-    <link
-      rel="preload"
-      href="/fonts/nunito-latin-wght-normal.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
     <link
       rel="alternate"
       title={gettext("Graasp blog")}
