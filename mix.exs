@@ -162,7 +162,7 @@ defmodule Admin.MixProject do
       {:nx, "~> 0.12.1"},
       {:exla, "~> 0.12"},
       {:evision, "~> 0.2"},
-      {:kino, "~> 0.16"},
+      {:kino, "~> 0.19"},
       {:kino_yolo, github: "poeticoding/kino_yolo", branch: "main"},
 
       # localized dates and times
