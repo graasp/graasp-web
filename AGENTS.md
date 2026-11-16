@@ -362,6 +362,10 @@ And **never** do this:
 
 ## Agent skills
 
+### Porting core routes
+
+Moving a core route group into admin, or filing the issues for one: follow `docs/core-migration/porting-recipe.md`.
+
 ### Issue tracker
 
 Issues are tracked in GitHub Issues on `graasp/graasp-web` via the `gh` CLI. See `docs/agents/issue-tracker.md`.

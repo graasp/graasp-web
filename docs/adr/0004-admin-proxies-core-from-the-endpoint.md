@@ -1,5 +1,7 @@
 # Admin proxies core from the endpoint, and the router decides what is ported
 
+> Amended by ADR 0008: there is no Route Override; rolling back a Ported Route is a revert and redeploy.
+
 All of core's API traffic (`/api/*`) goes through admin. A hand-written plug in `AdminWeb.Endpoint`, placed right after `Plug.Telemetry` and before the parsers, `MethodOverride`, `Head` and the session, decides for each request: if `AdminWeb.Router` has a route for it under `scope "/api"`, admin serves it; otherwise the plug streams it to core unchanged. Porting a route and switching it to Elixir are the same change. A **Route Override**, a database row edited in the admin UI, sends a ported route back to core without a deploy.
 
 Decided in graasp-web#319, building on the reverse-proxy research (graasp-web#315) and the production-traffic research (graasp-web#317).
