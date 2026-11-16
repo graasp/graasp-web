@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.15.1](https://github.com/graasp/graasp-web/compare/v0.15.0...v0.15.1) (2026-11-16)
+
+
+### Performance Improvements
+
+* preload the digested Nunito URL so app.css reuses it ([#333](https://github.com/graasp/graasp-web/issues/333)) ([a989355](https://github.com/graasp/graasp-web/commit/a989355c824674ab7b3e39de0999bac90fad66ea))
+
+
+### Documentation
+
+* ADR 0003, Ash for the domain layer ([#327](https://github.com/graasp/graasp-web/issues/327)) ([e90d22c](https://github.com/graasp/graasp-web/commit/e90d22c0c7cd6525c5fe8988bc4e46452f01b7a3))
+* ADR 0004, admin proxies core from the endpoint ([#330](https://github.com/graasp/graasp-web/issues/330)) ([6a67e47](https://github.com/graasp/graasp-web/commit/6a67e474786979e7865483dafb1de99f3d18d178))
+* ADR 0005, admin reads core's session cookie ([#331](https://github.com/graasp/graasp-web/issues/331)) ([cc0fabf](https://github.com/graasp/graasp-web/commit/cc0fabf76ccdbd8db19ad688b1b211533e7d2c90))
+* ADR 0006, websockets move in one wave without Redis ([#332](https://github.com/graasp/graasp-web/issues/332)) ([6fa54e5](https://github.com/graasp/graasp-web/commit/6fa54e59dde4c01501424b1c5d99a2c8f566d7ae))
+* ADR 0007, contract tests replay golden files recorded from core ([#334](https://github.com/graasp/graasp-web/issues/334)) ([23a6c93](https://github.com/graasp/graasp-web/commit/23a6c93e49d0bdabacc573e0b7db207e98f5aac9))
+* porting recipe for a route group, ADR 0008 drops the Route Override ([#336](https://github.com/graasp/graasp-web/issues/336)) ([4f641c3](https://github.com/graasp/graasp-web/commit/4f641c3eccac099719e208f32ae29f404c8a6b61))
+
+
+### Chores
+
+* **deps:** drop poison and upgrade to Ecto 3.14 ([#329](https://github.com/graasp/graasp-web/issues/329)) ([34fba6c](https://github.com/graasp/graasp-web/commit/34fba6cc66f8caedbafd7770cfbb31472baa2e76))
+
 ## [0.15.0](https://github.com/graasp/graasp-web/compare/v0.14.2...v0.15.0) (2026-11-13)
 
 
