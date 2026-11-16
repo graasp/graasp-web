@@ -9,7 +9,7 @@ Decided in graasp-web#322, building on ADR 0003 (Ash), ADR 0004 (proxy), ADR 000
 - **Run core and admin side by side in CI** and compare each request's answers live: rejected. Admin's CI would need Node, core's dependencies and Redis until the very end, and the tests would stop working when core is shut down. Since core's API is frozen, recording once gives the same guarantee.
 - **Rewrite core's jest tests in ExUnit** for each route group: rejected. The expectations would be written by hand, nothing would check them against core, and the copies would drift.
 - **Check only against `openapi.json`**: rejected. It covers response shapes, not status codes, side effects or permission outcomes.
-- **Shadow traffic** (the proxy mirrors real requests to both backends and logs the differences): not part of the harness. Mirroring writes would apply them twice. The Route Override is the production safety net.
+- **Shadow traffic** (the proxy mirrors real requests to both backends and logs the differences): not part of the harness. Mirroring writes would apply them twice. Reverting and redeploying is the production safety net (ADR 0008).
 
 ## Consequences
 

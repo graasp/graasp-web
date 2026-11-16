@@ -1,5 +1,7 @@
 # Websockets move in one wave, without a Redis bridge
 
+> Amended by ADR 0008: there is no Route Override; rolling back a Ported Route is a revert and redeploy.
+
 Admin never publishes to or subscribes to core's Redis channel. Because there is no bridge, a Ported Route's websocket events only reach clients whose `/api/ws` socket is held by the same backend. So `/api/ws` and every Core Route that publishes on it move to admin together, in one **Websocket Wave**, late in the migration. The app topics are dropped. Page collaboration sockets never move, because pages are retired along with core.
 
 Decided in graasp-web#321, building on the websocket research (graasp-web#316), ADR 0004 (proxy) and ADR 0005 (session).

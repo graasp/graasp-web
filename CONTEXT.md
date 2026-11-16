@@ -101,12 +101,12 @@ A Core Route that admin serves itself, with the same contract as core.
 _Avoid_: migrated route, new route
 
 **Proxied Route**:
-A Core Route that admin forwards to core untouched, because it isn't ported yet or a Route Override sends it back.
+A Core Route that admin forwards to core untouched, because it isn't ported yet.
 _Avoid_: legacy route, passthrough
 
-**Route Override**:
-A switch an admin flips to send a Ported Route back to core, without a deploy, while a problem is fixed.
-_Avoid_: feature flag, kill switch
+**Route Group**:
+A set of Core Routes ported together, by default one module of the core inventory. No group except the Websocket Wave contains a route that publishes on the notification socket.
+_Avoid_: batch, slice, module (that's the inventory's unit)
 
 **Websocket Wave**:
 The single cutover in which core's notification socket and every Core Route that publishes on it move to admin at the same moment, and roll back together. Clients only receive a route's notifications when the same backend serves both the route and the socket.
