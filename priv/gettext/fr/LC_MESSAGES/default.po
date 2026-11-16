@@ -294,7 +294,7 @@ msgstr "Vous n'avez pas trouvé ce que vous cherchiez ?"
 msgid "Blog posts and update log by the Graasp team"
 msgstr "Articles de blog et journal des mises à jour de l'équipe Graasp"
 
-#: lib/admin_web/components/layouts/root.html.heex:54
+#: lib/admin_web/components/layouts/root.html.heex:55
 #: lib/admin_web/controllers/blog_xml/blog_atom.xml.eex:3
 #, elixir-autogen, elixir-format
 msgid "Graasp blog"
